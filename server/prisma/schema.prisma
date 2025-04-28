@@ -1,0 +1,244 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Mobcomment {
+  id      String @id @default(uuid())
+  message String
+  userID  String
+  clan    String
+}
+
+model User1 {
+  id        String               @id @default(uuid())
+  username  String               @unique
+  tribe     String?
+  clan      String?
+  email     String               @unique
+  password  String
+  createdAt DateTime             @default(now())
+  post      Post[]
+  likesCP   Like_on_ClanPraise[]
+  reviews   Review[]              
+  comments  Comment[]             
+  definitions Definition[]
+  likes       Like_on_Review[]  
+  likesCom    Like_on_Comment[]     
+  likesDef    Like_on_Definition[]
+  disLikesRev DisLike_on_Review[]
+  disLikeCom  DisLike_on_Comment[]
+  disLikeDef  DisLike_on_Definition[]       
+}
+
+model Tribe {
+  id              String          @id @default(uuid())
+  tribe           String          @unique
+  praises_Plural   String         @default("clanpraises")      
+  praises_Singular String?
+  clanpraises      Post[]         
+}
+
+model Post {
+  id        String               @id @default(uuid())
+  title     String
+  tribe     String
+  tribe_     Tribe?                @relation(fields: [tribeId], references: [id], onDelete: Cascade)
+  tribeId   String?               
+  body      String
+  user      User1                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  likesCP   Like_on_ClanPraise[]
+  views     Views[]
+  reviews   Review[] 
+  comments  Comment[]                      //***
+  definitions Definition[]
+  reports   Report[]
+  createdAt DateTime?            @default(now())
+}
+
+model User {
+  id   String @id @default(uuid())
+  name String
+}
+
+model Review {
+  id        String    @id @default(uuid())
+  message   String
+  rating    Int?
+  index     Int?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  user      User1     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    String
+  parent    Review?  @relation("ParentChild", fields: [parentId], references: [id], onDelete: Cascade)
+  children  Review[] @relation("ParentChild")
+  parentId  String?
+  likes     Like_on_Review[]
+  disLikes  DisLike_on_Review[]
+  definition Definition? @relation(fields: [definitionId], references: [id], onDelete: Cascade)
+  definitionId String?
+  reports   Report[]
+}
+
+model Comment {
+  id        String    @id @default(uuid())
+  message   String
+  rating    Int?
+  index     Int?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  user      User1     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    String
+  parent    Comment?  @relation("ParentChild", fields: [parentId], references: [id], onDelete: Cascade)
+  children  Comment[] @relation("ParentChild")
+  parentId  String?
+  likes     Like_on_Comment[] 
+  disLikes  DisLike_on_Comment[]         
+  definition Definition? @relation(fields: [definitionId], references: [id], onDelete: Cascade)
+  definitionId String?
+  reports   Report[]
+}
+
+model Definition {
+  id        String    @id @default(uuid())
+  message   String
+  rating    Float?
+  index     Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  user      User1     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    String
+  parent    Definition?  @relation("ParentChild", fields: [parentId], references: [id], onDelete: Cascade)
+  children  Definition[] @relation("ParentChild")
+  parentId  String?
+  likes     Like_on_Definition[]
+  disLikes  DisLike_on_Definition[]
+  reviews  Review[]                   //*
+  comments Comment[]   
+  reports  Report[]               //***
+}
+
+model TrashCan_ClanPraises {
+  id          String   @id @default(uuid())
+  clan        String
+  tribe       String
+  body        String
+  definitions String
+  reviews     String
+  comments    String
+  createdAt DateTime  @default(now())
+}
+
+model TrashCan_Definitions {
+  id            String   @id @default(uuid())
+  clanPraiseId  String
+  clan          String
+  tribe         String
+  body          String
+  reviews       String
+  comments      String
+  createdAt DateTime  @default(now())
+}
+
+
+model Report {            //#######
+  id        String  @id @default(uuid())
+  type      String?
+  message   String          //##########
+  Status    String?
+  userId    String? 
+  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    String?
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId String?
+  review    Review?  @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  reviewId  String?
+  definition Definition?   @relation(fields: [definitionId], references: [id], onDelete: Cascade)
+  definitionId String?
+  createdAt DateTime  @default(now())
+}
+
+model Like_on_ClanPraise {
+  user   User1  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId String
+  postId String
+
+  @@id([userId, postId])
+}
+
+model Views {
+  id        String   @id @default(uuid())
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    String
+  vieweeId  String
+  createdAt DateTime @default(now())
+}
+
+model Like_on_Definition {
+  user          User1     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  definition    Definition @relation(fields: [definitionId], references: [id], onDelete: Cascade)
+  userId        String
+  definitionId  String
+
+  @@id([userId, definitionId])
+}
+
+model DisLike_on_Definition {
+  user          User1     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  definition    Definition @relation(fields: [definitionId], references: [id], onDelete: Cascade)
+  userId        String
+  definitionId  String
+
+  @@id([userId, definitionId])
+}
+
+model Like_on_Review {
+  user      User1   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  review    Review @relation(fields: [reviewId], references: [id], onDelete: Cascade) //*
+  userId    String
+  reviewId  String            //**
+
+  @@id([userId, reviewId])
+}
+
+model DisLike_on_Review {
+  user      User1   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  review    Review @relation(fields: [reviewId], references: [id], onDelete: Cascade) //*
+  userId    String
+  reviewId  String            //**
+
+  @@id([userId, reviewId])
+}
+
+model Like_on_Comment {
+  user      User1   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade) //*
+  userId    String
+  commentId  String            //**
+
+  @@id([userId, commentId])
+}
+
+model DisLike_on_Comment {
+  user      User1   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade) 
+  userId    String
+  commentId  String            //**
+
+  @@id([userId, commentId])
+}

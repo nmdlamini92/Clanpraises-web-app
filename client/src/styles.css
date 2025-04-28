@@ -1,0 +1,418 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap');
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  /*background-color: beige;*/
+  /*background-color: rgb(220, 233, 245);*/
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.4;
+
+  background-image: url('./[[...slug]]/MapChart_Map.png');
+  background-size: cover; /* Cover the entire page */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed; /* Keeps the background fixed when scrolling */
+}
+
+.container {
+  max-width: 1200px;
+  width: calc(100vw - 4rem);
+  margin: 2rem auto;
+}
+
+/*
+button {
+  font-size: inherit;
+  font-family: inherit;
+}
+*/
+
+button {
+  background-color: gold;
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  font-size: 1rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 0.3rem;
+}
+
+.header1 {
+  display: flex;
+  justify-content: space-between;
+  /*background-color: beige;*/
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  /* Ensure it stays on top of all other elements */
+}
+
+.modal-backdrop-clear {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  /* Ensure it stays on top of all other elements */
+}
+
+.modal {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  /* z-index: 10000;  Even higher than the backdrop */
+}
+
+.ClanNamenTribe {
+  display: flex;
+  flex-direction: "horizontal";
+  justify-content: left;
+  margin-bottom: 5%;
+}
+
+.ClanNameInput {
+  width: 90%;
+  margin-right: 10%;
+}
+
+.TribeInput {
+  width: 90%;
+  margin-right: 10%;
+}
+
+.ClanPraiseInput {
+  height: 80px;
+  width: 90%;
+}
+
+.close-button {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.btn-AddClnPrs {
+  background-color: beige;
+}
+
+.card {
+  width: 10px;
+  /* Fixed width */
+  height: 15px;
+  /* Fixed height */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin: 16px;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  cursor: pointer;
+}
+
+.CardClanPraise {
+  text-decoration: none;
+}
+
+.card-link {
+  text-decoration: none;
+}
+
+.card:hover {
+  opacity: 0.7;
+  /* Change opacity on hover */
+  transform: translateY(-5px);
+  /* Slight lift on hover */
+}
+
+.card-image {
+  max-width: 10%;
+  height: auto;
+  border-radius: 50%;
+  margin-bottom: 10px;
+  margin-top: 0px;
+  background-color: aqua;
+}
+
+.card-content {
+  padding: 16px;
+  line-height: 1.5;
+  max-height: 100%;
+  /* Ensures the card has a fixed size */
+}
+
+.card-interactions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.card-commentsIcon {
+  display: flex;
+  justify-content: center;
+}
+
+.card-title-container {
+  display: flex;
+  justify-content: center;
+}
+
+.card-title {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.card h5 {
+  background-color: yellowgreen;
+}
+
+.card-description-container {
+  display: flex;
+  justify-content: center;
+}
+
+.card-description {
+  font-size: 1rem;
+  margin: 8px 0;
+}
+
+.error-msg {
+  color: hsl(0, 100%, 67%);
+}
+
+.comments-title {
+  margin-bottom: 0.5rem;
+}
+
+.comment-form-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.message-input {
+  flex-grow: 0.5;
+  resize: none;
+  height: 2px;
+  border-radius: 0.5em;
+  padding: 0.5em;
+  font-size: inherit;
+  font-family: inherit;
+  border: 2px solid hsl(235, 50%, 74%);
+  line-height: 0.4;
+}
+
+.message-input:focus {
+  border-color: hsl(235, 100%, 67%);
+  outline: none;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.mt-1 {
+  margin-top: 0.25rem;
+}
+
+.comment-stack {
+  margin: 0.5rem 0;
+}
+
+.comment-stack:last-child {
+  margin-bottom: 0;
+}
+
+.nested-comments {
+  padding-left: 0.5rem;
+  flex-grow: 1;
+}
+
+.nested-comments-stack {
+  display: flex;
+}
+
+.collapse-line {
+  border: none;
+  background: none;
+  padding: 0;
+  width: 15px;
+  margin-top: 0.5rem;
+  position: relative;
+  cursor: pointer;
+  outline: none;
+  transform: translateX(-50%);
+}
+
+.collapse-line:hover::before,
+.collapse-line:focus-visible::before {
+  background-color: hsl(235, 100%, 60%);
+}
+
+.collapse-line::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background-color: hsl(235, 50%, 74%);
+  transition: background-color 100ms ease-in-out;
+}
+
+.hide {
+  display: none;
+}
+
+.btn {
+  --hue: 235;
+  --color: hsl(var(--hue), 100%, 67%);
+  padding: 0.5em 1em;
+  background: var(--color);
+  border: none;
+  color: white;
+  border-radius: 0.5em;
+  font-size: 0.75em;
+  cursor: pointer;
+}
+
+.btn:hover,
+.btn:focus-visible {
+  --color: hsl(var(--hue), 100%, 74%);
+}
+
+.btn.icon-btn {
+  background: none;
+  color: var(--color);
+  padding: 0.25em;
+  display: flex;
+  align-items: center;
+}
+
+.mr-1 {
+  margin-right: 0.25em;
+}
+
+.icon-btn:hover,
+.icon-btn:focus-visible {
+  --color: hsl(var(--hue), 100%, 74%);
+}
+
+.icon-btn-active,
+.icon-btn.danger {
+  --hue: 0;
+}
+
+.icon-btn-active {
+  position: relative;
+}
+
+.icon-btn-active::before {
+  content: "\00D7";
+  position: absolute;
+  font-size: 0.75em;
+  width: 1em;
+  height: 1em;
+  color: white;
+  background-color: var(--color);
+  border-radius: 50%;
+  bottom: 0.1em;
+  right: 0.1em;
+}
+
+.lyricsheader {
+  color: hsl(235, 50%, 67%);
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+  font-size: 0.75em;
+}
+
+.authorName {
+  font-weight: bold;
+}
+
+.comment {
+  
+  width: 90%;
+  padding: 0.5rem;
+  border: 1px solid hsl(235, 100%, 90%);
+  border-radius: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.post-box {
+  width: 50%;
+}
+
+.comment .header {
+  color: hsl(235, 50%, 67%);
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+  font-size: 0.75em;
+}
+
+.comment .header .name {
+  font-weight: bold;
+}
+
+.comment .message {
+  white-space: pre-wrap;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.comment .footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.ml-3 {
+  margin-left: 1.5rem;
+}
+
+.btn[disabled] {
+  --color: hsl(var(--hue), 20%, 74%);
+}
+
+.dropdown-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #f1f1f1;
+  /* Change background color on hover */
+}

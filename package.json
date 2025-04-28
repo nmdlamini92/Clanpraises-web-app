@@ -1,0 +1,12 @@
+{
+  "type": "module",
+  "dependencies": {
+    "next": "^15.2.1"
+  },
+  "scripts": {
+    "dev": "next dev --turbo"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2"
+  }
+}
