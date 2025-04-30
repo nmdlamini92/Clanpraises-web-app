@@ -1,12 +1,55 @@
 {
   "type": "module",
   "dependencies": {
-    "next": "^15.2.1"
+    "next": "^15.2.1",
+    "@craco/craco": "^7.1.0",
+    "@testing-library/jest-dom": "^5.16.4",
+    "@testing-library/react": "^13.3.0",
+    "@testing-library/user-event": "^13.5.0",
+    "axios": "^0.27.2",
+    "buffer": "^6.0.3",
+    "crypto-browserify": "^3.12.1",
+    "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^4.0.0",
+    "process": "^0.11.10",
+    "react": "18.3.1",
+    "react-cookie": "^7.2.0",
+    "react-dom": "18.3.1",
+    "react-icons": "^4.4.0",
+    "react-select": "^5.8.3",
+    "react-toastify": "^10.0.6",
+    "stream-browserify": "^3.0.0",
+    "swiper": "^11.1.15",
+    "util": "^0.12.5",
+    "web-vitals": "^2.1.4"
   },
   "scripts": {
     "dev": "next dev --turbo"
   },
   "devDependencies": {
-    "ts-node": "^10.9.2"
+    "@types/react": "19.1.2",
+    "ts-node": "^10.9.2",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.8.3"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }

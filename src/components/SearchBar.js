@@ -18,8 +18,8 @@ const SearchBarWithSuggestions = () => {
   const [postsLength, setPostsLength] = useState();
   const [query, setQuery] = useState("");
 
-  const users = getUsers();
-  console.log(users);
+  //const users = getUsers();
+ // console.log(users);
 
   useEffect(() => {
     
