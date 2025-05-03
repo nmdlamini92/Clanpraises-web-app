@@ -58,7 +58,7 @@ import AddClanPraise from "../components/AddClanPraise";
           </div>
           <div className="flex justify-center flex-wrap mt-4 gap-1 md:gap-4 max-w-2xl mx-auto p-0 bg-white/60"> {/** bg-amber-600/10*/}
             {TribesList.map((tribe, index) => (
-            <Link key={index} href={`http://192.168.1.172:3000/${tribe.tribe}`} 
+            <Link key={index} href={`http://${process.env.HOST}:${process.env.PORT}/${tribe.tribe}`} 
             className={`font-serif text-md md:text-lg mr-4 hover:underline ${colors[index % colors.length]}`}>
             •{capitalizeFirstLetter(tribe.tribe)} - {tribe.praises_Plural} ({tribe._count.clanpraises})</Link>
             ))}  

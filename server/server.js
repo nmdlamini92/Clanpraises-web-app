@@ -12,15 +12,29 @@ import { v4 as uuidv4 } from "uuid"
 dotenv.config()
 
 const app = fastify()
+
 app.register(sensible)
+
 app.register(clanPraiseRoutes);
 
 app.register(cookie, { secret: process.env.COOKIE_SECRET })
+
 app.register(cors, {
   origin: ['*', process.env.CLIENT_URL, 'http://localhost:3000', 'http://192.168.1.172:3000', 'http://192.168.1.185:3000'],
   method: ["GET", "POST"],
   credentials: true,
 })
+
+app.listen({port: process.env.PORT, host: "0.0.0.0"},()=>{                                    //tells our app to be live on localhost:3001
+  console.log("Server started on portland 3001")
+})
+
+async function commitToDb(promise) {
+  const [error, data] = await app.to(promise)
+  if (error) return app.httpErrors.internalServerError(error.message)
+  return data
+}
+
 const prisma = new PrismaClient()
 
 /*
@@ -53,16 +67,6 @@ oauth2Client.setCredentials({
 app.addHook("onRequest", (req, res, done) => {
   console.log('sent request to server');
   console.log(req.cookies);
-  /*
-  const cookieZero = req.cookies.userId;
-  console.log(cookieZero);
-
-  if (req.cookies.userId !== CURRENT_USER_ID) {
-    req.cookies.userId = CURRENT_USER_ID
-    res.clearCookie("userId")
-    res.setCookie("userId", CURRENT_USER_ID)
-    console.log('you are now the user Kyle');
-  } */
 
   let visitorId = req.cookies.visitorId
   console.log(visitorId);
@@ -71,9 +75,9 @@ app.addHook("onRequest", (req, res, done) => {
   if (!visitorId) {
     visitorId = uuidv4();
     res.setCookie('visitorId', visitorId, {
-      path: '/',
+      //path: '/',
       httpOnly: true,
-      secure: true,
+      //secure: true,
       sameSite: 'lax',
       expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000) // 1 year expiration
     });
@@ -1494,14 +1498,6 @@ app.post("/posts/:postId/definitions/:definitionId/toggleDisLike", async (req, r
   }
 })
 
-async function commitToDb(promise) {
-  const [error, data] = await app.to(promise)
-  if (error) return app.httpErrors.internalServerError(error.message)
-  return data
-}
 
-app.listen({port: process.env.PORT, host: "0.0.0.0"},()=>{                                    //tells our app to be live on localhost:3001
-  console.log("Server started on portland 3001")
-})
 
 
