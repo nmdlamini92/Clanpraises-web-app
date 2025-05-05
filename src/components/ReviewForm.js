@@ -10,6 +10,7 @@ export function ReviewForm({loading, error, onSubmit, reviewee, popLoginModal, p
   console.log(reviewee);
 
   const isUserSignedIn = JSON.parse(localStorage.getItem('isUserSignedIn'));
+  const VipUserID = JSON.parse(localStorage.getItem('VipUserId'));
 
   const childRef = useRef()
 
@@ -29,6 +30,9 @@ export function ReviewForm({loading, error, onSubmit, reviewee, popLoginModal, p
 
     if (isUserSignedIn.isUserSignedIn===false){
       popLoginModal()
+    }
+    if (author.id === VipUserID.VipUserId) {
+      setErrorComment("You cannot review your own post");
     }
     else{
       if (message === "" || rating === null) {
@@ -80,7 +84,7 @@ export function ReviewForm({loading, error, onSubmit, reviewee, popLoginModal, p
   return (
     <div className="bg-amber-50/50 ">
       <div className="flex items-center p-1 gap-2">
-      <p className="text-xs mb-0 pb-0 pt-2">rate <strong>{author}</strong>'s post</p>
+      <p className="text-xs mb-0 pb-0 pt-2">rate <strong>{author.username}</strong>'s post</p>
       {<StarRatingInterActive onRate={handleRating} ref={childRef}/>}
       <p className="error-msg text-xs">{errorRating}</p>
     </div>
@@ -89,7 +93,7 @@ export function ReviewForm({loading, error, onSubmit, reviewee, popLoginModal, p
       <div className="flex gap-1 mb-1">
       <textarea
           autoFocus={autoFocus}
-          placeholder={`review ${author}\'s post...`}
+          placeholder={`review ${author.username}\'s post...`}
           value={message}
           onChange={e => setMessage(e.target.value)}
           className="h-8 w-9/12 border border-gray-300 rounded-md placeholder:text-md placeholder:m-1"

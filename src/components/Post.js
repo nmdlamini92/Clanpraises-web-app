@@ -380,7 +380,7 @@ export function Post() {
             {show && (
               <div className="modal-backdrop">
                 <div className="modal">
-              <button className="close-button" onClick={handleClose}>Close</button>
+              <button className="p-1 mb-1 text-xs bg-red-800/60" onClick={handleClose}>Close</button>
               {isSignUpCompVisible && <SignUpComp onDataChange={handleChildData} />}
               {isSignInCompVisible && <SignInComp onDataChange={handleChildData} />}
               </div>
@@ -564,6 +564,9 @@ export function Post() {
                 if (isUserSignedIn.isUserSignedIn===false){
                   handleOpenLogInModal()
                 }
+                if (rootDefinitions.filter(definition => definition.id === definitionId)[0].user.id === VipUserID.VipUserId) {
+                  setErrorDefReview("You cannot review your own note");
+                }
                 else{
                   if (DefReview === "" || rating === null) {
                     const validationError = Validations.addReviewValidations({comment: DefReview, rating: rating, author: post.user.username});
@@ -689,7 +692,7 @@ export function Post() {
                     return createCommentOnDefFn({ message: DefComment, index: selectedLineIndex, parentId: null, definitionId: definitionId, postId: post.id })
                     .then(response => {
                       createLocalComment(response);
-                      updateLocalDefinition({id: definitionId, rating: (currentDefRating + rating)/(currentNumOfDefReviews + 1)})  
+                      //updateLocalDefinition({id: definitionId, rating: (currentDefRating + rating)/(currentNumOfDefReviews + 1)})  
                   })
                   .catch(error => {console.error("Error creating Def-review:", error);})
                     }
@@ -890,7 +893,7 @@ export function Post() {
                 <ReviewForm
                 loading={loading}
                 error={error}
-                reviewee={post.user.username}
+                reviewee={post.user}
                 onSubmit={onReviewCreate}
                 popLoginModal={handleOpenLogInModal}
                 postId={post.id}

@@ -61,9 +61,9 @@ import Link from "next/link"
       <p className="">{postList.length} results for {posts} ({tribe})</p>
       {/*</div>*/}
       <div className="flex flex-wrap">
-        {postList.map(post => (
-        <div className="flex flex-row flex-wrap">
-        <Link href={`/${post.tribe}/${post.title}/${post.id}`}>
+        {postList.map((post, index) => (
+        <div key={index} className="flex flex-row flex-wrap">
+        <Link key={index} href={`/${post.tribe}/${post.title}/${post.id}`}>
           <Card
             title={post.title}
             username={post.user.username}

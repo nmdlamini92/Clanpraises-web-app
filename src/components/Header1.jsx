@@ -130,7 +130,7 @@ export default function Header1 (){
                   {show && (
                     <div className="modal-backdrop">
                       <div className="modal">
-                    <button className="close-button" onClick={handleClose}>Close</button>
+                    <button className="p-1 mb-1 text-xs bg-red-800/60" onClick={handleClose}>Close</button>
                     {isSignUpCompVisible && <SignUpComp onDataChange={handleChildData} />}
                     {isSignInCompVisible && <SignInComp onDataChange={handleChildData} />}
                     </div>

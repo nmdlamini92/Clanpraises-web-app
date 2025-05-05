@@ -45,23 +45,23 @@ export default function SignInComp ({onDataChange}) {
     }
 
     return (
-      <div style={{ marginTop: '20px', border: '1px solid black', padding: '10px' }}>
+      <div className="bg-gray-200 p-3 border border-amber-950">
         <p>Sign In to continue</p>
         <form onSubmit={(e) => handleSubmit(e, values2)}>
         <div className="boarder border-black">
-            <input type='email' name='email' placeholder='Email' onChange={(e)=> 
+            <input className="border rounded border-amber-950 mt-1" type='email' name='email' placeholder='Email' onChange={(e)=> 
               setvalues2({ ...values2, [e.target.name]: e.target.value })} />
-              {errors2.email && <span className= 'error-msg'> {errors2.email} </span>}
+              {errors2.email && <span className= 'error-msg text-xs'> {errors2.email} </span>}
           </div>
           <div>
-            <input type='password' name='password' placeholder='Password' onChange={(e)=>  //updates values on related hook as changes are made
+            <input className="border rounded border-amber-950 mt-1" type='password' name='password' placeholder='Password' onChange={(e)=>  //updates values on related hook as changes are made
               setvalues2({ ...values2, [e.target.name]: e.target.value })} />
-              {errors2.password && <span className= 'error-msg'> {errors2.password} </span>}
+              {errors2.password && <span className= 'error-msg text-xs'> {errors2.password} </span>}
           </div>
-          <button type='submit'>Sign In</button>
+          <button className="mt-0.5 p-1 bg-amber-400 border-2 border-black" type='submit'>Sign In</button>
         </form>
         <div className="flex flex-row">
-                Have no account? <Link onClick={switchToSignUp} href={''} className="flex flex-row"><p className="text-blue-500 ml-1">Sign Up</p></Link>
+                Have no account? <Link onClick={switchToSignUp} href={''} className="flex flex-row"><p className="text-blue-500 ml-1 underline">Sign Up</p></Link>
           </div>
       </div>
     );

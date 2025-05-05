@@ -75,7 +75,7 @@ export default function SignUpComp({ onDataChange }) {
               setEnteredVcode(e.target.value)} />
               <button onClick={(e)=>handleSignUp(e)}>Verify</button>
               
-              {errors11 && <span className= 'error-msg'> {errors11} </span>}    
+              {errors11 && <span className= 'error-msg text-xs'> {errors11} </span>}    
         </div>
       )
     }
@@ -126,24 +126,24 @@ export default function SignUpComp({ onDataChange }) {
     }
       
       return(
-        <div className="bg-gray-200">
+        <div className="bg-gray-200 ">
         <form onSubmit={(e) => handleSubmit(e, values1)}>
-          <div>
           <div>
             <input className="border rounded border-amber-950" type='text' name='username' placeholder='Username' value={values1.username || ""} 
               onChange={(e)=> setvalues1({ ...values1, [e.target.name]: e.target.value })} />
-              {errors1.username && <span className= 'error-msg'> {errors1.username} </span>}
+              {errors1.username && <span className= 'error-msg text-xs'> {errors1.username} </span>}
           </div>
+          <div>
             <input className="border rounded border-amber-950 mt-1" type='email' name='email' placeholder='Email' onChange={(e)=>  //updates values on related hook as changes are made
               setvalues1({ ...values1, [e.target.name]: e.target.value })} />
-              {errors1.email && <span className= 'error-msg'> {errors1.email} </span>}
+              {errors1.email && <span className= 'error-msg text-xs'> {errors1.email} </span>}
           </div>
           <div>
             <input className="border rounded border-amber-950 mt-1" type='password' name='password' placeholder='Password' onChange={(e)=>
               setvalues1({ ...values1, [e.target.name]: e.target.value })} />
-              {errors1.password && <span className='error-msg'> {errors1.password} </span>}
+              {errors1.password && <span className='error-msg text-xs'> {errors1.password} </span>}
           </div>
-          <button type='submit'>Sign Up</button>
+          <button className="mt-0.5 p-1 bg-amber-400 border border-black" type='submit'>Sign Up</button>
       </form>
             <div className="flex flex-row">
                 Already have account? <p onClick={switchToSignIn} className="text-blue-500 cursor-pointer underline ml-1">Sign In</p>
@@ -154,7 +154,7 @@ export default function SignUpComp({ onDataChange }) {
 
     return (
       <>
-      <div className="mt-5 border border-black p-2.5 bg-gray-200">
+      <div className="border border-amber-950 p-2.5 bg-gray-200">
         <p>Sign Up to continue</p>
         {isEnterVeriCodeCompVisible && <EnterVerifCode/>}
         {isSignUpFormVisible && <SignUpForm/>}
