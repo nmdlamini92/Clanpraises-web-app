@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+   binaryTargets = ["native", "debian-openssl-3.0.x", "linux-musl" ]
 }
 
 datasource db {
@@ -23,7 +24,7 @@ model User1 {
   tribe     String?
   clan      String?
   email     String               @unique
-  password  String
+  password  String?
   createdAt DateTime             @default(now())
   post      Post[]
   likesCP   Like_on_ClanPraise[]
@@ -58,7 +59,7 @@ model Post {
   likesCP   Like_on_ClanPraise[]
   views     Views[]
   reviews   Review[] 
-  comments  Comment[]                      //***
+  comments  Comment[]                      
   definitions Definition[]
   reports   Report[]
   createdAt DateTime?            @default(now())
@@ -172,6 +173,12 @@ model Report {            //#######
   createdAt DateTime  @default(now())
 }
 
+model Feedback {
+  id        String   @id @default(uuid())
+  message   String
+  createdAt DateTime @default(now())
+}
+
 model Like_on_ClanPraise {
   user   User1  @relation(fields: [userId], references: [id], onDelete: Cascade)
   post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
@@ -186,7 +193,7 @@ model Views {
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    String
   vieweeId  String
-  createdAt DateTime @default(now())
+  createdAt DateTime? @default(now())
 }
 
 model Like_on_Definition {
@@ -194,6 +201,7 @@ model Like_on_Definition {
   definition    Definition @relation(fields: [definitionId], references: [id], onDelete: Cascade)
   userId        String
   definitionId  String
+  createdAt     DateTime? @default(now())
 
   @@id([userId, definitionId])
 }
@@ -203,6 +211,7 @@ model DisLike_on_Definition {
   definition    Definition @relation(fields: [definitionId], references: [id], onDelete: Cascade)
   userId        String
   definitionId  String
+  createdAt     DateTime? @default(now())
 
   @@id([userId, definitionId])
 }
@@ -212,6 +221,7 @@ model Like_on_Review {
   review    Review @relation(fields: [reviewId], references: [id], onDelete: Cascade) //*
   userId    String
   reviewId  String            //**
+  createdAt DateTime? @default(now())
 
   @@id([userId, reviewId])
 }
@@ -220,7 +230,8 @@ model DisLike_on_Review {
   user      User1   @relation(fields: [userId], references: [id], onDelete: Cascade)
   review    Review @relation(fields: [reviewId], references: [id], onDelete: Cascade) //*
   userId    String
-  reviewId  String            //**
+  reviewId  String
+  createdAt DateTime? @default(now())
 
   @@id([userId, reviewId])
 }
@@ -230,6 +241,7 @@ model Like_on_Comment {
   comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade) //*
   userId    String
   commentId  String            //**
+  createdAt DateTime? @default(now())
 
   @@id([userId, commentId])
 }
@@ -239,6 +251,27 @@ model DisLike_on_Comment {
   comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade) 
   userId    String
   commentId  String            //**
+  createdAt DateTime? @default(now())
 
   @@id([userId, commentId])
+}
+
+model recently_trending {
+  id           String   @id @default(uuid())
+  clanPraiseId String
+  rank         Int?
+  createdAt    DateTime @default(now())
+}
+
+model UserAnalytics {
+  id         String   @id @default(uuid())
+  ip         String
+  date       DateTime
+  deviceType String
+  country    String?
+  region     String?
+  city       String?
+  createdAt  DateTime @default(now())
+
+  @@unique([ip, date])
 }

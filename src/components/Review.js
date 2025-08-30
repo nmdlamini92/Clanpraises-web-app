@@ -89,11 +89,11 @@ export function Review({id, message, user, createdAt, _count, likeCount, likedBy
 
   return (
     <>
-      <div className="comment">
+      <div className="comment bg-yellow-50/50">
         <div className="header">
           <span className="name" > 
             <IconBtn 
-              Icon={props => <FaUser {...props} size={12} className="text-amber-900 bg-white/60"/>} 
+              Icon={props => <FaUser {...props} size={12} className="text-amber-900"/>} 
               style={{ marginBottom: 0 }}
               >
               <p className="text-amber-900 lowercase text-[11px]">

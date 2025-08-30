@@ -32,8 +32,8 @@ export default function FormattedParagraph({ text, onLineClick, definitions }) {
       <div className="flex flex-col items-center justify-center p-4 bg-transparent w-fit h-fit min-w-[200px] max-w-[500px]"> {/*border border-violet-500 h-full*/}
 
       {formattedLines.map((line, index) => (
-        <div key={index} className="flex">
-        <Line className = "mt-0 mb-0"
+        <div key={index} className="flex items-center justify-center gap-0.5 mb-0.5">
+        <Line className = "flex items-center justify-center"
           key={index}
           lineIndex={index}
           text={line}
@@ -67,9 +67,14 @@ function Line({ text, lineIndex, numOfDefinitions, isActive, onHover, onLeave, o
 
   return (
     <p
-      className={`px-1 py-0 my-0 rounded-lg cursor-pointer transition-all duration-200 border w-fit ${
-        isActive ? "bg-amber-200" : numOfDefinitions>0? "bg-amber-700/10" : "bg-slate-50"      //bg-amber-200 : bg-slate-50
+      className={`px-1 py-0 my-0 rounded-md cursor-pointer transition-all duration-200 w-fit ${
+        isActive ? "bg-amber-100" : numOfDefinitions>0? "bg-amber-700/10" : "bg-slate-50/30"      //bg-amber-200 : bg-slate-50
       }`}
+      style={{
+        display: "inline-block",  // Shrink to fit content, even when wrapped
+        whiteSpace: "normal",     // Allow line wrapping
+        textAlign: "center",      // Center multi-line text
+    }}
       onMouseEnter={onHover}
       onMouseLeave={onLeave}
       onTouchStart={onHover}

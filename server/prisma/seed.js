@@ -2,50 +2,77 @@ import { PrismaClient } from "@prisma/client"
 const prisma = new PrismaClient()
 
 async function seed() {
-  await prisma.post.deleteMany()
-  await prisma.user.deleteMany()
-  const kyle = await prisma.user.create({ data: { name: "Kyle" } })
-  const sally = await prisma.user.create({ data: { name: "Sally" } })
 
-  const post1 = await prisma.post.create({
-    data: {
-      body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer placerat urna vel ante volutpat, ut elementum mi placerat. Phasellus varius nisi a nisl interdum, at ultrices ex tincidunt. Duis nec nunc vel urna ullamcorper eleifend ac id dolor. Phasellus vitae tortor ac metus laoreet rutrum. Aenean condimentum consequat elit, ut placerat massa mattis vitae. Vivamus dictum faucibus massa, eget euismod turpis pretium a. Aliquam rutrum rhoncus mi, eu tincidunt mauris placerat nec. Nunc sagittis libero sed facilisis suscipit. Curabitur nisi lacus, ullamcorper eu maximus quis, malesuada sit amet nisi. Proin dignissim, lacus vitae mattis fermentum, dui dolor feugiat turpis, ut euismod libero purus eget dui.",
-      title: "Post 1",
-      tribe: "german"
-    },
-  })
-  const post2 = await prisma.post.create({
-    data: {
-      body: "Proin ut sollicitudin lacus. Mauris blandit, turpis in efficitur lobortis, lectus lacus dictum ipsum, vel pretium ex lacus id mauris. Aenean id nisi eget tortor viverra volutpat sagittis sit amet risus. Sed malesuada lectus eget metus sollicitudin porttitor. Fusce at sagittis ligula. Pellentesque vel sapien nulla. Morbi at purus sed nibh mollis ornare sed non magna. Nunc euismod ex purus, nec laoreet magna iaculis quis. Mauris non venenatis elit. Curabitur varius lectus nisl, vitae tempus felis tristique sit amet.",
-      title: "Post 2",
-      tribe: "italian"
-    },
-  })
+  const nmd = await prisma.user1.create({ 
+    data: { 
+      username: "guest", 
+      tribe: "swati",
+      email: "new@guest.com",
+      password: "guest",
+      clan: "dlamini",
+    } 
+    })
 
-  const comment1 = await prisma.comment.create({
+
+  const tribe = await prisma.tribe.create({
     data: {
-      message: "I am a root comment",
-      userId: kyle.id,
-      postId: post1.id,
+      tribe: "zulu",
+      praises_Plural: "Izithakazelo",
+      praises_Singular: "Ithakazelo"
     },
   })
 
-  const comment2 = await prisma.comment.create({
+  const tribe1 = await prisma.tribe.create({
     data: {
-      parentId: comment1.id,
-      message: "I am a nested comment",
-      userId: sally.id,
-      postId: post1.id,
+      tribe: "sotho",
+      praises_Plural: "Diboko",
+      praises_Singular: "Sereto"
+    },
+  })
+  const tribe2 = await prisma.tribe.create({
+    data: {
+      tribe: "swati",
+      praises_Plural: "Tinanatelo",
+      praises_Singular: "Sinanatelo"
     },
   })
 
-  const comment3 = await prisma.comment.create({
+  const tribe3 = await prisma.tribe.create({
     data: {
-      message: "I am another root comment",
-      userId: sally.id,
-      postId: post1.id,
+      tribe: "shona",
+      praises_Plural: "Nhetembo dzemandzinza",
+      praises_Singular: "Nhetembo yedzinza"
     },
   })
+
+  const tribe4 = await prisma.tribe.create({
+    data: {
+      tribe: "tsonga",
+      praises_Plural: "hlomo",
+      praises_Singular: ""
+    },
+  })
+
+  const tribe5 = await prisma.tribe.create({
+    data: {
+      tribe: "other",
+      praises_Plural: "clan praises",
+      praises_Singular: "clan praise"
+    },
+  })
+
 }
 
 seed()
+  .then(() => {
+      console.log("Seeding done.");
+    })
+    .catch((e) => {
+      console.error("Seeding failed:", e);
+      process.exit(1);
+    })
+    .finally(() => {
+      prisma.$disconnect();
+    });
+
+

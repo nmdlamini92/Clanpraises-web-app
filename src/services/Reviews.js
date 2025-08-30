@@ -7,17 +7,17 @@ export function getVipUserId({ cookies}) {
   })
 }
 
-export function createReview({ postId, message, parentId, definitionId, rating, index }) {
+export function createReview({ postId, message, parentId, definitionId, rating, index, yourEmail }) {
   return makeRequest(`posts/${postId}/reviews`, {
     method: "POST",
-    data: { message, rating, index, parentId, definitionId, postId},
+    data: { message, rating, index, parentId, definitionId, postId, yourEmail },
   })
 }
 
-export function createReviewDefinition({ postId, message, parentId, definitionId, rating, index, newDefRating }) {
+export function createReviewDefinition({ postId, message, parentId, definitionId, rating, index, newDefRating, yourEmail }) {
   return makeRequest(`reviewDefinition`, {
     method: "POST",
-    data: {postId, message, parentId, definitionId, rating, index, newDefRating}
+    data: {postId, message, parentId, definitionId, rating, index, newDefRating, yourEmail}
   })
 }
 

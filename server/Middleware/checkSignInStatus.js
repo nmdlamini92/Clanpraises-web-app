@@ -21,7 +21,7 @@ export default class checkSignInStatus {
       
         try {
           const decodedToken = await new Promise((resolve, reject) => {
-            jwt.verify(token, "ligusha", (err, decoded) => {
+            jwt.verify(token, process.env.COOKIE_SECRET, (err, decoded) => {
               if (err) {
                 console.error('ErrorERR:', err);
                 //if (err.name === 'TokenExpiredError') {

@@ -5,8 +5,9 @@ import { getPosts, getUsers } from "../services/posts"
 //import { Link, useNavigate } from 'react-router-dom';
 import Link from 'next/link';
 import AddClanPraise from './AddClanPraise';
+import { FaSearch } from "react-icons/fa";
 
-const SearchBarWithSuggestions = () => {
+const SearchBarWithSuggestions = ({setButtonBorderBold, setButtonBorderNormal}) => {
 
   //const navigate = useNavigate(); 
 
@@ -17,6 +18,8 @@ const SearchBarWithSuggestions = () => {
   const [isPostsNull, setIsPostsNull] = useState(true);
   const [postsLength, setPostsLength] = useState();
   const [query, setQuery] = useState("");
+
+  const [isSearchTelescopeVisible, setIsSearchTelescopeVisible] = useState(true);
 
   //const users = getUsers();
  // console.log(users);
@@ -51,6 +54,7 @@ const SearchBarWithSuggestions = () => {
   // State for search input and filtered suggestions
   const [searchTerm, setSearchTerm] = useState('');
   const [suggestions, setSuggestions] = useState([]);
+  const [noResult, setNoResult] = useState('');
   const [suggestionsObj, setSuggestionsObj] = useState();
   const [storedSugg, setStoredSugg] = useState([]);
   
@@ -68,9 +72,10 @@ const SearchBarWithSuggestions = () => {
     console.log('Input box clicked!');
 
     //console.log(fetchedPosts);
-    //console.log(fetchedPosts.post);
-    
+    //console.log(fetchedPosts.post); 
     //setIsActive(true);  // Change the state to active
+
+    //setIsSearchTelescopeVisible(false);
     setArrayList(fetchedPosts)
     setArrayLength(postsLength)
 
@@ -103,7 +108,8 @@ const SearchBarWithSuggestions = () => {
   useEffect(() => {
     function handleClickOutside(event) {
       if (inputRef.current && !inputRef.current.contains(event.target)) {
-          setSuggestions([]);           // Hide suggestions when clicked outside
+          setSuggestions([]); // Hide suggestions when clicked outside
+          //setIsSearchTelescopeVisible(true);          
       }
     }
     // Add event listener
@@ -186,28 +192,43 @@ const SearchBarWithSuggestions = () => {
     setSearchTerm(input);
     setQuery(input);
 
+
     if (input.length > 0) {
+
+      setIsSearchTelescopeVisible(false);
+
       const filteredSuggestions = DropDown.filter(item =>
         item.toLowerCase().includes(input.toLowerCase())
       );
-      const filteredUniArrayWithSugg = uiqueArrLowerCase.filter(item =>
-          item.suggestion.toLowerCase().includes(input.toLowerCase())
-      );
-      setSuggestions(filteredSuggestions);
-      setSuggestionsObj(filteredUniArrayWithSugg);
-      console.log(filteredSuggestions);
-      console.log(filteredUniArrayWithSugg);
-      //console.log(filteredUniArrayWithSugg[2].id);
+      if (filteredSuggestions.length === 0) {
+        setSuggestions([]);
+        setNoResult(`no results found for '${input}'`);
+        setButtonBorderBold();
+      }
+      else {
+        setNoResult('');
+        setButtonBorderNormal();
+        const filteredUniArrayWithSugg = uiqueArrLowerCase.filter(item =>
+            item.suggestion.toLowerCase().includes(input.toLowerCase())
+        );
+        setSuggestions(filteredSuggestions);
+        setSuggestionsObj(filteredUniArrayWithSugg);
+        console.log(filteredSuggestions);
+        console.log(filteredUniArrayWithSugg);
+        //console.log(filteredUniArrayWithSugg[2].id);
 
-      const filteredItems = uiqueArrLowerCase.filter(item => filteredSuggestions.includes(item.suggestion));
-      setRightClickedSuggestion(filteredItems);
-      //setFilteredSugg(filteredItems);
-      console.log(filteredItems);
 
-      const links = linksToSuggestions(filteredSuggestions, DropDown1, uiqueArrLowerCase);
-      setSuggestionsLinks(links);
-      console.log(links);
+        const filteredItems = uiqueArrLowerCase.filter(item => filteredSuggestions.includes(item.suggestion));
+        setRightClickedSuggestion(filteredItems);
+        //setFilteredSugg(filteredItems);
+        console.log(filteredItems);
+
+        const links = linksToSuggestions(filteredSuggestions, DropDown1, uiqueArrLowerCase);
+        setSuggestionsLinks(links);
+        console.log(links);
+      }
     } else {
+      setIsSearchTelescopeVisible(true);
       setSuggestions([]);
     }
   };
@@ -292,13 +313,19 @@ const SearchBarWithSuggestions = () => {
     
     <>
     <div ref={inputRef} className="w-[300px] sm:w-[300px] md:w-[400px] lg:w-[500px] mx-auto absolute left-0 right-0">
+      <div className="relative w-full">
+      <p className=' absolute text-[8px] text-gray-600 ml-1 mt-0.5'><strong>{noResult}</strong></p>
+      {isSearchTelescopeVisible && (
+        <FaSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500/50" />
+      )}
       <input
         type="text"
-        placeholder="search Clan Name..."
+        placeholder="Search Literature..."
         value={searchTerm}
         onChange={handleInputChange}
         onFocus={handleFocus}
-        className="w-full p-2 md:p-2 lg:p-3 rounded border border-yellow-600 box-border bg-orange-50"
+        style={{backgroundColor: 'rgb(255 255 255 / 0.8)', border: '1.5px solid #fbbf24' }}
+        className="w-full p-2 md:p-2 lg:p-3 rounded border-1.5 border-amber-400 box-border bg-[#fff7ed]"
         //onBlur={console.log('clicked')}
         //style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ccc',boxSizing: 'border-box',}}
       />
@@ -326,6 +353,7 @@ const SearchBarWithSuggestions = () => {
           }
         </ul>
       )}
+    </div>
     </div>
     </>
   );

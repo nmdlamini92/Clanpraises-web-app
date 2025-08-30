@@ -4,7 +4,12 @@ import HeaderSmallScrn from "../../../components/HeaderSmallScrn"
 import SearchBarWithSuggestions from "../../../components/SearchBar"
 import AddClanPraise from "../../../components/AddClanPraise"
 import Card from "../../../components/CardClanPraise"
+//import Card from "../../../components/CardClanPraise_HomePage"
 import Link from "next/link"
+import SendFeedback from "../../../components/SendFeedback"
+import BeStakeholderUser from "../../../components/BeStakeholderUser"
+import Footer from "../../../components/Footer"
+import AddNsearchBar from "../../../components/AddClanNsearchBar"
 
   export async function generateMetadata({ params }) {
 
@@ -41,39 +46,40 @@ import Link from "next/link"
       return { sum, average };
     }
 
+    function capitalizeFirstLetter(str) {
+      if (!str) return '';
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
     return (
-      <>
+    <>
+    <div className="flex flex-col min-h-screen">
       <div className="hidden md:block">
       <Header1/>
       </div>
       <div className="md:hidden">
       <HeaderSmallScrn/>
       </div>
-      <div className="flex flex-col mt-8">
-      <div>
-      <SearchBarWithSuggestions/>
-      </div>
-      <div className="w-[300px] sm:w-[300px] md:w-[400px] lg:w-[500px] mx-auto mt-12 md:mt-14">
-      <AddClanPraise />
-    </div>
+      <div className="flex flex-col mt-8 flex-grow">
+        <AddNsearchBar/>
       <div className="flex flex-col justify-center items-center mt-6">
-      {/*<div className="flex mt-16 gap-1">*/}
-      <p className="">{postList.length} results for {posts} ({tribe})</p>
-      {/*</div>*/}
-      <div className="flex flex-wrap">
+      <p className="mt-8 text-sm text-gray-600/90">{postList.length} results for {posts} ({tribe})</p>
+      <div className="flex flex-wrap justify-center items-center">
         {postList.map((post, index) => (
         <div key={index} className="flex flex-row flex-wrap">
         <Link key={index} href={`/${post.tribe}/${post.title}/${post.id}`}>
           <Card
-            title={post.title}
-            username={post.user.username}
-            rating={sumAndAverage(post.reviews, "rating")}
-            views={post._count.views}
-            reviews={post._count.reviews}
-            comments={post._count.comments}
-            description={post.body}
-            createdAt={post.createdAt}
-            //{/*onClick={handleCardClick}*/}
+            title={capitalizeFirstLetter(post.title)}
+                tribe={post.tribe}
+                username={post.user.username}
+                rating={sumAndAverage(post.reviews, "rating")}
+                views={post._count.views}
+                definitions={post._count.definitions}
+                reviews={post.reviews.length}
+                comments={post.comments.length}
+                description={post.body}
+                createdAt={post.createdAt}
+                linkUrl={`/${post.tribe}/${post.title}/${post.id}`}
           />
         </Link>
       </div>
@@ -82,7 +88,20 @@ import Link from "next/link"
       </div>
       </div>
       </div>
-      </>
+      <div className="hidden sm:flex justify-center gap-6 mt-4">
+         {/*<BeStakeholderUser/>*/}
+        <SendFeedback/>
+      </div>
+       <div className="sm:hidden mt-4 m-2">
+          {/*<BeStakeholderUser/>*/}
+       </div>
+       <div className="sm:hidden mt-4 m-2">
+       </div>
+       <div className="mt-8 md:mt-12 lg:mt-8">
+         <Footer/>
+       </div>
+    </div>
+</>
     )
 }
   

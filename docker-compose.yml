@@ -1,0 +1,54 @@
+#version: "3.9"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: dockerfile.backend
+    container_name: bantu-backend
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./server/.env
+    networks:
+      - bantu-network
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: dockerfile.frontend
+    container_name: bantu-frontend
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    networks:
+      - bantu-network
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  db:
+    image: postgres:17
+    container_name: bantu-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ligusha101
+      POSTGRES_DB: swaclans
+    ports:
+      - "5432:5432"
+    volumes:
+      - bantu-db-data:/var/lib/postgresql/data
+    networks:
+      - bantu-network
+    restart: unless-stopped
+
+networks:
+  bantu-network:
+    driver: bridge
+
+volumes:
+  bantu-db-data:

@@ -1,6 +1,7 @@
 import { useState, forwardRef, useImperativeHandle, useRef } from "react";
 import { FaStar, FaRegStar } from "react-icons/fa";
 
+//const labels = ["ukhe eceleni", "akunetisi", "kuya ngakhona", "kuyamukeleka", "ushaye esicongweni"];
 const labels = ["Poor", "Fair", "Good", "Very Good", "Excellent"];
 
 const StarRatingInterActive = forwardRef(({ totalStars = 5, onRate}, ref ) => {

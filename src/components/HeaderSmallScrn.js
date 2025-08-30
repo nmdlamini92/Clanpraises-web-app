@@ -11,6 +11,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import { FaRegUser, FaBars, FaPenSquare, FaFolderPlus, FaHome } from "react-icons/fa";
 import { IconBtn } from "./IconBtn";
 import Image from "next/image";
+import Link from "next/link";
 
 
 export default function HeaderSmallScrn (){
@@ -20,6 +21,8 @@ export default function HeaderSmallScrn (){
 
   const [isUserSignedIn, setIsUserSignedIn] = useState(Boolean);
   const [userName, setUserName] = useState('');
+  const [userTribe, setUserTribe] = useState('');
+  const [userClan, setUserClan] = useState('');
   const [userID, setUserID] = useState();
 
 
@@ -79,6 +82,7 @@ export default function HeaderSmallScrn (){
             setUserName("")
             localStorage.setItem('isUserSignedIn', JSON.stringify({isUserSignedIn: true}));
             localStorage.setItem('VipUserId', JSON.stringify({VipUserId: data.data.UserId}));
+            localStorage.setItem('guestEmail', JSON.stringify({ guestEmail: null }));
             console.log(data.data);
             setUserID(data.data.UserId);
             setUserName(data.data.UserName);
@@ -117,12 +121,12 @@ export default function HeaderSmallScrn (){
                 console.log(data == 'SwitchToSignIn');
                   if (data[0] == 'SignUpSuccess'){
                     setShowModal(false);
-                    toast.success("Successfully signed-up");
+                    //toast.success("Successfully signed-up");
                     window.location.reload()
                   }
                   if (data[0] == 'SignInSuccess'){
                     setShowModal(false);
-                    toast.success("Successfully signed-in");
+                    //toast.success("Successfully signed-in");
                     window.location.reload()
                   }
                   if (data == 'SwitchToSignIn'){
@@ -250,10 +254,11 @@ export default function HeaderSmallScrn (){
         return(
           <>
           {showAboutModal && (
-          <div className="modal-backdrop-clear">
+          <div className="modal-backdrop">
           <div className="modal animate-slide-in-top">
           <button onClick={handleClose}>Close</button>
-          <p>Bantu-ClanPraises is an interactive databes of bantu clans' praises and their meanings</p>
+          <p>Clanpraises.com is an interactive database of clan praises including their meaning/context.<br></br><br></br> 
+             <strong>Search</strong>, <strong>Add</strong>, <strong>Define</strong>, <strong>Review</strong> or <strong>Discuss</strong> clan praises and their meaning/context.</p>
           </div>
           </div>
           )}
@@ -277,7 +282,7 @@ export default function HeaderSmallScrn (){
         return(
           <>
           {showContactModal && (
-          <div className="modal-backdrop-clear">
+          <div className="modal-backdrop">
           <div className="modal animate-slide-in-top">
             <button onClick={handleClose}>Close</button>
           <p>Email: nmdlamini92@gmail.com</p>
@@ -307,16 +312,47 @@ export default function HeaderSmallScrn (){
               document.removeEventListener("mousedown", handleClickOutside);
             };
           }, []);*/
+
+      const [showUserProfileModal, setShowUserProfileModal] = useState(false);
+      
+                  const handleOpenUserProfileModal = () => {
+                    setShowUserProfileModal(true);
+                  };
+                      
+                  const handleCloseUserProfileModal = () => {
+                    setShowUserProfileModal(false);
+                  };
+                
+                  const UserProfile_Modal = ({ handleClose}) => {
+            
+                    console.log('madafvcker');
+            
+                    return(
+                      <>
+                        {showUserProfileModal && (
+                          <div className="modal-backdrop">
+                            <div className="modal">
+                          <button className="close-button" onClick={handleCloseUserProfileModal}>Close</button>
+                          <p>Username: {userName} </p>
+                          <p>Tribe: {userTribe} </p>
+                          <p>Clan/Surname: {userClan}</p>
+                          </div>
+                          </div>
+                        )}
+                      </>
+                    )
+                  }
     
     return(   
       
       <>
       <ToastContainer/>
-    <div className='header1 bg-white/60 border border-amber-500 items-center p-2'> {/**bg-amber-600/10 */}
+    <div className='header1 border-b border-yellow-600 bg-white/20 items-center p-2'> {/**bg-white/60 bg-amber-600/10 */}
     <Modal show={showModal} handleClose={handleCloseModal} isSignUpCompVisible={isSignUpCompVisible} setIsSignUpCompVisible={setIsSignUpCompVisible} isSignInCompVisible={isSignInCompVisible} setIsSignInCompVisible={setIsSignInCompVisible} setShowModal={setShowModal}></Modal>    
         <SignOut_Modal show={showSignOutModal} handleClose={handleCloseSignOutModal}></SignOut_Modal>
         <About_Modal showAboutModal={showAboutModal} handleClose={handleCloseAboutModal}></About_Modal>  
         <Contact_Modal showContactModal={showContactModal} handleClose={handleCloseContactModal}></Contact_Modal>
+        <UserProfile_Modal></UserProfile_Modal>
         <div className="flex flex-col">
           <IconBtn
           Icon={props => <FaBars {...props} size={20} className='text-amber-900'/>}
@@ -332,7 +368,7 @@ export default function HeaderSmallScrn (){
               {/* Sliding Menu */}
               <div className="bg-white shadow-lg rounded-md left-0 p-0 animate-slide-in-left z-[101]">
                 <ul className=""> {/*space-y-2*/}
-                  <li className="p-2 hover:bg-gray-100 cursor-pointer border border-gray-400" onClick={handleHome}>Home</li>
+                  <li className="p-2 hover:bg-gray-100 cursor-pointer border border-gray-400" onClick={handleHome}><Link href={`/`}>Home</Link></li>
                   <li className="p-2 hover:bg-gray-100 cursor-pointer border border-gray-400" onClick={handleOpenAboutModal}>About</li>
                   <li className="p-2 hover:bg-gray-100 cursor-pointer border border-gray-400" onClick={handleOpenContactModal}>Contact</li>
                 </ul>
@@ -350,13 +386,17 @@ export default function HeaderSmallScrn (){
             )}
             </div>
         </div>
-        <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center leading-none">
-            <Image src="/SimpleIcon.svg" alt="My Logo" width={55} height={65 } 
-                  className="w-[35px] h-[45px] sm:w-[40px] sm:h-[50px] md:w-[50px] md:h-[60px] lg:w-[55px] lg:h-[65px]"/>
-            <div className="flex flex-col items-center leading-none">
-              <h1 className="text-amber-900 leading-none font-hand text-[18px] sm:text-[22px] md:text-[26px] lg:text-[28px]">Bantu</h1>
-              <p className="relative text-amber-900 leading-none font-hand text-[9px] sm:text-[11px] md:text-[12px] lg:text-[13px]">clan praises</p>
+        <div className="absolute left-1/2 transform -translate-x-1/2 ">
+        <Link href={`/`}>
+          <div className="cursor-pointer flex items-center leading-none">
+            <Image src="/feather.svg" alt="My Logo" width={55} height={65 } 
+                  className="w-[15px] h-[22px] sm:w-[20px] sm:h-[25px] "/>
+            <div className="flex items-center leading-none">
+              <h1 className="text-amber-900 leading-none font-hand text-[10px] sm:text-[14px]">Clan praises</h1>
+              {/*<p className="relative text-amber-900 leading-none font-hand text-[9px] sm:text-[11px] md:text-[12px] lg:text-[13px]">clan praises</p>*/}
             </div>
+          </div>
+        </Link>
         </div>
         <div className="flex flex-col">
         <IconBtn
@@ -381,7 +421,7 @@ export default function HeaderSmallScrn (){
             {/* Sliding Menu */}
             <div className="bg-white shadow-lg rounded-md p-0 animate-slide-in-right z-[101]">
               <ul className="text-sm"> {/*space-y-2*/}
-                <li className="p-2 hover:bg-gray-100 cursor-pointer border border-gray-400 box-border" onClick={handleProfileClick}>Profile</li>
+                <li className="p-2 hover:bg-gray-100 cursor-pointer border border-gray-400 box-border" onClick={handleOpenUserProfileModal}>Profile</li>
                 <li className="p-2 hover:bg-gray-100 cursor-pointer border border-gray-400" onClick={handleOpenSignOutModal}>Logout</li>
                
               </ul>

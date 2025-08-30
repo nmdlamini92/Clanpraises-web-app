@@ -1,3 +1,5 @@
+"use client"
+
 import Validations from "./Validations";
 import { useState, useEffect, useRef} from "react";
 import { useCookies } from "react-cookie";
@@ -5,6 +7,10 @@ import axios from "axios";
 import { getTribes, getClanNames } from "../services/posts";
 import { useAsync} from "../hooks/useAsync";
 
+/*const apiUrl = typeof window !== 'undefined'
+  ? window.env?.NEXT_PUBLIC_SERVER_URL
+  : process.env.NEXT_PUBLIC_SERVER_URL;*/
+const apiUrl = process.env.NEXT_PUBLIC_SERVER_URL
 
 
 export default function AddClanPraiseForm() {
@@ -14,6 +20,7 @@ export default function AddClanPraiseForm() {
 
   const { loading, error, value: TribesList } = useAsync(getTribes)
   const { loading1, error1, value: ClanNamesList } = useAsync(getClanNames)
+  const [isLoading, setIsLoading] = useState(false);
 
     const [queryClanName, setQueryClanName] = useState("");
     const [queryTribe, setQueryTribe] = useState("");
@@ -114,6 +121,7 @@ export default function AddClanPraiseForm() {
 
       const handleInputChange_Tribe = (e) => {
         //(e) => setvalues({ ...values, [e.target.name]: e.target.value })
+        //setErrors({clanName: null, tribe: null, clanPraise:errors.clanPraise});
         const input = e.target.value;
         setvalues({ ...values, ['tribe']: e.target.value })
         setSearchTerm_Tribe
@@ -148,6 +156,7 @@ export default function AddClanPraiseForm() {
   
       const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsLoading(true);
         console.log("All Cookies:", cookies);
         console.log(values);
 
@@ -155,7 +164,7 @@ export default function AddClanPraiseForm() {
 
         const tribeId = tribesArray.find(
           tribe => tribe.tribe.toLowerCase() === values.tribe.toLowerCase()
-        )?.id ?? 'iua63833-bwi7-hwy3-n3i3-nwk343n32e4j';
+        )?.id ?? null;
         
         console.log(tribeId)
 
@@ -163,12 +172,13 @@ export default function AddClanPraiseForm() {
 
         if (validationError){
           setErrors(validationError);
+          setIsLoading(false);
         }
         else{
           setErrors({clanName:"", tribe:"", clanPraise:""});
           console.log(values);
           try {
-              const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/addclanpraise`,
+              const response = await axios.post(`${apiUrl}/addclanpraise`,
                 {...values, tribeId: tribeId},{withCredentials: true}
               );
       
@@ -186,8 +196,10 @@ export default function AddClanPraiseForm() {
                 window.location.href = `/${response.data.clanPraisePost.tribe}/${response.data.clanPraisePost.title}/${response.data.clanPraisePost.id}`;
               } 
               if (!(response.data.status)) {
+                console.log(response)
                 console.log(response.data);
-                setErrors(response.data.errors)
+                setErrors("error - no response");
+                setIsLoading(false);
               }
             } 
           catch (error) {
@@ -198,16 +210,19 @@ export default function AddClanPraiseForm() {
 
     return (
       <>
-            <div>
+            <br></br>
+            <div className="bg-amber-600/20 p-3 border rounded border-amber-500">
               <form onSubmit={handleSubmit}>
-                <div className="ClanNamenTribe">
-                <div ref={clanNameRef} style={{ margin: '0 auto', position: 'relative', left: 0, right: 0,}}>
-                  <input className="ClanNameInput" name="clanName" placeholder="Clan name"  //value={values.clanName || ""}  
+                <div className="flex mb-4 gap-2 w-[90%]">
+                <div ref={clanNameRef} className="flex-1 mt-2 relative">
+                  <div className="flex flex-col">
+                  {<p className="error-msg text-xs">{errors.clanName}</p>}
+                  <input className="w-full border rounded border-amber-500" name="clanName" placeholder="Title"  //value={values.clanName || ""}  
                     onChange={handleInputChange_ClanName}
                     onFocus={handleFocus_ClanName}
                     value={searchTerm_ClanName}
                     />
-                  {errors.clanName && (<span className="error-msg">{errors.clanName}</span>)}
+                    </div>
                   {suggestionsClanName.length > 0 && (
                           <ul
                             style={{listStyleType: 'none', position: 'absolute', padding: '0', margin: '5px 0', border: '1px solid #ccc', borderRadius: '4px',
@@ -218,7 +233,7 @@ export default function AddClanPraiseForm() {
                               <li className="dropdown-item bg-stone-50"
                                 key={index}
                                 onClick={() => handleClanName_SuggestionClick(suggestion)}
-                                style={{padding: '0px', cursor: 'pointer', borderBottom: '1px solid #ddd',}}
+                                style={{padding: '0px', cursor: 'pointer', borderBottom: '1px solid #ca8a04',}}   //#ddd
                               >
                               {suggestion} 
                               </li>
@@ -227,13 +242,15 @@ export default function AddClanPraiseForm() {
                           </ul>
                         )}
                 </div>
-                <div ref={tribeRef} style={{ margin: '0 auto', position: 'relative', left: 0, right: 0,}}>
-                  <input className="TribeInput" name="tribe" placeholder="Tribe"        //value={values.tribe || ""}  
+                <div ref={tribeRef} className="flex-1 mt-2 relative">
+                  <div className="flex flex-col">
+                  {<p className="error-msg text-xs">{errors.tribe}</p>}
+                  <input className="w-full border rounded border-amber-500" name="tribe" placeholder="genre"        //value={values.tribe || ""}  
                     onChange={handleInputChange_Tribe}
                     onFocus={handleFocus_Tribe}
                     value={searchTerm_Tribe}
                   />
-                  {errors.tribe && (<span className="error-msg">{errors.tribe}</span>)}
+                  </div>
                   {suggestionsTribe.length > 0 && (
                           <ul
                             style={{listStyleType: 'none', position: 'absolute', padding: '0', margin: '5px 0', border: '1px solid #ccc', borderRadius: '4px',
@@ -241,10 +258,10 @@ export default function AddClanPraiseForm() {
                             }}
                           >
                             {suggestionsTribe.map((suggestion, index) => (
-                              <li className="dropdown-item"
+                              <li className="dropdown-item bg-stone-50"
                                 key={index}
                                 onClick={() => handleTribe_SuggestionClick(suggestion)}
-                                style={{padding: '10px', cursor: 'pointer', borderBottom: '1px solid #ddd',}}
+                                style={{padding: '0px', cursor: 'pointer', borderBottom: '1px solid #ca8a04',}} //#ddd
                               >
                               {suggestion} 
                               </li>
@@ -254,13 +271,14 @@ export default function AddClanPraiseForm() {
                         )}
                 </div>
                 </div>
-                <div>
-                  <textarea className="ClanPraiseInput" name="clanPraise" placeholder="Clan praise" value={values.clanPraise || ""}  
+                <div className="flex flex-col">
+                  <textarea className="ClanPraiseInput border rounded border-amber-500" name="clanPraise" placeholder="Literature..." value={values.clanPraise || ""}  
                     onChange={(e) => setvalues({ ...values, [e.target.name]: e.target.value })}
                   />
-                  {errors.clanPraise && (<span className="error-msg">{errors.clanPraise}</span>)}
+                  {errors.clanPraise && (<span className="error-msg text-xs">{errors.clanPraise}</span>)}
                 </div>
-                <button type="submit">Add Clan Praise</button>
+                <button className={`mt-1 p-1 px-2  border-black ${isLoading ? "bg-amber-200" : " bg-amber-400"}`} 
+                  type='submit'>{isLoading ? "Loading..." : "Add Literature"}</button>
               </form>
             </div>
       </>

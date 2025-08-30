@@ -8,34 +8,46 @@ import jwt from "jsonwebtoken";
 import { google } from "googleapis"
 import clanPraiseRoutes from "./Routes/All-Routes.js"
 import { v4 as uuidv4 } from "uuid"
+//import userAnalyticsPlugin from './plugins/userAnalytics.js';
+import fetch from "node-fetch"
+
+
+const prisma = new PrismaClient()
 
 dotenv.config()
 
-const app = fastify()
+const app = fastify({trustProxy: true}) //trustProxy: true, // Enable this if your app is behind a reverse proxy (like Nginx or Heroku) to correctly handle IP addresses and cookies
+
+app.decorate('prisma', prisma);
 
 app.register(sensible)
 
 app.register(clanPraiseRoutes);
 
+//await app.register(userAnalyticsPlugin);
+
 app.register(cookie, { secret: process.env.COOKIE_SECRET })
 
 app.register(cors, {
-  origin: ['*', process.env.CLIENT_URL, 'http://localhost:3000', 'http://192.168.1.172:3000', 'http://192.168.1.185:3000'],
+  origin: ['http://localhost:3000', 'http://192.168.200.248', process.env.CLIENT_URL,'http://192.168.1.172:3000','https://13.244.89.134:3000', 'https://www.clanpraises.com', 'https://clanpraises.com', 
+    'http://localhost:3000', 'http://frontend:3000', 'http://192.168.225.46:3000', 'http://13.244.89.134:3000',],
   method: ["GET", "POST"],
   credentials: true,
 })
 
-app.listen({port: process.env.PORT, host: "0.0.0.0"},()=>{                                    //tells our app to be live on localhost:3001
-  console.log("Server started on portland 3001")
+app.listen({port: process.env.PORT_SERVER, host: process.env.HOST_SERVER},()=>{            //0.0.0.0 for prod                        //tells our app to be live on localhost:3001
+  console.log("Server started")
 })
 
 async function commitToDb(promise) {
   const [error, data] = await app.to(promise)
-  if (error) return app.httpErrors.internalServerError(error.message)
+  if (error) {
+    console.error("DB error:", error);
+   //throw app.httpErrors.internalServerError(error.message);
+   return res.status(500).json([]); // ✅ return safe empty array
+  }
   return data
 }
-
-const prisma = new PrismaClient()
 
 /*
 const CURRENT_USER_ID = (
@@ -47,7 +59,7 @@ const maxAge = 3 *24*60*60;
 //const jwt = jsonwebtoken();
 
 const createToken = (id) => {                               //creates signed web session id 
-    return jwt.sign({id}, "ligusha", {                      //"ligusha" secret key, make sure is in envir var whn deploying to server
+    return jwt.sign({id}, process.env.COOKIE_SECRET, {                      //process.env.COOKIE_SECRET secret key, make sure is in envir var whn deploying to server
         expiresIn: maxAge,
     });   
 };
@@ -65,7 +77,7 @@ oauth2Client.setCredentials({
 });
 
 app.addHook("onRequest", (req, res, done) => {
-  console.log('sent request to server');
+  console.log('now inside onRequest ADDHOOK dala VISITOR_ID server');
   console.log(req.cookies);
 
   let visitorId = req.cookies.visitorId
@@ -75,8 +87,8 @@ app.addHook("onRequest", (req, res, done) => {
   if (!visitorId) {
     visitorId = uuidv4();
     res.setCookie('visitorId', visitorId, {
-      //path: '/',
-      httpOnly: true,
+      path: '/',
+      httpOnly: false,
       //secure: true,
       sameSite: 'lax',
       expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000) // 1 year expiration
@@ -99,6 +111,12 @@ const COMMENT_SELECT_FIELDS = {
     },
   },
 }
+
+app.get('/analytics', async (req, res) => {
+
+  const data = await prisma.userAnalytics.findMany();
+  return data;
+});
 
 app.get("/headers/:id", async (req, res) => {
 
@@ -137,7 +155,7 @@ app.post("/getUserId", async (req, res) => {
     const jwtCookie = req.cookies.jwt
   
           const decodedToken = await new Promise((resolve, reject) => {
-            jwt.verify(jwtCookie, "ligusha", (err, decoded) => {
+            jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
               if (err) {
                 reject(err);
               } else {
@@ -185,7 +203,7 @@ app.get("/clanNames/:tribe", async (req, res) => {
 
   const tribeId =  await prisma.tribe.findUnique({ 
     where: {tribe: req.params.tribe},
-    select:{id: true}
+    select:{id: true, praises_Plural: true}
   })
   console.log(tribeId)
 
@@ -201,6 +219,13 @@ app.get("/clanNames/:tribe", async (req, res) => {
         title: true },
   })
  )
+ .then(async post => {
+            
+    return {
+      post,
+      tribeId
+    }
+  })
  
 })
 
@@ -220,8 +245,284 @@ app.get("/posts", async (req, res) => {
 })
 
 
+const TIME_SPANS = [
+  1, // 24 hours
+  3, // 3 days
+  7, // 1 week
+  14, // 2 weeks
+  30, // 1 month
+  90, // 3 months
+  180, // 6 months
+  365, // 1 year
+  730, // 2 years
+  1095, // 3 years
+  1825, // 5 years
+];
+
+app.get("/mostPopularposts", async (req, res) => {
+  console.log("now in MOST ENGAGED WITH POSTS server");
+  try {
+    for (const span of TIME_SPANS) {
+      const since = new Date();
+      since.setDate(since.getDate() - span);
+
+      const posts = await prisma.post.findMany({
+        where: {
+          OR: [
+            { views: { some: { createdAt: { gte: since } } } },
+            /*{ reviews: { some: { createdAt: { gte: since } } } },
+            { comments: { some: { createdAt: { gte: since } } } },
+            {
+              definitions: {
+                some: {
+                  OR: [
+                    { createdAt: { gte: since } },
+                    { reviews: { some: { createdAt: { gte: since } } } },
+                    { comments: { some: { createdAt: { gte: since } } } },
+                    { likes: { some: { createdAt: { gte: since } } } },
+                    { disLikes: { some: { createdAt: { gte: since } } } },
+                  ],
+                },
+              },
+            },*/
+          ],
+        },
+        include: {
+          user: { select: { username: true } },
+          views: { where: { createdAt: { gte: since } }, select: { id: true } },
+          /*reviews: {
+            where: { createdAt: { gte: since } },
+            orderBy: { createdAt: "desc" },
+            select: COMMENT_SELECT_FIELDS,
+          },
+          comments: { where: { createdAt: { gte: since } }, select: { id: true } },
+          definitions: {
+            where: { createdAt: { gte: since } },
+            include: {
+              reviews: { where: { createdAt: { gte: since } }, select: { id: true } },
+              comments: { where: { createdAt: { gte: since } }, select: { id: true } },
+              likes: { where: { createdAt: { gte: since } }, select: { definitionId: true } },
+              disLikes: { where: { createdAt: { gte: since } }, select: { definitionId: true } },
+            },
+          },*/
+        },
+      });
+
+      if (posts.length === 0) continue;
+
+      const postIds = posts.map(obj => obj.id);
+
+      const postsNumbers = await prisma.post.findMany({
+        where: {
+          id: { in: postIds },
+        },
+        select: {
+          id: true,
+          _count: {
+            select: {
+              views: true,
+              definitions: true,
+            },
+          },
+          reviews: {
+            where: { definitionId: null },
+            select: {
+              ...COMMENT_SELECT_FIELDS,
+            },
+          },
+          comments: {
+            where: { definitionId: null },
+            select: {
+              ...COMMENT_SELECT_FIELDS,
+            },
+          },
+        },
+      });
+
+      const scoredPosts = posts.map(post => {
+        /*const defEngagement = post.definitions.reduce((sum, def) => {
+          return sum +
+            def.reviews.length +
+            def.comments.length +
+            def.likes.length +
+            def.disLikes.length;
+        }, 0);*/
+
+        const totalEngagement = post.views.length
+          //post.reviews.length +
+          //post.comments.length +
+          //defEngagement;
+
+        const numbers = postsNumbers.find(p => p.id === post.id);
+
+        return {
+          ...post,
+          engagementScore: totalEngagement,
+          numbers,
+        };
+      });
+
+      scoredPosts.sort((a, b) => b.engagementScore - a.engagementScore);
+
+      if (scoredPosts.length >= 6) {
+        return res.send(scoredPosts);
+      }
+    }
+
+    return res.send({ message: "Not enough posts with engagement found in the last 3 months." });
+  } catch (err) {
+    console.error("Error fetching most engaged posts:", err);
+    return res.status(500).send({ error: "Internal Server Error" });
+  }
+});
+
+
+
+app.get("/:tribe/mostPopularTribePosts", async (req, res) => {
+  console.log("now inside get posts by tribe & clanName server");
+
+    console.log(req.params.tribe);
+
+    const tribeId =  await prisma.tribe.findUnique({ 
+      where: {tribe: req.params.tribe},
+      select:{id: true}
+    })
+    console.log(tribeId)
+    console.log(tribeId.id===null )
+
+    if (tribeId.id===null) {
+      return []
+    }
+
+    try {
+    for (const span of TIME_SPANS) {
+      const since = new Date();
+      since.setDate(since.getDate() - span);
+
+      const posts = await prisma.post.findMany({
+        where: {
+          tribeId: tribeId.id,
+          OR: [
+            { views: { some: { createdAt: { gte: since } } } },
+            /*{ reviews: { some: { createdAt: { gte: since } } } },
+            { comments: { some: { createdAt: { gte: since } } } },
+            {
+              definitions: {
+                some: {
+                  OR: [
+                    { createdAt: { gte: since } },
+                    { reviews: { some: { createdAt: { gte: since } } } },
+                    { comments: { some: { createdAt: { gte: since } } } },
+                    { likes: { some: { createdAt: { gte: since } } } },
+                    { disLikes: { some: { createdAt: { gte: since } } } },
+                  ],
+                },
+              },
+            },*/
+          ],
+        },
+        include: {
+          user: { select: { username: true } },
+          views: { where: { createdAt: { gte: since } }, select: { id: true } },
+           _count: {select: {views: true, definitions: true, reviews: true, comments: true}}, //likesCP: true,
+          /*reviews: { where: { definitionId: null},
+                      //orderBy: {createdAt: "desc",},
+                      select: {...COMMENT_SELECT_FIELDS },
+                  },
+          reviews: {
+            where: { createdAt: { gte: since } },
+            orderBy: { createdAt: "desc" },
+            select: COMMENT_SELECT_FIELDS,
+          },
+          comments: { where: { createdAt: { gte: since } }, select: { id: true } },
+          definitions: {
+            where: { createdAt: { gte: since } },
+            include: {
+              reviews: { where: { createdAt: { gte: since } }, select: { id: true } },
+              comments: { where: { createdAt: { gte: since } }, select: { id: true } },
+              likes: { where: { createdAt: { gte: since } }, select: { definitionId: true } },
+              disLikes: { where: { createdAt: { gte: since } }, select: { definitionId: true } },
+            },
+          },*/
+        },
+      });
+
+      if (posts.length === 0) continue;
+
+      const postIds = posts.map(obj => obj.id);
+
+      const postsNumbers = await prisma.post.findMany({
+        where: {
+          id: { in: postIds },
+        },
+        select: {
+          id: true,
+          _count: {
+            select: {
+              views: true,
+              definitions: true,
+            },
+          },
+          reviews: {
+            where: { definitionId: null },
+            select: {
+              ...COMMENT_SELECT_FIELDS,
+            },
+          },
+          comments: {
+            where: { definitionId: null },
+            select: {
+              ...COMMENT_SELECT_FIELDS,
+            },
+          },
+        },
+      });
+
+
+      const scoredPosts = posts.map(post => {
+        /*const defEngagement = post.definitions.reduce((sum, def) => {
+          return sum +
+            def.reviews.length +
+            def.comments.length +
+            def.likes.length +
+            def.disLikes.length;
+        }, 0);*/
+
+        const totalEngagement = post.views.length 
+          /*post.reviews.length +
+          post.comments.length +
+          defEngagement;*/
+
+        const numbers = postsNumbers.find(p => p.id === post.id);
+
+        return {
+          ...post,
+          engagementScore: totalEngagement,
+          numbers,
+        };
+      });
+
+      scoredPosts.sort((a, b) => b.engagementScore - a.engagementScore);
+
+      if (scoredPosts.length >= 6 || span === 1825) {
+        return res.send(scoredPosts);
+      }
+    }
+
+    return res.send({ message: "Not enough posts with engagement found in the last 3 months." });
+  } catch (err) {
+    console.log(err)
+    console.error("Error fetching most engaged posts:", err);
+    return res.status(500).send({ error: "Internal Server Error" });
+  }
+    
+})
+
+
 app.get("/posts/:tribe/:clanName", async (req, res) => {
   console.log("now inside get posts by tribe & clanName server");
+
+
 
     return await commitToDb(
        prisma.post.findMany({ 
@@ -237,10 +538,19 @@ app.get("/posts/:tribe/:clanName", async (req, res) => {
           userId: true,
           user: {select: {username: true},
           },
-          _count: {select: {views: true, reviews: true, comments: true}}, //likesCP: true,
-          reviews: { orderBy: {createdAt: "desc",},
-                      select: {...COMMENT_SELECT_FIELDS },
-                  },
+          _count: {select: {views: true, definitions: true}}, //likesCP: true,
+          reviews: {
+            where: { definitionId: null },
+            select: {
+              ...COMMENT_SELECT_FIELDS,
+            },
+          },
+          comments: {
+            where: { definitionId: null },
+            select: {
+              ...COMMENT_SELECT_FIELDS,
+            },
+          },
         },
       })
     )
@@ -267,7 +577,7 @@ app.get("/posts/:id", async (req, res) => {
                 title: true,
                 tribe: true,
                 createdAt: true,
-                user: {select: {id: true, username: true} },
+                user: {select: {id: true, username: true, email: true, tribe: true, clan: true, createdAt: true}},
                 _count: {select: {views: true, reviews: true, comments: true}}, 
                 reviews: {
                   orderBy: {createdAt: "desc",},
@@ -331,7 +641,7 @@ app.get("/posts/:id", async (req, res) => {
       
       try{
         const decodedToken = await new Promise((resolve, reject) => {
-          jwt.verify(jwtCookie, "ligusha", (err, decoded) => {
+          jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
             if (err) {
               reject(err);
               //console.log(decodedToken);
@@ -353,7 +663,7 @@ app.get("/posts/:id", async (req, res) => {
               title: true,
               tribe: true,
               createdAt: true,
-              user: {select: {id: true, username: true} },
+              user: {select: {id: true, username: true, email: true, tribe: true, clan: true, createdAt: true}},
               _count: {select: {views: true, comments: true}}, 
               reviews: {
                 orderBy: {createdAt: "desc",},
@@ -463,7 +773,7 @@ app.get("/posts/:id", async (req, res) => {
                 title: true,
                 tribe: true,
                 createdAt: true,
-                user: {select: {id: true, username: true} },
+                user: {select: {id: true, username: true, email: true,tribe: true, clan: true, createdAt: true}},
                 _count: {select: {views: true, comments: true}}, 
                 reviews: {
                   orderBy: {createdAt: "desc",},
@@ -542,7 +852,7 @@ app.post("/posts/:id/viewpost", async (req, res) => {
     try{
       if (token){
         const decodedToken = await new Promise((resolve, reject) => {
-          jwt.verify(token, "ligusha", (err, decoded) => {
+          jwt.verify(token, process.env.COOKIE_SECRET, (err, decoded) => {
             if (err) {
               reject(err);
             } else {
@@ -626,6 +936,33 @@ app.post("/posts/:id/viewpost", async (req, res) => {
     }
 })
 
+
+app.post("/finishSignUp", async (req, res) => {
+  console.log("now inside FINISH SIGN-UP server");
+  
+  console.log(req.body);
+
+  try{
+      
+      return await commitToDb (prisma.user1.create({
+        where: { id: req.body.userID },
+        data: {
+          tribe: req.body.tribe,
+          clan: req.body.clan,
+        },
+      })
+      .then(finishup => {
+        res.send({isFinishSignUp: true})
+      })
+    )  
+   }
+   catch(error){
+    console.log(error)
+    res.send({isFinishSignUp: false, error: "error while finishing sign up"})
+   }
+})
+
+
  
 app.post("/reports", async (req, res) => {
   console.log("now inside report clan praise controller");
@@ -654,6 +991,34 @@ app.post("/reports", async (req, res) => {
    catch(error){
     console.log(error)
     res.send({reportLogged: false, error: error})
+   }
+})
+
+
+app.post("/feedback", async (req, res) => {
+  console.log("now inside SEND FEEDBACK controller");
+  
+  console.log(req.body);
+  //console.log(req.cookies)
+
+  try{
+      
+      return await commitToDb (prisma.feedback.create({
+        data: {
+          message: req.body.message,
+        },
+      })
+      .then(feedback => {
+        res.send({isFeedbackSent: true})
+        //return {
+         //reportLogged: "report successfully logged"
+        //}
+      })
+    )  //res.send({reportLogged: true, message: LoggedReport})
+   }
+   catch(error){
+    console.log(error)
+    res.send({isFeedbackSent: false, error: error})
    }
 })
 
@@ -712,7 +1077,7 @@ app.post("/posts/:id/reviews", async (req, res) => {
   console.log(jwtCookie);
 
   const decodedToken = await new Promise((resolve, reject) => {
-    jwt.verify(jwtCookie, "ligusha", (err, decoded) => {
+    jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
       if (err) {
         reject(err);
       } else {
@@ -780,7 +1145,7 @@ app.delete("/posts/:postId/reviews/:reviewId", async (req, res) => {
   const jwtCookie = req.cookies.jwt
 
   const decodedToken = await new Promise((resolve, reject) => {
-    jwt.verify(jwtCookie, "ligusha", (err, decoded) => {
+    jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
       if (err) {
         reject(err);
       } else {
@@ -820,7 +1185,7 @@ app.post("/posts/:postId/reviews/:reviewId/toggleLike", async (req, res) => {
   const jwtCookie = req.cookies.jwt 
   
   const decodedToken = await new Promise((resolve, reject) => {
-    jwt.verify(jwtCookie, "ligusha", (err, decoded) => {
+    jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
       if (err) {
         reject(err);
       } else {
@@ -861,7 +1226,7 @@ app.post("/posts/:postId/reviews/:reviewId/toggleDisLike", async (req, res) => {
   const jwtCookie = req.cookies.jwt 
   
   const decodedToken = await new Promise((resolve, reject) => {
-    jwt.verify(jwtCookie, "ligusha", (err, decoded) => {
+    jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
       if (err) {
         reject(err);
       } else {
@@ -894,52 +1259,216 @@ app.post("/posts/:postId/reviews/:reviewId/toggleDisLike", async (req, res) => {
   }
 })
 
-app.post("/posts/:id/comments", async (req, res) => {
+app.post("/validateCommentGuestInput", async (req, reply) => {
+  console.log("inside VALIDATE COMMENT INPUT server")
+  console.log(req.body)
+
+  try {
+
+   const emailExists = await prisma.user1.findUnique({
+        where: { email: req.body.yourEmail },
+        select: { username: true }
+      });
+
+      if (emailExists) {
+        console.log("email exists...");
+
+        if (emailExists.username !== req.body.yourName) {
+          console.log("email exists & yourName does not match...");
+
+          return reply.send({ status: false, errors: {message:"", 
+            yourName:`continue as ${emailExists.username}`, 
+            yourEmail: ""},
+            existingName: emailExists.username,
+           //values: {clanName: clanName, tribe:tribe, clanPraise:clanPraise, yourName:emailExists.username, yourEmail: req.body.yourEmail}
+          }); 
+
+        }
+        else {
+          console.log("email exists & yourName matches...");
+
+          return reply.send({ status: true, errors: {message:"", yourName: "", yourEmail: ""} });
+        }
+      }
+      else {
+        console.log("email does not exist...");
+
+                  const usernameExists = await prisma.user1.findUnique({
+                    where: { username: req.body.yourName},  
+                  });
+
+                  console.log(usernameExists);
+        
+                  if (usernameExists) {
+                    return reply.send({ status: false, errors: {message:"",  
+                          yourName:"this name is linked to another email, please choose another name" ,
+                          yourEmail:"",
+                          existingName: "" }});
+                  }
+        
+                  /*const verifyEmailDeliverability = async (email) => {
+                    const apiKey = process.env.MAILBOXLAYER_API_KEY;
+                    const res = await fetch(`https://apilayer.net/api/check?access_key=${apiKey}&email=${email}&smtp=1&format=1`);
+                    const data = await res.json();
+                    return data;
+                  };
+        
+                  const emailValidation = await verifyEmailDeliverability(req.body.yourEmail);*/
+
+                  const verifyEmailDeliverability = async (email) => {
+
+                  try {
+                    const apiKey = process.env.MAILBOXLAYER_API_KEY;
+                    const res = await fetch(`https://apilayer.net/api/check?access_key=${apiKey}&email=${email}&smtp=1&format=1`);
+
+                    const contentType = res.headers.get("content-type") || "";
+                    if (!contentType.includes("application/json")) {
+                      const text = await res.text();
+                      console.error("Non-JSON response from MailboxLayer:", text.slice(0, 100));
+                      return null;
+                    }
+
+                    const data = await res.json();
+                    return data;
+                  } 
+                  catch (error) {
+                  console.error("Error during email verification:", error.message);
+                  return null;
+                  }
+                };
+
+                const emailValidation = await verifyEmailDeliverability(req.body.yourEmail);
+
+                  if (!emailValidation || !emailValidation.smtp_check || !emailValidation.mx_found) {
+                    return reply.send({
+                      status: false,
+                      errors: {
+                        message: "",
+                        yourName: "",
+                        yourEmail: "please enter a valid email",
+                      },
+                    });
+                  }
+                  /*if (!emailValidation.smtp_check || !emailValidation.mx_found) {
+                    return reply.send({
+                      status: false,
+                      errors: {
+                        message: "",
+                        yourName: "",
+                        yourEmail: "please enter a valid email",
+                      }
+                    });
+                  }*/
+                  else{
+                    console.log("email is valid & does not exist...");
+
+                    const newUserGuest = await prisma.user1.create({
+                      data: {
+                        username: req.body.yourName,
+                        email: req.body.yourEmail,
+                      },
+                      select: {id: true}
+                    });
+
+                    return reply.send({ status: true, errors: {message:"", yourName: "", yourEmail: ""},
+                       guestEmail: req.body.yourEmail , guestUserID: newUserGuest.id});
+
+                  }
+
+      }
+
+    } catch (error) {
+      console.error("Error validating comment input:", error);
+      return reply.status(500).send({ status: false, error: "Internal Server Error" });
+    }
+  
+})
+
+app.post("/posts/:id/comments", async (req, reply) => {
   console.log("inside CREATE COMMENT server")
   console.log(req.body)
+  //console.log(req.body.message)
   console.log(req.params)
 
-  if (req.body.message === "" || req.body.message == null) {
-    return res.send(app.httpErrors.badRequest("Message is f**kn required"))
-  }
+  if (req.body.message.yourName === undefined && req.body.message.yourEmail === undefined) {
 
-  const jwtCookie = req.cookies.jwt
-  console.log(jwtCookie);
+    const jwtCookie = req.cookies.jwt
+    console.log(jwtCookie);
 
-   const decodedToken = await new Promise((resolve, reject) => {
-    jwt.verify(jwtCookie, "ligusha", (err, decoded) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(decoded);
-      }
-    });
-  });
-
-  return await commitToDb(
-    prisma.comment
-      .create({
-        data: {
-          message: req.body.message,
-          userId: decodedToken.id,
-          parentId: req.body.parentId,
-          postId: req.params.id,
-          definitionId: req.body.definitionId,
-          index: req.body.index,
-        },
-        select: {...COMMENT_SELECT_FIELDS, definitionId: true,}
-          //_count: {select: { likes: true, disLikes: true}},},
-      })
-      .then(comment => {
-        return {
-          ...comment,
-          likeCount: 0,
-          disLikeCount: 0,
-          likedByMe: false,
-          disLikeCount: false,
+    const decodedToken = await new Promise((resolve, reject) => {
+      jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(decoded);
         }
-      })
-  )
+      });
+    });
+
+    return await commitToDb(
+      prisma.comment
+        .create({
+          data: {
+            message: req.body.message.message,
+            userId: decodedToken.id,
+            parentId: req.body.parentId,
+            postId: req.params.id,
+            definitionId: req.body.definitionId,
+            index: req.body.index,
+          },
+          select: {...COMMENT_SELECT_FIELDS, definitionId: true,}
+            //_count: {select: { likes: true, disLikes: true}},},
+        })
+        .then(comment => {
+          return {
+            ...comment,
+            likeCount: 0,
+            disLikeCount: 0,
+            likedByMe: false,
+            disLikeCount: false,
+          }
+        })
+    )
+  }
+  else {
+
+    try {
+
+          const userID = await prisma.user1.findUnique({
+                  where: { email: req.body.message.yourEmail },
+                  select: { id: true }
+                }); 
+
+          return await commitToDb(
+            prisma.comment
+              .create({
+                data: {
+                  message: req.body.message.message,
+                  userId: userID.id,
+                  parentId: req.body.parentId,
+                  postId: req.params.id,
+                  definitionId: req.body.definitionId,
+                  index: req.body.index,
+                },
+                select: {...COMMENT_SELECT_FIELDS, definitionId: true,}
+                //_count: {select: { likes: true, disLikes: true}},},
+               })
+              .then(comment => {
+                return {
+                  ...comment,
+                  likeCount: 0,
+                  disLikeCount: 0,
+                  likedByMe: false,
+                  disLikeCount: false,
+                }
+              })
+          )
+
+        }
+        catch (error) {
+          console.log(error);
+        }
+    }
 })
 
 app.put("/posts/:postId/comments/:commentId", async (req, res) => {
@@ -974,7 +1503,7 @@ app.delete("/posts/:postId/comments/:commentId", async (req, res) => {
   const jwtCookie = req.cookies.jwt 
 
   const decodedToken = await new Promise((resolve, reject) => {
-    jwt.verify(jwtCookie, "ligusha", (err, decoded) => {
+    jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
       if (err) {
         reject(err);
       } else {
@@ -1012,7 +1541,7 @@ app.post("/posts/:postId/comments/:commentId/toggleLike", async (req, res) => {
   const jwtCookie = req.cookies.jwt 
 
   const decodedToken = await new Promise((resolve, reject) => {
-    jwt.verify(jwtCookie, "ligusha", (err, decoded) => {
+    jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
       if (err) {
         reject(err);
       } else {
@@ -1051,7 +1580,7 @@ app.post("/posts/:postId/comments/:commentId/toggleDisLike", async (req, res) =>
   const jwtCookie = req.cookies.jwt 
 
   const decodedToken = await new Promise((resolve, reject) => {
-    jwt.verify(jwtCookie, "ligusha", (err, decoded) => {
+    jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
       if (err) {
         reject(err);
       } else {
@@ -1159,7 +1688,7 @@ app.post("/getLineDefinitions", async (req, res) => {
         )
         
         const decodedToken = await new Promise((resolve, reject) => {
-          jwt.verify(jwtCookie, "ligusha", (err, decoded) => {
+          jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
             if (err) {
               reject(err);
             } else {
@@ -1193,44 +1722,88 @@ app.post("/posts/:id/definitions", async (req, res) => {
   console.log(req.body);
   console.log(req.params)
   console.log(req.body.message)
+  console.log(req.cookies.jwt)
 
-  const jwtCookie = req.cookies.jwt
-  console.log(jwtCookie);
+  if (req.body.yourEmail === undefined || req.body.yourEmail === null) {
+    console.log("vip user adding note...")
 
-  const decodedToken = await new Promise((resolve, reject) => {
-    jwt.verify(jwtCookie, "ligusha", (err, decoded) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(decoded);
-      }
-    });
-  });
-  console.log(decodedToken.id);
+    const jwtCookie = req.cookies.jwt
+    console.log(jwtCookie);
 
-  return await commitToDb(prisma.definition.create({
-    data: {
-          message: req.body.message,
-          rating: req.body.rating,
-          index: req.body.index,
-          userId: decodedToken.id,
-          //parentId: req.body.parentId,
-          postId: req.params.id,
-        },
-        select: COMMENT_SELECT_FIELDS
-      })
-      .then(definition => {
-        return {
-          ...definition,
-          _count: {likes: 0, disLikes: 0},
-          likedByMe: false,
-          disLikedByMe: false,
-           likeCount: 0,
-          disLikeCount: 0,
+    const decodedToken = await new Promise((resolve, reject) => {
+      jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(decoded);
         }
-      })
-  ) 
+      });
+    });
+    console.log(decodedToken.id);
+
+    return await commitToDb(prisma.definition.create({
+      data: {
+            message: req.body.message,
+            rating: req.body.rating,
+            index: req.body.index,
+            userId: decodedToken.id,
+            //parentId: req.body.parentId,
+            postId: req.params.id,
+          },
+          select: COMMENT_SELECT_FIELDS
+        })
+        .then(definition => {
+          return {
+            ...definition,
+            _count: {likes: 0, disLikes: 0},
+            likedByMe: false,
+            disLikedByMe: false,
+            likeCount: 0,
+            disLikeCount: 0,
+          }
+        })
+    )
+
+  }
+  else{
+    console.log("guest user adding note...")
+    try {
+      const userID = await prisma.user1.findUnique({
+        where: { email: req.body.yourEmail },
+        select: { id: true }
+      }); 
+
+      return await commitToDb(prisma.definition.create({
+      data: {
+            message: req.body.message,
+            rating: req.body.rating,
+            index: req.body.index,
+            userId: userID.id,
+            //parentId: req.body.parentId,
+            postId: req.params.id,
+          },
+          select: COMMENT_SELECT_FIELDS
+        })
+        .then(definition => {
+          return {
+            ...definition,
+            _count: {likes: 0, disLikes: 0},
+            likedByMe: false,
+            disLikedByMe: false,
+            likeCount: 0,
+            disLikeCount: 0,
+          }
+        })
+    )     
+          
+    }
+    catch (error) {
+      console.log(error);
+    }
+  }
+
 })
+
 
 app.post("/reviewDefinition", async (req, res) => {
 
@@ -1241,57 +1814,107 @@ app.post("/reviewDefinition", async (req, res) => {
   console.log(req.params)
   console.log(req.body.message[1])
 
-  const jwtCookie = req.cookies.jwt
-  console.log(jwtCookie);
+  if (req.body.yourName === undefined && req.body.yourEmail === undefined) {
 
-  const decodedToken = await new Promise((resolve, reject) => {
-    jwt.verify(jwtCookie, "ligusha", (err, decoded) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(decoded);
-      }
-    });
-  });
-  console.log(decodedToken.id);
+    const jwtCookie = req.cookies.jwt
+    console.log(jwtCookie);
 
-      try{
-  return await commitToDb(
-    prisma.review
-      .create({
-        data: {
-          message: req.body.message,
-          rating: req.body.rating,
-          index: req.body.index,
-          userId: decodedToken.id,
-          parentId: req.body.parentId,
-          postId: req.body.postId,
-          definitionId: req.body.definitionId,
-        },
-        select: {...COMMENT_SELECT_FIELDS, definitionId: true,
-          _count: {select: { likes: true, disLikes: true}},},
-      })
-      .then(async review => {
-
-        const updated_DefRating = await prisma.definition.update({
-          where: {id: req.body.definitionId},
-          data: {rating: req.body.newDefRating},
-          select: {id: true, rating: true},
-           // _count: {select: { likes: true, disLikes: true}},},
-        })
-        console.log(updated_DefRating)
-
-        return {
-          ...review,
-          likeCount: 0,
-          disLikeCount: 0,
-          likedByMe: false,
-          disLikedByMe: false,
+    const decodedToken = await new Promise((resolve, reject) => {
+      jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(decoded);
         }
-      })
-    )
-  }catch(error){
-    console.log({errorName: "ERRRRRROR HERE", errorDesc: error})
+      });
+    });
+    console.log(decodedToken.id);
+
+        try{
+    return await commitToDb(
+      prisma.review
+        .create({
+          data: {
+            message: req.body.message,
+            rating: req.body.rating,
+            index: req.body.index,
+            userId: decodedToken.id,
+            parentId: req.body.parentId,
+            postId: req.body.postId,
+            definitionId: req.body.definitionId,
+          },
+          select: {...COMMENT_SELECT_FIELDS, definitionId: true,
+            _count: {select: { likes: true, disLikes: true}},},
+        })
+        .then(async review => {
+
+          const updated_DefRating = await prisma.definition.update({
+            where: {id: req.body.definitionId},
+            data: {rating: req.body.newDefRating},
+            select: {id: true, rating: true},
+            // _count: {select: { likes: true, disLikes: true}},},
+          })
+          console.log(updated_DefRating)
+
+          return {
+            ...review,
+            likeCount: 0,
+            disLikeCount: 0,
+            likedByMe: false,
+            disLikedByMe: false,
+          }
+        })
+      )
+    }catch(error){
+      console.log({errorName: "ERRRRRROR HERE", errorDesc: error})
+    }
+  }
+  else{
+
+    const userID = await prisma.user1.findUnique({
+        where: { email: req.body.yourEmail },
+        select: { id: true }
+      }); 
+
+    try{
+    return await commitToDb(
+      prisma.review
+        .create({
+          data: {
+            message: req.body.message,
+            rating: req.body.rating,
+            index: req.body.index,
+            userId: userID.id,
+            parentId: req.body.parentId,
+            postId: req.body.postId,
+            definitionId: req.body.definitionId,
+          },
+          select: {...COMMENT_SELECT_FIELDS, definitionId: true,
+            _count: {select: { likes: true, disLikes: true}},},
+        })
+        .then(async review => {
+
+          const updated_DefRating = await prisma.definition.update({
+            where: {id: req.body.definitionId},
+            data: {rating: req.body.newDefRating},
+            select: {id: true, rating: true},
+            // _count: {select: { likes: true, disLikes: true}},},
+          })
+          console.log(updated_DefRating)
+
+          return {
+            ...review,
+            likeCount: 0,
+            disLikeCount: 0,
+            likedByMe: false,
+            disLikedByMe: false,
+          }
+        })
+      )
+    }catch(error){
+      console.log({errorName: "ERRRRRROR HERE", errorDesc: error})
+    }
+
   }
 
 })
@@ -1310,7 +1933,7 @@ app.post("/commentOnDefinition", async (req, res) => {
   console.log(jwtCookie);
 
   const decodedToken = await new Promise((resolve, reject) => {
-    jwt.verify(jwtCookie, "ligusha", (err, decoded) => {
+    jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
       if (err) {
         reject(err);
       } else {
@@ -1374,7 +1997,7 @@ app.delete("/posts/:postId/definitions/:definitionId", async (req, res) => {
   const jwtCookie = req.cookies.jwt
 
   const decodedToken = await new Promise((resolve, reject) => {
-    jwt.verify(jwtCookie, "ligusha", (err, decoded) => {
+    jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
       if (err) {
         reject(err);
       } else {
@@ -1423,7 +2046,7 @@ app.post("/posts/:postId/definitions/:definitionId/toggleLike", async (req, res)
   const jwtCookie = req.cookies.jwt 
 
   const decodedToken = await new Promise((resolve, reject) => {
-    jwt.verify(jwtCookie, "ligusha", (err, decoded) => {
+    jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
       if (err) {
         reject(err);
       } else {
@@ -1465,7 +2088,7 @@ app.post("/posts/:postId/definitions/:definitionId/toggleDisLike", async (req, r
   const jwtCookie = req.cookies.jwt;
 
   const decodedToken = await new Promise((resolve, reject) => {
-    jwt.verify(jwtCookie, "ligusha", (err, decoded) => {
+    jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
       if (err) {
         reject(err);
       } else {

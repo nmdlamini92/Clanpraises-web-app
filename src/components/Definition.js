@@ -63,7 +63,7 @@ export function Definition({id, message, user, reviews, createdAt, _count, likeC
     }
 
   function onDefinitionDelete() {
-    popDeleteModal({postId: post.id, id: id, postType: 'definition'})
+    popDeleteModal({postId: post.id, id: id, postType: 'note'})
   }
 
   function onToggleDefinitionLike() {
@@ -109,7 +109,7 @@ export function Definition({id, message, user, reviews, createdAt, _count, likeC
 
   return (
     <>
-      <div className="comment min-w-[100%] bg-white">
+      <div className="comment min-w-[100%] bg-gray-100/60">
         <div className="header">
           <span className="name">
             <IconBtn
@@ -122,7 +122,7 @@ export function Definition({id, message, user, reviews, createdAt, _count, likeC
             <span>
               <div className="flex justify-between items-center gap-12 ">
                 <IconBtn 
-                  Icon={props => <FaUser {...props} size={9} className=" bg-white/60"/>} 
+                  Icon={props => <FaUser {...props} size={9} className=""/>} 
                   style={{ marginBottom: 0, color: "rgba(180, 83, 9, 0.8)" }}
                   >
                   <p className="text-rgba(180, 83, 9, 0.8) lowercase text-[11px]">
@@ -164,12 +164,12 @@ export function Definition({id, message, user, reviews, createdAt, _count, likeC
           />
         ) : (
           <div className="">
-            <div className="message text-sm">{message}</div>
+            <div className="message text-sm p-0.5">{message}</div>
           </div>
         )}
         <div className="footer">
           <span>
-            <div className="flex flex-row justify-between">
+            <div className="flex flex-row gap-4 justify-between ml-6">
               <IconBtn
                 onClick={onToggleDefinitionLike}
                 disabled={toggleDefinitionLikeFn.loading}
@@ -191,26 +191,25 @@ export function Definition({id, message, user, reviews, createdAt, _count, likeC
             </div>
             </span>
             <span>
-              <div className="flex gap-0.5">
-              <button className="bg-orange-200 text-white text-[9px] border-1px border-amber-700 px-1 py-0.5 uppercase cursor-pointer rounded-md"
-              onClick={handleReviewDef}>REVIEW</button>
-              <p className="underline text-[9px] mt-1 cursor-pointer"
+              <div className="flex-col leading-none mr-4">
+              <p className="underline text-[8px] text-gray-600 cursor-pointer leading-none"
                  onClick={handleReviewDef}>
-              {(rootReviews.filter(review => review.definitionId === id).length)} Reviews
+              ({(rootReviews.filter(review => review.definitionId === id).length)} Reviews)
               </p>
+              <button className="bg-orange-300 text-white text-[9px] border-[1.3px] border-solid border-orange-400 p-1 uppercase cursor-pointer rounded-md leading-none"
+              onClick={handleReviewDef}>REVIEW</button>
               </div>
             </span>
-              <span>
+              {/*<span>
                 <div className=" flex items-center">
                 <IconBtn
                   Icon={props => <FaRegComment {...props} size={12} className="text-gray-500"/>} //className="text-gray-600"
                   onClick={handlePopDefCommentsModal}
-                  style={{ /*marginLeft: 6*/ }}
                   >
                   <p onClick={handlePopDefCommentsModal} className="text-black text-[10px] underline cursor-pointer">{rootComments.filter(comment => comment.definitionId === id).length}</p>
                 </IconBtn>
                 </div>
-              </span>
+              </span>*/}
             <span>
               {user.id === currentUser.id && (
               <>
@@ -226,7 +225,7 @@ export function Definition({id, message, user, reviews, createdAt, _count, likeC
               {user.id !== currentUser.id && (
               <>
               <IconBtn
-                Icon={props => <FaFlag {...props} className="text-yellow-700"/>}
+                Icon={props => <FaFlag {...props} className="text-stone-400"/>} //text-yellow-700
                 onClick={handlePopReportModal}
                 >
                 <p className="text-orange-700 text-[10px]"></p>

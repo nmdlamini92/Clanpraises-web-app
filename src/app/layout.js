@@ -1,4 +1,6 @@
 import './styles.css'
+import React from 'react';
+import { ToastContainer } from 'react-toastify';
 
 /** @type {import('next').Metadata} */
 export const metadata = {

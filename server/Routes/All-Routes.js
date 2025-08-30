@@ -8,7 +8,9 @@ import checkSignInStatus from "../Middleware/checkSignInStatus.js";
 export default async function clanPraiseRoutes(fastify, options) {
 
     fastify.post('/addclanpraise', ClanPraiseController.addClanPraise);
+    fastify.post('/addclanpraiseGuest', ClanPraiseController.addClanPraiseGuest);
     fastify.post('/sendVcode', AuthController.sendVcode);
+    fastify.post('/checkUsernameAvailability', AuthController.checkUsernameAvailability);
     fastify.post('/signup', AuthController.signup);
     fastify.post('/signin', AuthController.signin);
     fastify.post('/verifyuser', checkSignInStatus.checkLoginStatus);  

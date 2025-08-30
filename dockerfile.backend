@@ -1,0 +1,29 @@
+# Stage 1: Builder
+FROM node:18-bullseye AS builder
+
+WORKDIR /server
+
+COPY server/package.json server/package-lock.json ./
+COPY server/.env .env
+
+RUN npm install --production
+
+COPY server ./
+
+RUN npx prisma generate
+
+# Stage 2: Final image
+FROM node:18-bullseye AS runner
+
+WORKDIR /server
+
+COPY --from=builder /server /server
+
+EXPOSE 3001
+
+CMD ["sh", "-c", "node server.js"]
+
+#CMD ["sh", "-c", "node prisma/seed.js && node server.js"]
+
+#CMD ["sh", "-c", "npx prisma db seed && node server.js"]
+

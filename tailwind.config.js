@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-//module.exports =
+
  export default {
   content: ["./src/**/*.{html,js,jsx,ts,tsx,css}"],
   theme: {
@@ -35,18 +35,23 @@
             opacity: '1',
           },
         },
+        marquee: {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
       },
       animation: {
         'slide-in-top': 'slide-in-top 0.5s ease-out',
         'slide-in-left': 'slide-in-left 0.4s ease-out',
         'slide-in-right': 'slide-in-right 0.4s ease-out',
+        marquee: 'marquee 30s linear infinite',
       },
       fontFamily: {
         hand: ['"Patrick Hand"', 'cursive'],
       },
     },
   },
-  plugins: [],
+  plugins: [require('tailwind-scrollbar-hide')],
   
 }
 

@@ -90,11 +90,11 @@ export function Comment({id, message, user, createdAt, likeCount, likedByMe, dis
 
   return (
     <>
-      <div className="comment">
+      <div className="comment bg-amber-50/50 ">
         <div className="header">
           <span>
             <IconBtn 
-              Icon={props => <FaUser {...props} size={12} className="text-amber-900 bg-white/60"/>} 
+              Icon={props => <FaUser {...props} size={12} className="text-amber-900"/>} 
               style={{ marginBottom: 0 }}
               >
               <p className="text-amber-900 lowercase text-[11px]">
@@ -116,7 +116,7 @@ export function Comment({id, message, user, createdAt, likeCount, likedByMe, dis
             error={updateCommentFn.error}
           />
         ) : (
-          <div className="message">{message}</div>
+          <div className="message text-xs">{message}</div>
         )}
         <div className="footer">
           <IconBtn
@@ -146,12 +146,12 @@ export function Comment({id, message, user, createdAt, likeCount, likedByMe, dis
           />
           {user.id === currentUser.id && (
             <>
-              <IconBtn
+              {/*<IconBtn
                 onClick={() => setIsEditing(prev => !prev)}
                 isActive={isEditing}
                 Icon={FaEdit}
                 aria-label={isEditing ? "Cancel Edit" : "Edit"}
-              />
+              />*/}
               <IconBtn
                 disabled={deleteCommentFn.loading}
                 onClick={onCommentDelete}
@@ -195,7 +195,7 @@ export function Comment({id, message, user, createdAt, likeCount, likedByMe, dis
             }`}
           >
             <button
-              className="collapse-line"
+              className="collapse-line bg-orange-200"
               aria-label="Hide Replies"
               onClick={() => setAreChildrenHidden(true)}
             />

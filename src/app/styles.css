@@ -4,6 +4,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@media (hover: none) and (pointer: coarse) {
+  .ontouch\:underline {
+    text-decoration: underline;
+  }
+}
+
 *,
 *::before,
 *::after {
@@ -17,11 +23,13 @@ body {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
   line-height: 1.4;
-  background-image: url('./resources-media/MapChart_Map.png');
+  /*background-image: url('/MapChart_Map.png');  /*./resources-media/BantuLang.svg*/
   background-size: cover; /* Cover the entire page */
+  background-color: #bfa28e;
   background-position: center;
-  background-repeat: no-repeat;
+  background-repeat: no-repeat;  /*no-repeat*/
   background-attachment: fixed; /* Keeps the background fixed when scrolling */
+  /*min-height: 100vh;*/
 }
 
 body::before {
@@ -39,7 +47,17 @@ body::before {
   max-width: 1200px;
   width: calc(100vw - 4rem);
   margin: 2rem auto;
+  background-color: rgba(174, 172, 172, 0.3);
 }
+
+.stroke-black {
+  -webkit-text-stroke: 0.5px rgb(79, 60, 6);
+}
+
+.fill-red-500 {
+  color: rgba(217, 119, 6, 0.8);; /* Tailwind's red-500 */
+}
+
 
 /*
 button {
@@ -57,6 +75,10 @@ button {
   text-transform: uppercase;
   cursor: pointer;
   border-radius: 0.3rem;
+}
+
+.notificationButton{
+ background-color: rgb(222, 198, 171); 
 }
 
 .header1 {
@@ -103,22 +125,22 @@ button {
   /* z-index: 10000;  Even higher than the backdrop */
 }
 
-.ClanNamenTribe {
+/*.ClanNamenTribe {
   display: flex;
   flex-direction: "horizontal";
   justify-content: left;
   margin-bottom: 5%;
-}
+}*/
 
-.ClanNameInput {
-  width: 90%;
+/*.ClanNameInput {
+  width: 60%;
   margin-right: 10%;
-}
+}*/
 
-.TribeInput {
-  width: 90%;
+/*.TribeInput {
+  width: 4cm;
   margin-right: 10%;
-}
+}*/
 
 .ClanPraiseInput {
   height: 80px;
@@ -138,10 +160,6 @@ button {
 }
 
 .card {
-  width: 290px;
-  /* Fixed width */
-  height: 290px;
-  /* Fixed height */
   border: 1px solid #ccc;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -150,6 +168,10 @@ button {
   transition: opacity 0.3s ease, transform 0.3s ease;
   cursor: pointer;
 }
+
+/*.animate-marquee:hover {
+  animation-play-state: paused;
+}*/
 
 .CardClanPraise {
   text-decoration: none;
@@ -208,12 +230,8 @@ button {
 }
 
 .card-description-container {
-  /*display: flex;
-  justify-content: center;*/
   width: 270px;
-  /* Fixed width */
   height: 170px;
-  /* Fixed height */
 }
 
 .card-description {
@@ -235,14 +253,14 @@ button {
 }
 
 .message-input {
-  flex-grow: 0.5;
+  /*flex-grow: 0.5;*/
   resize: none;
   height: 70px;
   border-radius: 0.5em;
   padding: 0.5em;
   font-size: inherit;
   font-family: inherit;
-  border: 2px solid hsl(235, 50%, 74%);
+  /*border: 2px solid hsl(235, 50%, 74%);*/
   line-height: 1.4;
 }
 
@@ -290,7 +308,7 @@ button {
 
 .collapse-line:hover::before,
 .collapse-line:focus-visible::before {
-  background-color: hsl(235, 100%, 60%);
+  background-color: hsl(40, 79%, 40%);
 }
 
 .collapse-line::before {
@@ -300,7 +318,7 @@ button {
   bottom: 0;
   left: 50%;
   width: 1px;
-  background-color: hsl(235, 50%, 74%);
+  background-color: hsl(38, 87%, 25%);
   transition: background-color 100ms ease-in-out;
 }
 
@@ -312,7 +330,7 @@ button {
   --hue: 235;
   --color: hsl(var(--hue), 100%, 67%);
   padding: 0.5em 1em;
-  background: var(--color);
+  background-color: hsl(38, 92%, 58%);
   border: none;
   color: white;
   border-radius: 0.5em;
@@ -379,12 +397,25 @@ button {
 .comment {
   
   width: 90%;
-  padding: 0.5rem;
+  padding: 0.2rem;
   border: 1px solid #78350f;
   border-radius: 0.5rem;
-  background-color: rgba(255, 255, 255, 0.5);
+  /*background-color: rgba(255, 255, 255, 0.5);*/
   margin-left: 1;
 }
+
+.review {
+  
+  width: 90%;
+  padding: 0.2rem;
+  border: 1px solid #78350f;
+  border-radius: 0.5rem;
+  /*background-color: rgba(255, 255, 255, 0.5);*/
+  margin-left: 1;
+}
+
+
+
 
 .post-box {
   width: 50%;
@@ -394,7 +425,7 @@ button {
   color: hsl(235, 50%, 67%);
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.15rem;
   font-size: 0.75em;
 }
 
@@ -412,7 +443,7 @@ button {
   display: flex;
   justify-content: space-between;
   gap: 0.5rem;
-  margin-top: 0.5rem;
+  margin-top: 0.2rem;
 }
 
 .ml-3 {

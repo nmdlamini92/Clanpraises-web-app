@@ -9,11 +9,18 @@ import SignInComp from "./SignInComp";
 import Validations from "./Validations";
 import { getUsers } from "../services/posts";
 import { ToastContainer, toast } from 'react-toastify';
-import { FaRegUser, FaBars, FaPenSquare, FaFolderPlus, FaHome } from "react-icons/fa";
+import { FaRegUser, FaFeather, FaPenSquare, FaFolderPlus, FaHome } from "react-icons/fa";
 import { IconBtn } from "./IconBtn";
 import Image from "next/image"
 import BantuLogoIcon from "./BantuIcon";
+import Link from "next/link";
 
+
+/*const apiUrl = typeof window !== 'undefined'
+  ? window.env?.NEXT_PUBLIC_SERVER_URL
+  : process.env.NEXT_PUBLIC_SERVER_URL;*/ 
+
+  const apiUrl = process.env.NEXT_PUBLIC_SERVER_URL
 
 export default function Header1 (){
 
@@ -31,23 +38,28 @@ export default function Header1 (){
       console.log(!cookies.jwt);
       console.log(cookies.userId);
       console.log(cookies.jwt===undefined);
-      
-      const isUserSignedIn = JSON.parse(localStorage.getItem('isUserSignedIn'));
-      console.log(isUserSignedIn);
 
-      if (isUserSignedIn===null || isUserSignedIn.isUserSignedIn===false || isUserSignedIn.isUserSignedIn===undefined){ //isUserSignedIn.isUserSignedIn===false || isUserSignedIn.isUserSignedIn===undefined) {
+      
+      const isUserSignedIn = JSON.parse(localStorage.getItem('isUserSignedIn')); //
+      console.log(isUserSignedIn);
+      console.log(!(null))
+      console.log(!(undefined))
+      
+      console.log(localStorage.getItem('isUserSignedIn'));
+
+      if (isUserSignedIn.isUserSignedIn===null || isUserSignedIn.isUserSignedIn===false || isUserSignedIn.isUserSignedIn===undefined){ //isUserSignedIn.isUserSignedIn===false || isUserSignedIn.isUserSignedIn===undefined) {
         removeCookie("jwt");
         setIsUserSignedIn(false);
         setUserName("Login")
         //onDataChange1([false, '']);
-        localStorage.setItem('isUserSignedIn', JSON.stringify({isUserSignedIn: false}));
+        localStorage.setItem('isUserSignedIn', JSON.stringify({isUserSignedIn: false}));  //JSON.stringify
         localStorage.setItem('VipUserId', JSON.stringify({VipUserId: null}));
         //console.log(isUserSignedIn);
         console.log('user Not signed-in');
       } else {
         if(isUserSignedIn.isUserSignedIn===true){
         try {
-          const  data  = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/verifyuser`,
+          const  data  = await axios.post(`${apiUrl}/verifyuser`,
             {cookies: cookies},
             { withCredentials: true }
           );
@@ -64,6 +76,7 @@ export default function Header1 (){
             setIsUserSignedIn(true);
             localStorage.setItem('isUserSignedIn', JSON.stringify({isUserSignedIn: true}));
             localStorage.setItem('VipUserId', JSON.stringify({VipUserId: data.data.UserId}));
+            localStorage.setItem('guestEmail', JSON.stringify({ guestEmail: null }));
             console.log(data.data);
             //setUserID(data.data.UserId);
             setUserName(data.data.UserName);
@@ -106,12 +119,12 @@ export default function Header1 (){
                 console.log(data == 'SwitchToSignIn');
                   if (data[0] == 'SignUpSuccess'){
                     setShowLoginModal(false);
-                    toast.success("Successfully signed-up");
+                    //toast.success("Successfully signed-up");
                     window.location.reload()
                   }
                   if (data[0] == 'SignInSuccess'){
                     setShowLoginModal(false);
-                    toast.success("Successfully signed-in");
+                    //toast.success("Successfully signed-in");
                     window.location.reload()
                   }
                   if (data == 'SwitchToSignIn'){
@@ -131,8 +144,8 @@ export default function Header1 (){
                     <div className="modal-backdrop">
                       <div className="modal">
                     <button className="p-1 mb-1 text-xs bg-red-800/60" onClick={handleClose}>Close</button>
-                    {isSignUpCompVisible && <SignUpComp onDataChange={handleChildData} />}
-                    {isSignInCompVisible && <SignInComp onDataChange={handleChildData} />}
+                    {isSignUpCompVisible && <SignUpComp onDataChange={handleChildData}/>}
+                    {isSignInCompVisible && <SignInComp onDataChange={handleChildData}/>}
                     </div>
                     </div>
                   )}
@@ -153,6 +166,7 @@ export default function Header1 (){
           removeCookie("jwt");
           localStorage.setItem('isUserSignedIn', JSON.stringify({isUserSignedIn: false}));
           localStorage.setItem('VipUserId', JSON.stringify({VipUserId: null}));
+          localStorage.setItem('VipUserName', JSON.stringify({VipUseName: null}));
           window.location.reload();
         }
 
@@ -162,9 +176,9 @@ export default function Header1 (){
           <div className="modal-backdrop-clear">
           <div className="modal animate-slide-in-top">
           <p>Are you sure you want to log out?</p>
-          <div>
+          <div className="flex gap-4">
             <button onClick={handleCloseSignOutModal}>No</button>
-            <button onClick={handleSignOut}>Yes</button>
+            <button onClick={handleSignOut} className="px-1">Yes</button>
           </div>
           </div>
           </div>
@@ -217,10 +231,11 @@ export default function Header1 (){
               return(
                 <>
                 {showAboutModal && (
-                <div className="modal-backdrop-clear">
+                <div className="modal-backdrop">
                 <div className="modal animate-slide-in-top">
-                <button onClick={handleClose}>Close</button>
-                <p>Bantu-ClanPraises is an interactive databes of bantu clans' praises and their meanings</p>
+                <button className="mb-1" onClick={handleClose}>Close</button>
+                <p>ilan.my is an interactive platform for sharing short literature and notes.<br></br><br></br> 
+                  Add Literature and start sharing notes.</p>
                 </div>
                 </div>
                 )}
@@ -244,7 +259,7 @@ export default function Header1 (){
               return(
                 <>
                 {showContactModal && (
-                <div className="modal-backdrop-clear">
+                <div className="modal-backdrop">
                 <div className="modal animate-slide-in-top">
                   <button onClick={handleClose}>Close</button>
                 <p>Email: nmdlamini92@gmail.com</p>
@@ -289,7 +304,7 @@ export default function Header1 (){
       
       <>
       <ToastContainer/>
-    <div className='flex justify-between items-center bg-white/60 border-4 border-amber-500 p-2'> {/**bg-amber-600/10  bg-amber-200/50 */}
+    <div className='flex justify-between items-center p-2  bg-white/20 border-b border-yellow-600'> {/**bg-white/60 bg-amber-600/10  bg-amber-200/50 */}
     <Login_Modal show={showLoginModal} handleClose={handleCloseLoginModal} isSignUpCompVisible={isSignUpCompVisible} setIsSignUpCompVisible={setIsSignUpCompVisible} isSignInCompVisible={isSignInCompVisible} setIsSignInCompVisible={setIsSignInCompVisible} setShowModal={setShowLoginModal}></Login_Modal>    
         <SignOut_Modal show={showSignOutModal} handleClose={handleCloseSignOutModal}></SignOut_Modal>  
         <About_Modal showAboutModal={showAboutModal} handleClose={handleCloseAboutModal}></About_Modal>  
@@ -298,24 +313,27 @@ export default function Header1 (){
         <div className="flex gap-2 justify-center items-center">
           <IconBtn
           
-          Icon={props => <FaHome {...props} size={20} className='text-amber-900'/>}
+          Icon={props => <FaHome {...props} size={24} className='text-amber-900'/>}
           onClick={handleHome}
         >
-          <p className='text-amber-900'>Home</p>
+         <Link href={`/`}> <p className='text-amber-900 text-[13px]'>Home</p></Link>
         </IconBtn>
-        <p onClick={handleOpenAboutModal} className='text-amber-900 hover:bg-gray-100 cursor-pointer'>ABOUT</p>
+        <p onClick={handleOpenAboutModal} className='text-amber-900 hover:bg-gray-100 text-md cursor-pointer'>ABOUT</p>
         <p onClick={handleOpenContactModal} className='text-amber-900 hover:bg-gray-100 cursor-pointer'>CONTACT</p>
         </div>
         <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center leading-none">
-        <Image src="/SimpleIcon.svg" alt="My Logo" width={55} height={65 } />
-          <div className="flex flex-col items-center leading-none">
-            <h1 className="text-amber-900 text-[28px] leading-none font-hand">Bantu</h1>
-            <p className="relative text-amber-900 text-[13px] leading-none font-hand">clan praises</p>
+        <Link href={`/`}>
+          <div className="flex flex-col items-center leading-none cursor-pointer">
+            {/*<Image src="/feather.svg" alt="My Logo" width={30} height={40} 
+                    className="w-[14px] h-[18px] sm:w-[15px] sm:h-[20px] md:w-[25px] md:h-[35px] lg:w-[28px] lg:h-[40px]"/>*/}
+            <h1 className="text-amber-900 leading-none font-hand text-[10px] sm:text-[12px] md:text-[15px] lg:text-[17px]">ILAN</h1>
+          <p className="text-xs text-amber-800/50 font-hand">Interactive Literature And Notes</p>
           </div>
+        </Link>
         </div>
       <div className="flex flex-col items-center">
         <IconBtn
-          Icon={props => <FaRegUser {...props} size={20} className="mb-0 p-0 text-amber-900"/>}
+          Icon={props => <FaRegUser {...props} size={26} className="mb-0 p-0 text-amber-900"/>}
           onClick={handleProfileClick}
         > 
         </IconBtn>
@@ -338,10 +356,8 @@ export default function Header1 (){
               <ul className=""> {/*space-y-2*/}
                 <li className="p-2 hover:bg-gray-100 cursor-pointer border border-gray-400 box-border" onClick={handleOpenUserProfileModal}>Profile</li>
                 <li className="p-2 hover:bg-gray-100 cursor-pointer border border-gray-400" onClick={handleOpenSignOutModal}>Logout</li>
-               
               </ul>
             </div>
-            
           </div>
           </div>
           )}

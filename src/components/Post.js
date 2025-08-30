@@ -10,7 +10,7 @@ import { DefinitionList } from "./DefinitionList"
 import HighlightableTex33 from "./HighlightableTex33"
 import {React, useState, useEffect, useRef} from "react"
 import { IconBtn } from "./IconBtn"
-import { FaTrash, FaShareAlt, FaRegComment, FaRegEye, FaFlag, FaUser, FaScroll, FaStar, FaComment } from "react-icons/fa"
+import { FaTrash, FaShareAlt, FaRegComment, FaRegEye, FaFlag, FaUser, FaScroll, FaStar, FaComment, FaChartBar, FaPoll, FaChartLine, FaEye } from "react-icons/fa"
 //import { useCookies } from "react-cookie"
 import axios from "axios"
 import SignUpComp from "./SignUpComp"
@@ -25,6 +25,7 @@ import StarRatingInterActive from "./FiveStarRatingInterActive"
 import { createComment, deleteComment, createCommentOnDef} from "../services/Comments"
 import { CommentList } from "./CommentList"
 import { CommentForm } from "./CommentForm"
+import NotificationToggle from "./EmailNotificationsButton"
 
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
@@ -38,7 +39,6 @@ export function Post() {
 
     const childRef = useRef()
 
-    
     const { post, rootReviews = [], rootComments = [], rootDefinitions = [], createLocalReview, deleteLocalReview, createLocalComment, deleteLocalComment, createLocalDefinition, updateLocalDefinition, deleteLocalDefinition} = usePost()
     console.log(post);
     console.log(post.definitions);
@@ -52,6 +52,18 @@ export function Post() {
     const VipUserID = JSON.parse(localStorage.getItem('VipUserId'));
     const currentUser = {id: VipUserID.VipUserId}
     console.log(currentUser);
+
+    const guestEmail = JSON.parse(localStorage.getItem('guestEmail'));
+    //const [guestEmail, setGeuestEmail] = useState(JSON.parse(localStorage.getItem('guestEmail')))
+    console.log(guestEmail);
+    console.log(!guestEmail);
+
+    //console.log(guestEmail === null)
+    //if (guestEmail === null) {
+      //setGeuestEmail('ewww')
+    //}
+
+    console.log(guestEmail)
 
     const [reportData, setReportData] = useState({postId: post.id, definitionId: null, commentId: null, reviewId: null})
     const [deleteData, setDeleteData] = useState({postId: post.id, id: post.id})
@@ -171,7 +183,7 @@ export function Post() {
               handleCloseDelete_Modal()
             })
           }
-          if (deleteData.postType === 'definition'){
+          if (deleteData.postType === 'note'){
             return deleteDefinitionFn
             .execute({ postId: deleteData.postId, id: deleteData.id, clan: post.title, tribe: post.tribe,
               definition: rootDefinitions.filter(definition => definition.id === deleteData.id)[0], 
@@ -215,11 +227,11 @@ export function Post() {
           <>
           {show && (
           <div className="modal-backdrop-clear">
-          <div className="modal">
-          <p>Are sure you want to delete {deleteData.postType}</p>
-          <div>
-            <button onClick={handleCloseDelete_Modal}>No</button>
-            <button onClick={handle_deletePost}>Yes</button>
+          <div className="modal bg-stone-200">
+          <p>Are sure you want to delete {deleteData.postType}?</p>
+          <div className="flex gap-4">
+            <button onClick={handleCloseDelete_Modal} className="">No</button>
+            <button onClick={handle_deletePost} className="px-1">Yes</button>
           </div>
           </div>
           </div>
@@ -290,37 +302,75 @@ export function Post() {
           }
 
         return(
-          <>
-          {show && (                          
-          <div className="modal-backdrop">
-          <div className="modal">
-          <button className="close-button" onClick={handleClose}>Close</button>   
-          <p>why are you reporting this clan praise?</p>
+          <>  
+          {/*<div className="modal-backdrop">
+          <div className="modal bg-gray-500">*/}
+          {show && (       
+          <div className="fixed inset-0 z-[9999] bg-black bg-opacity-50 flex items-center justify-center ">
+          <div className="relative w-[95%] md:w-[45%] lg:w-[35%] max-h-[60%] bg-stone-300 overflow-y-auto p-4 pt-2 rounded-lg shadow-lg" 
+                >
+          <button className="close-button" style={{ backgroundColor: "rgba(214, 131, 108)" }}
+                onClick={handleClose}>Close</button>   
+          <p className="text-sm mt-2 mb-0.5">why are you reporting this post?</p>
+          <div className="flex flex-col gap-1">
             <select
             id="dropdown"
             value={selectedOption}
             onChange={handleChange}
-            style={{ marginLeft: "10px", padding: "5px" }}
+            className="border border-amber-500 text-sm w-fit"
+            style={{ marginLeft: "1px", padding: "1px" }}
           >
-            <option value="" disabled>
-              -- why are you reporting  post --
+            <option className="text-sm"value="" disabled>
+              -- select reason --
+              {/*<p className="text-sm">-- select reason --</p>*/}
             </option>
-            <option value="wrong">not associated with {post.title} in any way</option>
-            <option value="offensive">contains in-appropriate language</option>
-            <option value="other">Other</option>
+            <option className="text-xs" value="wrong">post is irrelevant to {capitalizeFirstLetter(post.title)}</option>
+            <option className="text-xs" value="offensive">contains in-appropriate language</option>
+            <option className="text-xs" value="other">Other</option>
           </select>
-            <br></br>
             {isWhyReportlVisible && 
               <>
-              <p className= 'error-msg'>please specify reason</p>
-              <input type="text"  onChange={(e)=>setSelectedOption(e.target.value)}/>
+              <p className= 'error-msg text-sm'>please specify reason</p>
+              <input type="text" className="border border-amber-500 w-fit"/> {/*onChange={(e) => setComment(e.target.value)}*/}
               </>}
-            <br></br>
-            <button onClick={handleSendReport}>Send Report</button>
+            <button onClick={handleSendReport} className="mt-1 border border-black w-fit">Send Report</button>
             {errors11 && <span className= 'error-msg'> {errors11} </span>}
           </div>
           </div>
+          </div>
           )}
+          </>
+        )
+      }
+
+
+      const [showUserProfileModal, setShowUserProfileModal] = useState(false);
+            
+      const handleOpenUserProfileModal = () => {
+        setShowUserProfileModal(true);
+      };
+                            
+      const handleCloseUserProfileModal = () => {
+        setShowUserProfileModal(false);
+      };
+                      
+      const UserProfile_Modal = ({ handleClose}) => {
+                  
+        console.log('lol');
+                  
+        return(
+          <>
+            {showUserProfileModal && (
+            <div className="modal-backdrop">
+              <div className="modal">
+                <button className="close-button" onClick={handleCloseUserProfileModal}>Close</button>
+                <p>Username: {post.user.username} </p>
+                <p>Joined: {dateFormatter.format(new Date(post.user.createdAt))}</p>
+                <p>Tribe: {post.user.tribe} </p>
+                <p>Clan/Surname: {post.user.clan}</p>
+              </div>
+            </div>
+            )}
           </>
         )
       }
@@ -329,6 +379,8 @@ export function Post() {
        const [isSignInCompVisible, setIsSignInCompVisible] = useState(false);
        const [showLogInModal, setShowLogInModal] = useState(false);
        const [userName, setUserName] = useState();
+       const [userTribe, setUserTribe] = useState('');
+       const [userClan, setUserClan] = useState('');
 
        const handleOpenLogInModal = () => {
         setShowLogInModal(true);
@@ -418,6 +470,23 @@ export function Post() {
       }
 
       const Definitions_Modal = ({ show, line_nd_index, children, }) => {
+  
+          useEffect(() => {
+            if (show) {
+              // Prevent scrolling
+              document.body.style.overflow = "hidden";
+            } else {
+              // Restore scrolling
+              document.body.style.overflow = "";
+            }
+
+            // Clean up on unmount
+            return () => {
+              document.body.style.overflow = "";
+            };
+          }, [show]);
+
+
 
         console.log(definitions);
         console.log(line_nd_index)
@@ -430,39 +499,102 @@ export function Post() {
         const [definition, setDefinition] = useState("");
         //setDefinitionList(definitions);
         console.log(definitionsList);
-        const [checkStatus, setCheckStatus] = useState();
-        const [errorDef, setErrorDef] = useState();
+        //const [checkStatus, setCheckStatus] = useState();
+        
 
-        function onDefinitioncreate(e) {
+        const [loadingNote, setLoadingNote] = useState(false);
+        const [valuesNote, setValuesNote] = useState({message: "", yourName: "", yourEmail: ""})
+        const [errorsNote, setErrorsNote] = useState({message: "", yourName: "", yourEmail: ""});
+        const [errorDef, setErrorDef] = useState('');
+
+        async function onDefinitioncreate(e) {
           e.preventDefault();
           console.log(isUserSignedIn)
+
+
           if (isUserSignedIn.isUserSignedIn===false){   //isUserSignedIn.isUserSignedIn===false
-            handleOpenLogInModal()
+            
+            const validationError = Validations.addCommentGuestValidations(valuesNote);
+            
+            if (validationError){
+              console.log(validationError)
+              setErrorsNote(validationError);
+              setLoadingNote(false);
+            }
+            else{
+              setErrorsNote({message:"", yourName:"", yourEmail:""});
+              //console.log(values);
+              try {
+
+                const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/validateCommentGuestInput`,
+                  {...valuesNote},{withCredentials: true}
+                );
+
+                console.log(response)
+
+                if (response.data.status===false) {
+                  //console.log(response);
+
+                  if (!(response.data.existingName === undefined)){
+                    setValuesNote({ ...valuesNote, ['yourName']: response.data.existingName })
+                  }
+
+                  console.log("values:", valuesNote);
+                  setErrorsNote(response.data.errors);
+                  setLoadingNote(false);
+                }
+                      
+                if (response.data.status===true) {
+                  //console.log(response);
+                  try{
+                      return createDefinitionFn({ postId: post.id, message: valuesNote.message, index: selectedLineIndex, rating: 0, 
+                         yourEmail: valuesNote.yourEmail })
+                        .then(response => {
+                          createLocalDefinition(response);
+                          setDefinitionsArray([response, ...definitionsArray])
+                        })
+                        .catch(error => {console.error("Error creating definition:", error);
+                          //setErrorDef(error)
+                          setErrorDef(error)
+                        })
+                  }
+                  catch(error){
+                    console.log(error);
+                    setErrorDef(error)
+                  } 
+                }
+              }
+              catch(error) {
+                console.log(error)
+                setErrorDef(error)
+              }
+            }
           }
           else{
-            if (definition ==="") {
-              setErrorDef("*required");
+            if (valuesNote.message ==="" && isUserSignedIn === true) {
+              //setErrorNote("*required");
+              setErrorsNote({ ...valuesNote, ['message']: "*required" })
               console.log('ya')
             }
             else{
-              setErrorDef("");
-          try{
-            return createDefinitionFn({ postId: post.id, message: definition, index: selectedLineIndex, rating: 0 })
-            .then(response => {
-              createLocalDefinition(response);
-              setDefinitionsArray([response, ...definitionsArray])
-            })
-            .catch(error => {console.error("Error creating definition:", error);
+              setErrorsNote({ ...valuesNote, ['message']: "" });
+              try{
+                return createDefinitionFn({ postId: post.id, message: valuesNote.message, index: selectedLineIndex, rating: 0 })
+                .then(response => {
+                createLocalDefinition(response);
+                setDefinitionsArray([response, ...definitionsArray])
+                })
+                .catch(error => {console.error("Error creating definition:", error);
+                setErrorDef(error)
+                })
+              }
+              catch(error){
+              //console.log(error);
               setErrorDef(error)
-            })
+              } 
             }
-            catch(error){
-            //console.log(error);
-            setErrorDef(error)
-          } 
+          }
         }
-      }
-      }
           
         const handleReviewDef = (defData) => {
             console.log(defData);
@@ -482,34 +614,65 @@ export function Post() {
         return(
           <>
           {show && (               // min-w-[300px] max-w-[90vw] min-h-[200px]
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center ">
-          <div className="relative w-[95%] md:w-[45%] lg:w-[35%]  max-h-[60%] overflow-y-auto bg-gray-200 p-4 rounded-lg shadow-lg"> {/*bg-[url('./resources-media/MapChart_Def.png')] bg-cover bg-center*/}
-          <button onClick={handleCloseDefinitions_Modal}>Close</button>
-          <p className="font-bold mt-2 mb-2 text-amber-900 bg-white w-fit"> "{line_nd_index.line}"</p>
-
-          <form onSubmit={onDefinitioncreate}>
-            <div className="comment-form-row ">
-            <div className="relative min-w-[60%]">
+          <div className="fixed inset-0 z-[999] bg-black bg-opacity-50 flex items-center justify-center ">
+          <div className="relative w-[95%] md:w-[45%] lg:w-[35%] max-h-[60%] overflow-y-auto p-4 pt-2 rounded-lg shadow-lg" 
+                style={{ backgroundColor: "rgba(205, 187, 167)" }}>
+          <button onClick={handleCloseDefinitions_Modal} className="p-1 mb-2"
+            style={{ backgroundColor: "rgba(214, 131, 108)" }}>Close</button>
+          <p className="font-bold mt-2 mb-3 text-amber-900 bg-yellow-50 w-fit text-md"> "{line_nd_index.line}"</p>
+          <div className= "p-2 pb-0.5 bg-gray-100/60 rounded-md md:max-w-[90%] lg:max-w-[76%]">  {/*bg-amber-50/50*/}
+          <form onSubmit={onDefinitioncreate}>  
+            <div className="flex flex-col">
+            <div className="flex gap-1.5 w-fit leading-none">
+            <div className="relative">
               <textarea
-                className="message-input border p-2 w-full bg-gray-50"
+                className="message-input w-full border-[1.3px] border-yellow-400 bg-gray-50"
                 onFocus={(e) => (e.target.nextSibling.style.display = "none")}
-                onBlur={(e) => {
-                  if (!e.target.value) e.target.nextSibling.style.display = "block";
-                }}
-                onChange={e => setDefinition(e.target.value)}
+                onBlur={(e) => {if (!e.target.value) e.target.nextSibling.style.display = "block";}}
+                name="message"
+                value={valuesNote.message}
+                onChange={e => setValuesNote({ ...valuesNote, [e.target.name]: e.target.value })}
               />
-              <div className="absolute left-2 top-2 text-gray-400 pointer-events-none">
-                add meaning/context...
+              <div className="absolute left-2 top-2 text-gray-400 pointer-events-none text-sm">
+                {/*faka lwati ngale'sisho... <br></br>*/}
+                Add context...
               </div>
             </div>
-              <button className="btn" type="submit" disabled={loading}>
-              {loading ? "Loading" : <>add <br></br> note</>}
+              <button className="bg-yellow-400 border-[1.3px] border-solid border-yellow-400/80 text-sm" type="submit" disabled={loading}>
+              {loadingNote ? "Loading" : <p className="text-sm">add <br></br> note</p>}
               </button>
             </div>
-              <div className="error-msg">{errorDef}</div>
+            <p className="text-[11px] text-lime-700 w-fit leading-none">*use {capitalizeFirstLetter(post.tribe)} lang preferably*</p>
+              <div className="text-red-500 w-fit text-xs mt-1">{errorsNote.message}</div>
+          <div className="flex w-[75%] mt-1.5 mb-1.5">
+          {(isUserSignedIn.isUserSignedIn===null || isUserSignedIn.isUserSignedIn===false || 
+              isUserSignedIn.isUserSignedIn===undefined) && (
+            <div className="flex gap-2 w-fit">
+                  <div className="flex-col w-fit">
+                  <input className="w-full border-[1.3px] rounded border-amber-400 text-sm" name="yourName" placeholder="name"  //value={values.clanName || ""}  
+                    onChange={(e) => setValuesNote({ ...valuesNote, [e.target.name]: e.target.value })}
+                    //onFocus={handleFocus_ClanName}
+                    value={valuesNote.yourName}
+                  />
+                  {<p className="text-xs text-red-600">{errorsNote.yourName}</p>}
+                  </div>
+                  <div className="flex-col w-fit">
+                  <input className="w-full border-[1.3px] rounded border-amber-400 text-sm" name="yourEmail" placeholder="email"  //value={values.clanName || ""}  
+                    onChange={(e) => setValuesNote({ ...valuesNote, [e.target.name]: e.target.value })}
+                    //onFocus={handleFocus_ClanName}
+                    value={valuesNote.yourEmail}
+                  />
+                  {<p className="text-xs text-red-500">{errorsNote.yourEmail}</p>}
+                  </div>
+        </div>
+          )}
+          </div>       
+          </div>
           </form>
+          </div>
+           <p>{errorDef}</p>
             <div className="boarder boarder-red-500">
-              <p className="text-xs text-lime-700">*stick to {post.tribe} lang if possible*</p>
+              
             <h3 className="font-bold mt-3 mb-1 ml-1">Notes ({rootDefinitions.filter(definition => definition.index === selectedLineIndex).length})</h3>
               {((rootDefinitions.filter(definition => definition.index === selectedLineIndex).length==0) && (false)) &&  //(currentUser.id==null))
               (<div className="text-xs flex text-stone-400 ml-1">get notified when new note is added <p onClick={handleOpenLogInModal} className="text-blue-500 ml-1 underline cursor-pointer">Sign-Up</p></div>)}
@@ -545,6 +708,16 @@ export function Post() {
               const [errorDefReview, setErrorDefReview] = useState("");
               const [errorRating, setErrorRating] = useState("");
 
+              const [loadingReview, setLoadingReview] = useState(false);
+              const [valuesReview, setValuesReview] = useState({rating: null, message: "", yourName: "", yourEmail: ""})
+              const [errorsReview, setErrorsReview] = useState({errorRating: "", errorMessage: "", errorName: "", errorEmail: "", message: ""});
+              const [errorReview, setErrorReview] = useState('');
+             
+
+              const [yourName, setYourName] = useState("");
+              const [yourEmail, setYourEmail] = useState("");
+              const [errors, setErrors] = useState('');
+
               console.log(currentDefRating)
               console.log(currentNumOfDefReviews)
               console.log(rating)
@@ -552,6 +725,7 @@ export function Post() {
       
               const handle_ReviewDefinition = async (e) => {
                 e.preventDefault();
+                setLoadingReview(true);
 
                 console.log(currentDefRating)
                 console.log(currentNumOfDefReviews)
@@ -561,29 +735,92 @@ export function Post() {
                 const isUserSignedIn = JSON.parse(localStorage.getItem('isUserSignedIn'));
                 console.log(isUserSignedIn.isUserSignedIn);
 
-                if (isUserSignedIn.isUserSignedIn===false){
-                  handleOpenLogInModal()
-                }
-                if (rootDefinitions.filter(definition => definition.id === definitionId)[0].user.id === VipUserID.VipUserId) {
-                  setErrorDefReview("You cannot review your own note");
-                }
-                else{
-                  if (DefReview === "" || rating === null) {
-                    const validationError = Validations.addReviewValidations({comment: DefReview, rating: rating, author: post.user.username});
-                    setErrorDefReview(validationError.errorComment);
-                    setErrorRating(validationError.errorRating);
-                    setDefReview(validationError.comment)
-                    }
-                    else{
-                      setErrorDefReview("");
-                      setErrorRating("");
-                      setDefReview("")
-                      childRef.current.changeText(0)
+                if (isUserSignedIn.isUserSignedIn===false){   //isUserSignedIn.isUserSignedIn===false
+
+                  const validationError = Validations.addReviewValidations(valuesReview);
+                  console.log(validationError);
+
+                  if (Object.keys(validationError).length > 0){
+                    console.log(validationError)
+                    setErrorsReview(validationError);
+                    setValuesReview({ ...valuesReview, ['message']: validationError.message })
+                    setLoadingReview(false);
+                  }
+                  else{
+                    setErrorsReview({errorRating: "", errorMessage: "", errorName: "", errorEmail: "", message: ""});
+                    //console.log(values);
+                    try {
+
+                      const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/validateCommentGuestInput`,
+                        {...valuesReview},{withCredentials: true}
+                      );
+
+                      console.log(response)
+
+                      if (response.data.status===false) {
+                        //console.log(response);
+
+                        if (!(response.data.existingName === undefined)){
+                          setValuesReview({ ...valuesReview, ['yourName']: response.data.existingName })
+                        }
+
+                        console.log("values:", valuesReview);
+                        setErrorsReview({errorName: response.data.errors.yourName, errorEmail: response.data.errors.yourEmail, 
+                          errorMessage: response.data.errors.message, existingName: response.data.existingName});
+                        setLoadingReview(false);
+                      }
+                            
+                      if (response.data.status===true) {
+                        //console.log(response);
                         try{
-                          return createReviewDefinitionFn({ message: DefReview, rating: rating, index: line_nd_index.index, parentId: null, definitionId: definitionId, postId: post.id, newDefRating: ((currentDefRating + rating)/(currentNumOfDefReviews + 1))})
+                            return createReviewDefinitionFn({ message: valuesReview.message, rating: valuesReview.rating, index: line_nd_index.index, parentId: null, 
+                              definitionId: definitionId, postId: post.id, newDefRating: ((currentDefRating + valuesReview.rating)/(currentNumOfDefReviews + 1)),
+                              yourEmail: valuesReview.yourEmail, yourName: valuesReview.yourName })
                           .then(response => {
                             createLocalReview(response);
-                            updateLocalDefinition({id: definitionId, rating: (currentDefRating + rating)/(currentNumOfDefReviews + 1)})  
+                            updateLocalDefinition({id: definitionId, rating: (currentDefRating + valuesReview.rating)/(currentNumOfDefReviews + 1)})  
+                        })
+                        .catch(error => {console.error("Error creating Def-review:", error);})
+                        }
+                        catch(error){
+                          console.log(error);
+                          setErrorReview(error)
+                        } 
+                      }
+                    }
+                    catch(error) {
+                      console.log(error)
+                      setErrorReview(error)
+                    }
+                  }
+                }
+                else{
+                  if (rootDefinitions.filter(definition => definition.id === definitionId)[0].user.id === VipUserID.VipUserId) {
+                    setLoadingReview(false);
+                    setErrorDefReview("You cannot review your own note");
+                  }
+                  else{
+                  if (DefReview === "" || rating === null) {
+                    //const validationError = Validations.addReviewValidations({message: DefReview, rating: rating, author: post.user.username});
+                    const validationError = Validations.addReviewValidations(valuesReview);
+                    console.log(validationError);
+                    setErrorsReview(validationError)
+                    setLoadingReview(false);
+                    //setErrorDefReview(validationError.errorComment);
+                    //setErrorRating(validationError.errorRating);
+                    //setDefReview(validationError.comment)
+                    }
+                    else{
+                      setErrorsReview({errorRating: "", errorMessage: "", errorName: "", errorEmail: "", message: ""});
+                      //setErrorDefReview("");
+                      //setErrorRating("");
+                      //setDefReview("")
+                      childRef.current.changeText(0)
+                        try{
+                           return createReviewDefinitionFn({ message: valuesReview.message, rating: valuesReview.rating, index: line_nd_index.index, parentId: null, definitionId: definitionId, postId: post.id, newDefRating: ((currentDefRating + valuesReview.rating)/(currentNumOfDefReviews + 1))})
+                          .then(response => {
+                            createLocalReview(response);
+                            updateLocalDefinition({id: definitionId, rating: (currentDefRating + valuesReview.rating)/(currentNumOfDefReviews + 1)})  
                         })
                         .catch(error => {console.error("Error creating Def-review:", error);})
                           }
@@ -594,43 +831,74 @@ export function Post() {
                   }
                 }
 
+                }
+
               const handleRating = (rate) => {
-                setRating(rate);
+                setValuesReview({...valuesReview, ['rating']: rate});
                 console.log("User rated:", rate);
               };
       
               return(
                 <>
                 {show && (
-                <div className="modal-backdrop-clear">
-                <div className="bg-amber-50 w-[90%] md:w-[40%] lg:w-[30%] p-4 pr-4 pl-4 rounded-lg shadow-md">
-                  <button onClick={handleCloseReviewDefModal}>close</button>
-                   <div className="bg-amber-50/50 ">
-                    <div className="flex items-center p-1 gap-2">
-                    <p className="text-xs mb-0 pb-0 pt-2">rate <strong>{rootDefinitions.filter(definition => definition.id === definitionId)[0].user.username}</strong>'s note</p>
-                    {<StarRatingInterActive onRate={handleRating} ref={childRef}/>}
-                    <p className="error-msg text-xs">{errorRating}</p>
+                <div className="modal-backdrop ">
+                <div className=" bg-stone-300 w-[90%] md:w-[40%] lg:w-[30%] max-h-[50%] overflow-y-auto p-2 pr-4 pl-4 rounded-lg shadow-md">
+                 
+                  <button onClick={handleCloseReviewDefModal} className="mb-2 p-1 "
+                  style={{ backgroundColor: "rgba(214, 131, 108)" }}> close
+                  </button>
+                  
+                    <div className="bg-yellow-50/50 flex-col p-2 rounded-md">
+                      <div className="flex items-center pb-0.5 gap-2">
+                        {/*<p className="text-xs mb-0.5 pt-1 ml-0.5 text-gray-500/80">rate <strong>{rootDefinitions.filter(definition => definition.id === definitionId)[0].user.username}</strong>'s note</p>*/}
+                        {<StarRatingInterActive onRate={handleRating} ref={childRef}/>}
+                        <p className="error-msg text-xs">{errorsReview.errorRating}</p>
+                      </div>
+                      <div className="pb-1">
+                      <form onSubmit={handle_ReviewDefinition} className="mb-2">
+                        <div className="flex gap-1 ">
+                        <textarea
+                            autoFocus={false} //${rootDefinitions.filter(definition => definition.id === definitionId)[0].user.username}
+                            placeholder={`review...`}
+                            value={valuesReview.message}
+                            name="message"
+                            onChange={e => setValuesReview({...valuesReview, [e.target.name]:e.target.value})}
+                            className="h-8 w-9/12 border-[1.3px] border-solid border-yellow-400 rounded-md placeholder:text-sm placeholder:m-1"
+                            rows={2}
+                          />
+                          <button className="bg-amber-300/60 border-[1.3px] border-solid border-yellow-400/80 text-white text-xs px-2 py-1 uppercase cursor-pointer rounded-md" 
+                          type="submit">
+                            {loadingReview ? "Loading" : "Review"}
+                          </button>
+                        </div>
+                        <div className="error-msg text-xs ml1">{errorsReview.errorMessage}</div>
+                      </form>
                   </div>
-                  <div className="pb-1 pl-1">
-                  <form onSubmit={handle_ReviewDefinition} className="mb-2">
-                    <div className="flex gap-1 mb-1">
-                    <textarea
-                        autoFocus={false}
-                        placeholder={`review ${rootDefinitions.filter(definition => definition.id === definitionId)[0].user.username}\'s note...`}
-                        value={DefReview}
-                        onChange={e => setDefReview(e.target.value)}
-                        className="h-8 w-9/12 border border-gray-300 rounded-md placeholder:text-md placeholder:m-1"
-                        rows={2}
-                      />
-                      <button className="bg-orange-200 text-white text-xs border border-y-orange-600 px-2 py-1 uppercase cursor-pointer rounded-md" 
-                      type="submit">
-                        {loading ? "Loading" : "Review"}
-                      </button>
+                  <div className="flex w-[75%] mt-1 mb-1.5">
+                  {(isUserSignedIn.isUserSignedIn===null || isUserSignedIn.isUserSignedIn===false || 
+                      isUserSignedIn.isUserSignedIn===undefined) && (
+                    <div className="flex gap-2 w-fit">
+                          <div className="flex-col">
+                          <input className="w-full text-sm border-[1.3px] rounded border-amber-400/80" name="yourName" placeholder=" name"  //value={values.clanName || ""}  
+                            onChange={(e) => setValuesReview({ ...valuesReview, [e.target.name]: e.target.value })}
+                            //onFocus={handleFocus_ClanName}
+                            value={valuesReview.yourName}
+                          />
+                          {<p className="text-red-500 text-xs ">{errorsReview.errorName}</p>}
+                          </div>
+                          <div className="flex-col w-fit">
+                          <input className="w-full text-sm border-[1.3px] rounded border-amber-400/80" name="yourEmail" placeholder=" email"  //value={values.clanName || ""}  
+                            onChange={(e) => setValuesReview({ ...valuesReview, [e.target.name]: e.target.value })}
+                            //onFocus={handleFocus_ClanName}
+                            value={valuesReview.yourEmail}
+                          />
+                          {<p className="error-msg text-xs">{errorsReview.errorEmail}</p>}
+                          </div>
                     </div>
-                    <div className="error-msg text-xs ml-1">{error}{errorDefReview}</div>
-                  </form>
+                  )}
+                  </div>   
                   </div>
-                  </div>
+                  <p>{errorReview}</p>
                   <div>
                   <div className="boarder boarder-red-500">
                     <h3 className="font-bold mt-3 mb-1 ml-1">Reviews ({rootReviews.filter(review => review.definitionId === definitionId).length})</h3>
@@ -707,8 +975,8 @@ export function Post() {
         return(
           <>
           {show && (
-          <div className="modal-backdrop-clear">
-          <div className="bg-amber-50 p-5 rounded-lg max-w-sm w-full shadow-md">
+          <div className="modal-backdrop">
+          <div className="bg-amber-50 w-[90%] md:w-[40%] lg:w-[30%] max-h-[50%] overflow-y-auto p-4 pr-4 pl-4 rounded-lg shadow-md">
             <button onClick={handleCloseDefCommentsModal}>close</button>
             <div className= "p-1 bg-amber-50/50 ">
               <form onSubmit={handle_commentOnDefinition}>
@@ -779,10 +1047,20 @@ export function Post() {
       return array.reduce((sum, obj) => sum + (obj[property] || 0), 0);                             
     }
 
+    function capitalizeFirstLetter(str) {
+      if (!str) return '';
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    const isUserSignedIn = JSON.parse(localStorage.getItem('isUserSignedIn'));
+
     
+    const handleToggle = (enabled) => {
+      console.log("Notifications enabled:", enabled);
+    };
 
   return (
-    <div className="flex flex-col justify-center items-center border">
+    <div className="flex flex-col justify-center items-center">
       <ToastContainer/>
       <Definitions_Modal show={showDefinitions_Modal} handleClose={handleCloseDefinitions_Modal}  line_nd_index={line_nd_index} ></Definitions_Modal>
       <ReviewDef_Modal show={showReviewDefModal} handleClose={handleCloseReviewDefModal}></ReviewDef_Modal> 
@@ -790,57 +1068,83 @@ export function Post() {
       <LogInModal show={showLogInModal} handleClose={handleCloseLogInModal} isSignUpCompVisible={isSignUpCompVisible} setIsSignUpCompVisible={setIsSignUpCompVisible} isSignInCompVisible={isSignInCompVisible} setIsSignInCompVisible={setIsSignInCompVisible} setShowLogInModal={setShowLogInModal}></LogInModal>
       <ReportModal show={showReportModal} handleClose={handleCloseReportModal}> </ReportModal>
       <DeletePost_Modal show={show_DeletePost_Modal} handleClose={handleCloseDelete_Modal}> </DeletePost_Modal>
-      <div className="border sm:px-1 md:px-0 w-[100%] md:min-w-[50%] md:max-w-[50%] lg:min-w-[40%] lg:max-w-[40%]"> 
-      <div className="flex flex-row justify-center bg-white/60"> 
-       <h1 className='text-yellow-600 text-2xl font-bold'>{post.title}</h1>
+      <UserProfile_Modal></UserProfile_Modal> 
+      {/*<p className="text-xs mb-1 text-stone-500">subscribe to {capitalizeFirstLetter(post.title)} to get notified about added notes (meaning/context)</p>*/}
+      <div className="sm:px-1 md:px-0 w-[100%] md:min-w-[50%] md:max-w-[50%] lg:min-w-[40%] lg:max-w-[40%] border-t border-[#ccc] rounded-lg shadow-md"> 
+      <div className="flex justify-between bg-white/20">
+                         <span className="username">
+                         <IconBtn 
+                         Icon={props => <FaUser {...props} //size={12} 
+                         className="text-[10px] sm:text-xs text-amber-900"/>} 
+                         style={{ marginBottom: 0, marginLeft: 2, marginTop: 2 }}
+                         >
+                         <p className="text-amber-900 text-[10px] sm:text-xs lowercase"><strong>{post.user.username}</strong></p>
+                         </IconBtn> 
+                         </span>
+                         <span className="text-gray-500/50 text-[8px] sm:text-[10px] mt-2 mr-2" >
+                         <strong>{dateFormatter.format(Date.parse(post.createdAt))}</strong>
+                         </span>
+            </div>
+      <div className="flex flex-row justify-center bg-white/20"> 
+       <h1 className='text-stone-600 text-2xl font-bold lg:text-[30px]'>{capitalizeFirstLetter(post.title)}</h1>
        <IconBtn
           Icon={props => <FaShareAlt {...props} size={15} className="text-gray-400"/>}
           style={{ marginLeft: 4}}
         >
         </IconBtn>
-        <FacebookShareButton  text={post.body} url={`192.168.1.172:3000/${post.tribe}/${post.title}/${post.id}`}/>
+        <FacebookShareButton  text={post.body} url={`https://clanpraises.com/${post.tribe}/${post.title}/${post.id}`}/>
 
        </div>
        <div>
-      <div className="flex flex-row justify-between pt-4 bg-white/60"> 
-        <IconBtn
+      <div className="flex flex-row justify-center pt-3 gap-2 bg-white/20"> 
+        {/*<IconBtn
         
-          Icon={props => <FaRegEye {...props} size={15} className="text-gray-600"/>}
+          Icon={props => <FaRegEye {...props}  className="text-gray-600 text-[10px] sm:text-[12px]"/>}
           style={{ marginLeft: 6 }}
         >
-          <p className="text-gray-500">{post._count.views}</p>
-        </IconBtn>
+          <p className="text-gray-500 text-[8px] sm:text-[10px]">{post._count.views}</p>
+        </IconBtn>*/}
+        <div className="">
+          <NotificationToggle initialOn={true} clanName={post.title} onChange={handleToggle} />
+        </div>
         <IconBtn
                   Icon={props => <FaScroll {...props} size={15} className="text-bg-amber-700"/>} //className="text-gray-600"
                   onClick={handleClickDiscussionTab}
                   style={{ marginLeft: 6, color: "rgba(180, 83, 9, 0.5)" }}
                >
-                <p className="text-gray-500 loweercase">{rootDefinitions.length}</p>
-              </IconBtn>
-      
-        <div className="flex flex-col justify-center items-center mr-2 cursor-pointer" onClick={handleClickReviewsTab}>
+                <p className="text-gray-500 loweercase underline text-[10px]">{rootDefinitions.length} notes</p>
+        </IconBtn>
+        {/*<div className="flex flex-col justify-center items-center mr-2 cursor-pointer" onClick={handleClickReviewsTab}>
         <StarRating rating={(sumProperty(rootReviews.filter(review => review.index === null), "rating"))/(rootReviews.filter(review => review.index === null).length)}/>
         <p className="text-[9px] text-gray-600">({rootReviews.filter(review => review.index === null).length} Reviews)</p>
-        </div>
+        </div>*/}
           </div>   
-            <div className=" flex items-center justify-center bg-white/60 h-fit"> {/*boader border-red-500 */}
+            <div className=" flex items-center justify-center bg-white/20 h-fit"> {/*boader border-red-500 */}
             <FormattedParagraph text={post.body} onLineClick={handle_ShowDefinitions_Modal} definitions={rootDefinitions} />
           </div>
-          <div className="flex justify-between text-blue bg-white/60 border"> {/*border-orange-500 */}
+          <div className="flex justify-between text-blue bg-white/20"> {/*border-orange-500 */}
             <div className="flex flex-col">
               <span className="username">
-              <IconBtn 
-              Icon={props => <FaUser {...props} size={16} className="text-amber-900 bg-white/60"/>} 
+              {/*<IconBtn 
+              Icon={props => <FaUser {...props} size={16} className="text-amber-900"/>} 
               style={{ marginBottom: 0 }}
+              onClick={handleOpenUserProfileModal}
               >
-              <p className="text-amber-900"><strong>{post.user.username}</strong></p>
-              </IconBtn> 
+              <p className="text-amber-900 lowercase"><strong>{post.user.username}</strong></p>
+              </IconBtn>*/}
+              <IconBtn
+        
+                Icon={props => <FaEye {...props}  className="text-gray-500/60 text-[14px] sm:text-[14px]"/>}
+                style={{ marginLeft: 6 }}
+              >
+                <p className="text-gray-500/60 text-[8px] sm:text-[10px]">{post._count.views}</p>
+              </IconBtn>
               </span>
-              <span className="text-gray-400 text-[9px] mt-0 ml-1 bg-white/60" >
+              {/*<span className="text-gray-400 text-[9px] mt-0 ml-1 " >
               <strong>{dateFormatter.format(Date.parse(post.createdAt))}</strong>
-              </span>
+              </span>*/}
             </div>
-              <span>
+              {/*<span>
               <div className=" flex items-center">
                <IconBtn
                   Icon={props => <FaRegComment {...props} size={15} className="text-gray-500"/>} //className="text-gray-600"
@@ -850,67 +1154,83 @@ export function Post() {
                 <p className="text-gray-600">{numOfDissCussionComments}</p>
               </IconBtn>
               </div>
-              </span>
+              </span>*/}
             <span>
-            {!(post.user.id === currentUser.id) && (
+            {!((post.user.id === currentUser.id) || ((guestEmail) && guestEmail.guestEmail === post.user.email)) && (
             <>
-       <IconBtn
-          Icon={props => <FaFlag {...props} size={15} className="text-yellow-700"/>}
-          onClick={handleOpenReportModal}
-        >
-          <p className="text-red-700 text-[10px]"></p>
-        </IconBtn>
-        </>
-          )}
-          {post.user.id === currentUser.id && (
-            <>
-              <IconBtn
-                onClick={handleOpenDelete_Modal}            
-                Icon={props => <FaTrash {...props} size={20} className="text-stone-400" />}
-                aria-label="Delete"
-                //color="danger"
-                style={{ marginLeft: 12 }}
-              />
-            </>
-          )}
+            <IconBtn
+                Icon={props => <FaFlag {...props} size={15} className="text-white/50"/>}
+                onClick={handleOpenReportModal}
+              >
+                <p className="text-red-700 text-[10px]"></p>
+              </IconBtn>
+              </>
+                )}
+                {(guestEmail) && (
+                  (post.user.id === currentUser.id || guestEmail.guestEmail === post.user.email) && (
+                    <>
+                      <IconBtn
+                        onClick={handleOpenDelete_Modal}
+                        Icon={props => <FaTrash {...props} size={20} className="text-stone-400" />}
+                        aria-label="Delete"
+                      //color="danger"
+                      style={{ marginLeft: 12 }}
+                    />
+                  </>
+                )
+              )}
           </span>
           </div>
           </div>
-           <div className=" flex flex-col items-center mt-2">           
+           <div className=" flex flex-col items-center h-2 bg-white/20 border-b border-[#9a9393] rounded-lg shadow-md ">           
             </div>
           <div className="boarder"> {/* border-red-500 */}
-            <div className="flex">
+            {/*<div className="flex">
             <h3 className={`font-bold mt-3 mb-1 ml-1 p-1 bg-gray-100 w-[40%]  hover:bg-yellow-100 
                               transition-colors cursor-pointer ${isReviewTabActive ? "bg-yellow-100" : ""}`}
                   onClick={handleClickReviewsTab}> Reviews ({rootReviews.filter(review => review.index === null).length})</h3>           
               <h3 className={`font-bold mt-3 mb-1 ml-1 p-1 bg-gray-100 w-[40%] hover:bg-yellow-100 
                               transition-colors cursor-pointer ${isDiscussionTabActive ? "bg-yellow-100" : ""}`}
                   onClick={handleClickDiscussionTab}> Discussion ({rootComments.filter(comment => comment.index === null).length})</h3>
-            </div>
-            <>
-            {(isReviewTabActive) && (
+            </div>*/}
+            {/*<>
+            {(isUserSignedIn.isUserSignedIn===null || isUserSignedIn.isUserSignedIn===false || 
+              isUserSignedIn.isUserSignedIn===undefined) && (
                 <div className="mt-4 mb-4">
-                <ReviewForm
-                loading={loading}
-                error={error}
-                reviewee={post.user}
-                onSubmit={onReviewCreate}
-                popLoginModal={handleOpenLogInModal}
-                postId={post.id}
-                index={null}
+                <CommentFormGuest
+                  loading={loading1}
+                  error={errorMessage}
+                  reviewee={post.user.username}
+                  onSubmit={onCommentCreate}
+                  popLoginModal={handleOpenLogInModal}
+                  postId={post.id}
+                  index={null}
                 />
                 </div>
               )}
-              </>
-              <>
-            {((rootReviews.filter(review => review.index === null) != null && rootReviews.filter(review => review.index === null).length > 0) && isReviewTabActive) && (
-                <div className="mt-4">
-                <ReviewList reviews={rootReviews.filter(review => review.index === null)} passOpenLogin={handleOpenLogInModal} passOpenReport={handleOpenReportModal} passOpenDelete={handleOpenDelete_Modal}/>
+              {(isUserSignedIn.isUserSignedIn===true) && (
+              <div className="mt-4 mb-4">
+                <CommentForm
+                  loading={loading1}
+                  error={errorMessage}
+                  reviewee={post.user.username}
+                  onSubmit={onCommentCreate}
+                  popLoginModal={handleOpenLogInModal}
+                  postId={post.id}
+                  index={null}
+                />
               </div>
-            )}
+              )}
+              </>*/}
+              <>
+            {/*{((rootComments != null && rootComments.length > 0) && isDiscussionTabActive) && (*/}
+                {/*<div className="mt-4 mb-4">
+                  <CommentList comments={rootComments.filter(comment => comment.index === null)} passOpenLogin={handleOpenLogInModal} passOpenReport={handleOpenReportModal} passOpenDelete={handleOpenDelete_Modal}/>
+                </div>*/}
+            {/*)}*/}
             </>
-            <>
-            {(isDiscussionTabActive) && (
+            {/*<>
+            {(isUserSignedIn.isUserSignedIn===true) && (
               <div className="mt-4 mb-4">
               <CommentForm
               loading={loading1}
@@ -930,9 +1250,10 @@ export function Post() {
                   <CommentList comments={rootComments.filter(comment => comment.index === null)} passOpenLogin={handleOpenLogInModal} passOpenReport={handleOpenReportModal} passOpenDelete={handleOpenDelete_Modal}/>
                 </div>
             )}
-            </>
+            </>*/}
           </div>
           </div>
+          <p>is to bani nbsjjhsd hjakjs jakjjkas askjjksa kzkaskj Zksjaj nsahhj sajhas kkjsjk ksdlklds klsd</p>
     </div>
   )
 }

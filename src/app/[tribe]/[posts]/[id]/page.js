@@ -1,4 +1,5 @@
 import ClanPraiseClient from "./client-clanpraise";
+import SendFeedback from "../../../../components/SendFeedback";
 
 
   export async function generateMetadata({ params }) {
@@ -21,7 +22,9 @@ import ClanPraiseClient from "./client-clanpraise";
 
   export default function ClanPraisePage() {
     return (
+        <div>
         <ClanPraiseClient />
+        </div>
     )
 }
         

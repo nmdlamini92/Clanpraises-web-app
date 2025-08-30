@@ -13,7 +13,7 @@ dotenv.config()
 const maxAge = 3 *24*60*60;   
 
 const createToken = (id) => {                               //creates signed web session id 
-    return jwt.sign({id}, "ligusha", {                      //"ligusha" secret key, make sure is in envir var whn deploying to server
+    return jwt.sign({id}, process.env.COOKIE_SECRET, {                      //process.env.COOKIE_SECRET secret key, make sure is in envir var whn deploying to server
         expiresIn: maxAge,
     });   
 };
@@ -35,14 +35,40 @@ oauth2Client.setCredentials({
 
 export default class AuthController {
 
+  static async checkUsernameAvailability(req, reply) {
+    console.log('now inside CHECK USERNAME AVAILABILITY controller');
+    console.log(req.body);
+
+    const username = req.body.username;
+
+    try {
+     const usernameExists = await prisma.user1.findUnique({
+          where: { username: username},  
+        });
+        console.log(usernameExists);
+
+        if (usernameExists) {
+          return reply.send({ status: false, errors: {username: "username already exists", clan: "", tribe: ""} });
+        }
+        else{
+          return reply.send({ status: true, errors: {username: "", clan: "", tribe: ""} });
+        }
+    } 
+    catch (error) {
+      console.log(error);
+      reply.send({ status: false, errors: {username: "error while checking username availability", clan: "", tribe: ""} });
+    }
+  }
+
+
   static async sendVcode(req, reply) {
 
-    console.log('now inside MVC-server sendVcode controller');
+    console.log('now inside SEND-V-CODE controller');
     console.log(req.body);
 
     const username = req.body.username;
     const email = req.body.email;
-    const password = req.body.password;
+    const password = req.body.password1;
 
   
     const OAuth2 = google.auth.OAuth2;
@@ -63,7 +89,7 @@ export default class AuthController {
         });
 
         if (emailExists) {
-          return reply.send({ status: false, errors: {username: "", email: "email is already registered", password: ""} });
+          return reply.send({ status: false, errors: {email: "email is already registered", password1: "", password2: ""} });
         }
 
         const usernameExists = await prisma.user1.findUnique({
@@ -76,6 +102,7 @@ export default class AuthController {
 
 
         const accessToken = await oauth2Client.getAccessToken();
+        console.log('AccessToken:', accessToken?.token);
 
         const transporter = nodemailer.createTransport({
           service: 'gmail',
@@ -105,7 +132,7 @@ export default class AuthController {
         reply.send({ status: true, message: 'Verification code sent', code: verificationCode, userDet: req.body });
       } catch (error) {
         console.log(error);
-        reply.send({ status: false, errors: {username: "", email: "please enter a valid email", password: ""} });
+        reply.send({ status: false, errors: {email: "please enter a valid email", password1: "", password2: ""} });
       }
 
   }
@@ -121,8 +148,12 @@ static async signup(req, reply) {
         username: req.body.username,
         email: req.body.email,
         password: req.body.password,
+        tribe: req.body.tribe,
+        clan: req.body.clan,
       },
+      //select: { id: true },
     });
+    
     const token = createToken(user1.id);
     console.log(user1.id);
 
@@ -166,7 +197,7 @@ static async signup(req, reply) {
             console.log(token)
 
             reply.setCookie('jwt', token, {withCredentials: true, httpOnly: false, sameSite: 'lax', maxAge: maxAge})
-            .send({ status: true, userName: userExists.username, message: 'signed in successfully'});
+            .send({ status: true, userName: userExists.username, userID: userExists.id, message: 'signed in successfully'});
           }
           reply.send({ status: false, errors: {email: "", password: "Incorrect password"}});
         }
