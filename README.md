@@ -4,26 +4,22 @@ An interactive library/database of clanpraises
 
 ## Get started
 
-1. Go inside server folder 
+Enter server folder then;
 
-  cd server
-
-2. Install dependencies 
+1. Install dependencies 
 
    ```bash
    npm install
    ```
 
-3. Start the server
+2. Start the server
 
    ```bash
    npm start
    ```
-4. Return to root folder
+Return to root folder then;
 
-   cd ..
-
-5. Install dependencies 
+3. Install dependencies 
 
    ```bash
    npm install
