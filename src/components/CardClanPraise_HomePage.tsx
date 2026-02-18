@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { FaEdit, FaHeart, FaRegHeart, FaComment, FaScroll, FaTrash, FaEye, FaRegEye, FaSearch } from "react-icons/fa"
+import { FaEdit, FaHeart, FaMapMarkerAlt, FaComment, FaScroll, FaTrash, FaEye, FaRegEye, FaSearch } from "react-icons/fa"
 import StarRating from './FiveStarRating';
 import { IconBtn } from "./IconBtn"
 import { FaUser } from 'react-icons/fa';
@@ -8,6 +8,9 @@ import { useState} from 'react'
 import { usePost } from "../contexts/PostContext"
 //import { FormattedParagraph } from './FormattedParagraph';
 import FormattedParagraph from './FormattedParagrahOnCard';
+import FormattedPoemOnCard from './FormattedPoemOnCard';
+import FormattedParagraphOnCard from './FormattedParagrahOnCard';
+import { usePathname } from "next/navigation";
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
   dateStyle: "medium"
@@ -16,6 +19,8 @@ const dateFormatter = new Intl.DateTimeFormat(undefined, {
 type CardProps = {
   title: string;
   tribe: string;
+  location: string;
+  tribeSingular: string;
   imageUrl: string;
   description: string;
   createdAt: string;
@@ -33,9 +38,13 @@ type CardProps = {
 
 ;
 //const Card: React.FC<CardProps> = ({ title, imageUrl, description, etc.. }) => {
-export default function Card ({ title, tribe, imageUrl, description, createdAt, username, rating, views, definitions, reviews, comments, onClick, linkUrl }: CardProps) {
+export default function Card ({ title, tribe, location, tribeSingular, imageUrl, description, createdAt, username, rating, views, definitions, reviews, comments, onClick, linkUrl }: CardProps) {
   
-console.log(definitions)
+//console.log(definitions)
+
+//const currentURLpath = usePathname()
+
+//console.log(currentURLpath)
 
   interface RootDefinition {
     // Add properties as needed, e.g.:
@@ -63,7 +72,7 @@ console.log(definitions)
   return (
     <>
     {/*<div className={"card w-[200px] h-[200px] sm:w-[240px] sm:h-[240px] md:w-[260px] md:h-[260px] lg:w-[290px] lg:h-[290px] ${clicked ? 'bg-yellow-100' : 'bg-white'}"}*/}
-    <div className={`border border-[#ccc] rounded-lg shadow-md overflow-hidden m-4 cursor-pointer
+    <div className={`border border-[#ccc] rounded-lg shadow-md overflow-hidden m-4 pt-0.5 cursor-pointer
       transition-transform duration-300 ease-in-out hover:bg-white/30 hover:opacity-75 hover:scale-105
      w-[200px] h-[200px] sm:w-[240px] sm:h-[240px] md:w-[260px] md:h-[260px] lg:w-[290px] lg:h-[290px] ${isTouched ? '' : 'bg-white/20'}`}
     //w-[290px] h-[290px] border border-gray-300 rounded-lg shadow-md overflow-hidden m-4 transition-transform transition-opacity duration-300 ease-in-out cursor-pointer" 
@@ -71,22 +80,31 @@ console.log(definitions)
          onTouchEnd={() => setIsTouched(false)}
          onTouchCancel={() => setIsTouched(false)}
          onClick={() => setIsTouched(true)}>
-     <div className="flex justify-between"> {/*bg-amber-100 border border-[#ccc]*/}
-                   <span className="username">
+     <div className="flex  mb-1"> {/*bg-amber-100 border border-[#ccc]*/}
+                {( tribe === "tinanatelo" &&
+                   <div className="flex justify-start items-start">
                    <IconBtn 
-                   Icon={props => <FaUser {...props} //size={12} 
-                   className="text-[10px] sm:text-xs text-amber-900"/>} 
-                   style={{ marginBottom: 0, marginLeft: 2, marginTop: 2 }}
-                   >
-                   <p className="text-amber-900 text-[9px] sm:text-[11px] lowercase"><strong>{username}</strong></p>
-                   </IconBtn> 
-                   </span>
-                   <span className="text-gray-500/50 text-[9px] sm:text-[10px] mt-2 mr-2" >
-                   <strong>{dateFormatter.format(Date.parse(createdAt))}</strong>
-                   </span>
+                    Icon={props => <FaMapMarkerAlt {...props} //size={15} 
+                    className="text-[7px] sm:text-[8px] text-stone-500/60"/>}
+                    style={{ marginLeft: 6 }}>
+                    <p className="text-[7px] sm:text-[8px] text-stone-500/60 normal-case leading-none">{location}</p>
+                    </IconBtn>
+                   </div>
+                )}
+                {( tribe === "clan-history" &&
+                  <div className="flex justify-center items-center">
+                   <p className="text-[9px] text-stone-500/60 font-medium ml-1 underline">{location}</p>
+                  </div>
+                )}
+                   {/*<span className="text-gray-500/50 text-[9px] sm:text-[10px] mt-2 mr-2" >
+                    <strong>{dateFormatter.format(Date.parse(createdAt))}</strong>
+                   </span>*/}
       </div>
       <div className="flex justify-center items-baseline gap-1">
-        <h2 className="text-[18px] sm:text-[1.5rem] m-0">{title}</h2> <p className='text-[14px] sm:text-[17px] text-stone-700'>({tribe})</p>
+        <h2 className="text-[18px] sm:text-[1.5rem] m-0">{title}</h2> {/*<p className='text-[14px] sm:text-[17px] text-stone-700'>({tribe})</p>*/}
+        {/*{( !(tribeSingular === "") &&
+        <p className='text-[11px] text-gray-600 font-medium'>({tribeSingular})</p>
+        )}*/}
       </div>
       <div className="flex flex-row justify-around mt-1"> 
         <div className="flex flex-row justify-between">
@@ -119,17 +137,24 @@ console.log(definitions)
         <div className='w-[180px] h-[92px] sm:w-[240px] sm:h-[123px] md:w-[240px] md:h-[140px] lg:w-[270px] lg:h-[170px] ml-2'>
       <div className='' >
       {/*<p className="my-2 text-[12px] sm:text-[14px]">{description}</p>*/}
-      <FormattedParagraph text={description}/>
+      {( tribe === "tinanatelo" && (
+      <FormattedPoemOnCard text={description}/>
+      )
+      )}
+      {( tribe === "clan-history" && (
+       <FormattedParagraphOnCard text={description}/>
+      )
+      )}
       </div>
       </div>
       <div className="flex justify-around mt-1.5">
-        <IconBtn
+        {/*<IconBtn
               Icon={props => <FaComment {...props} //size={15} 
               className="text-[9px] sm:text-[10px] text-gray-400"/>}
               style={{ marginLeft: 6 }}
               >
               <p className="text-[9px] sm:text-[10px] text-gray-500">{comments}</p>
-        </IconBtn>
+        </IconBtn>*/}
           </div>
     </div>
     </>

@@ -111,30 +111,32 @@ export function Definition({id, message, user, reviews, createdAt, _count, likeC
     <>
       <div className="comment min-w-[100%] bg-gray-100/60">
         <div className="header">
-          <span className="name">
+          {/*<span className="name">
             <IconBtn
                  Icon={props => <FaScroll {...props} size={13} className="text-bg-amber-700"/>} 
                  style={{ marginLeft: 4, color: "rgba(180, 83, 9, 0.5)" }}
                 >
                 <p className="text-gray-500 lowercase"></p>
             </IconBtn>
-            </span>
+            </span>*/}
             <span>
-              <div className="flex justify-between items-center gap-12 ">
+              {/*<div className="flex justify-between items-center">*/}
                 <IconBtn 
                   Icon={props => <FaUser {...props} size={9} className=""/>} 
-                  style={{ marginBottom: 0, color: "rgba(180, 83, 9, 0.8)" }}
+                  style={{ marginBottom: 0, color: "#78350f" }}  //rgba(180, 83, 9, 0.8)   
                   >
-                  <p className="text-rgba(180, 83, 9, 0.8) lowercase text-[11px]">
+                  <p className="text-amber-900 lowercase text-[11px]">
                   <strong>
                   {user.username.toLowerCase()}
                   </strong></p>
                 </IconBtn>
+            </span>
+            <span>
                 <p className="date text-gray-400 text-[10px] ">
                   <strong>{dateFormatter.format(Date.parse(createdAt))}</strong>
                 </p>
-            </div>
-          </span>
+            </span>
+            {/*</div>*/}
           <span >
             <div className="flex justify-center align-middle items-center">
               {(rootReviews.filter(review => review.definitionId === id).length) === 0 ?(
@@ -169,13 +171,13 @@ export function Definition({id, message, user, reviews, createdAt, _count, likeC
         )}
         <div className="footer">
           <span>
-            <div className="flex flex-row gap-4 justify-between ml-6">
+            <div className="flex flex-row gap-4 justify-between ml-2">
               <IconBtn
                 onClick={onToggleDefinitionLike}
                 disabled={toggleDefinitionLikeFn.loading}
                 Icon={likedByMe ? FaThumbsUp : FaRegThumbsUp}
                 aria-label={likedByMe ? "Unlike" : "Like"}
-                style={{ color: "#78350f" }}
+                style={{ color: "#78350f"}}      //#78350f
               >
                 {likeCount}
               </IconBtn>
@@ -184,7 +186,7 @@ export function Definition({id, message, user, reviews, createdAt, _count, likeC
                 disabled={toggleDefinitionDisLikeFn.loading}
                 Icon={disLikedByMe ? FaThumbsDown : FaRegThumbsDown}
                 aria-label={disLikedByMe ? "UnDisLike" : "DisLike"}
-                style={{ marginLeft: 12, color: "#78350f" }}
+                style={{ color: "#78350f" }}
               >
                 {disLikeCount}
               </IconBtn>
@@ -196,7 +198,8 @@ export function Definition({id, message, user, reviews, createdAt, _count, likeC
                  onClick={handleReviewDef}>
               ({(rootReviews.filter(review => review.definitionId === id).length)} Reviews)
               </p>
-              <button className="bg-orange-300 text-white text-[9px] border-[1.3px] border-solid border-orange-400 p-1 uppercase cursor-pointer rounded-md leading-none"
+              <button className="bg-yellow-400/70 text-white text-[9px] border-[1.3px] border-solid border-[rgba(202,138,4,0.5)] p-1 uppercase cursor-pointer rounded-md leading-none"
+              //style={{ color: "rgba(202, 138, 4, 0.5)" }}
               onClick={handleReviewDef}>REVIEW</button>
               </div>
             </span>

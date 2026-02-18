@@ -1,29 +1,52 @@
 //import PostListClient from "./client-postslists"
 import Header1 from "../../../components/Header1"
 import HeaderSmallScrn from "../../../components/HeaderSmallScrn"
-import SearchBarWithSuggestions from "../../../components/SearchBar"
-import AddClanPraise from "../../../components/AddClanPraise"
-import Card from "../../../components/CardClanPraise"
-//import Card from "../../../components/CardClanPraise_HomePage"
+//import Card from "../../../components/CardClanPraise"
+import Card from "../../../components/CardClanPraise_HomePage"
+import CardHistory from "../../../components/CardHistory"
 import Link from "next/link"
-import SendFeedback from "../../../components/SendFeedback"
-import BeStakeholderUser from "../../../components/BeStakeholderUser"
 import Footer from "../../../components/Footer"
+import FooterMobile from "../../../components/FooterMobile"
 import AddNsearchBar from "../../../components/AddClanNsearchBar"
+import { redirect, notFound } from "next/navigation";
+import { getAllPosts } from "../../../lib/posts"
+
+
+export const revalidate = 60;
+export const dynamicParams = true; 
+
 
   export async function generateMetadata({ params }) {
 
-    const { id } = await params
-    const { tribe } = await params
-    const { posts } = await params
-    console.log(id)
+    const { tribe, posts } = await params
+   
     console.log(tribe)
     console.log(posts)
-    return {
-        title: `${posts} (${tribe})`,
-        keywords: ['clan-praise', 'clanpraise'],
-        //description: 'nkhosi Dlamini, wena wekunene, wena weluhlanga',
-        themecolor: '#000000',
+
+    //const postList = await fetch(`${process.env.API_URL}/posts/${tribe}/${posts}`).then((res) => res.json())
+    const res = await fetch(`${process.env.API_URL}/posts/${tribe}/${posts}`, {
+      next: { revalidate: 60 }
+    });
+
+    if (!res.ok) {
+      notFound();
+    }
+
+    const postList = await res.json();
+
+
+    if (postList.length === 0) {
+    
+        notFound()
+    }
+    else {
+
+      return {
+          title: `${posts} (${tribe})`,
+          keywords: ['clan-praise', 'clanpraise'],
+          //description: 'nkhosi Dlamini, wena wekunene, wena weluhlanga',
+          themecolor: '#000000',
+      }
     }
   }
 
@@ -32,9 +55,25 @@ import AddNsearchBar from "../../../components/AddClanNsearchBar"
     const { tribe } = await params
     const { posts } = await params
 
-    const postList = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/posts/${tribe}/${posts}`).then((res) => res.json())
+    //const postList = await fetch(`${process.env.API_URL}/posts/${tribe}/${posts}`).then((res) => res.json())
+
+    const res = await fetch(`${process.env.API_URL}/posts/${tribe}/${posts}`, {
+      next: { revalidate: 60 }
+    })
+
+    if (!res.ok) {
+      redirect(`/${tribe}`);
+    }
+
+    const postList = await res.json();
+
 
     console.log(postList)
+
+    if (postList.length === 0) {
+    
+        redirect(`/${tribe}`)
+    }
 
 
     const sumAndAverage = (arr, key) => {
@@ -63,15 +102,18 @@ import AddNsearchBar from "../../../components/AddClanNsearchBar"
       <div className="flex flex-col mt-8 flex-grow">
         <AddNsearchBar/>
       <div className="flex flex-col justify-center items-center mt-6">
-      <p className="mt-8 text-sm text-gray-600/90">{postList.length} results for {posts} ({tribe})</p>
+      <p className="mt-8 text-sm text-gray-600/90">{postList.length} results for <strong>{capitalizeFirstLetter(posts)}</strong> clan praise</p>
       <div className="flex flex-wrap justify-center items-center">
         {postList.map((post, index) => (
         <div key={index} className="flex flex-row flex-wrap">
         <Link key={index} href={`/${post.tribe}/${post.title}/${post.id}`}>
+          {/*{(post.tribe === "tinanatelo" &&*/}
           <Card
             title={capitalizeFirstLetter(post.title)}
                 tribe={post.tribe}
+                location={post.location}
                 username={post.user.username}
+                tribeSingular={""}
                 rating={sumAndAverage(post.reviews, "rating")}
                 views={post._count.views}
                 definitions={post._count.definitions}
@@ -81,6 +123,7 @@ import AddNsearchBar from "../../../components/AddClanNsearchBar"
                 createdAt={post.createdAt}
                 linkUrl={`/${post.tribe}/${post.title}/${post.id}`}
           />
+          
         </Link>
       </div>
         ))
@@ -88,20 +131,66 @@ import AddNsearchBar from "../../../components/AddClanNsearchBar"
       </div>
       </div>
       </div>
-      <div className="hidden sm:flex justify-center gap-6 mt-4">
-         {/*<BeStakeholderUser/>*/}
+      {/*<div className="hidden sm:flex justify-center gap-6">
+        
         <SendFeedback/>
-      </div>
-       <div className="sm:hidden mt-4 m-2">
-          {/*<BeStakeholderUser/>*/}
+      </div>*/}
+
+       <div className="hidden md:block mt-8 md:mt-12">
+        <Footer />
        </div>
-       <div className="sm:hidden mt-4 m-2">
-       </div>
-       <div className="mt-8 md:mt-12 lg:mt-8">
-         <Footer/>
+       <div className="md:hidden mt-8 md:mt-12">
+        <FooterMobile />
        </div>
     </div>
 </>
     )
 }
   
+
+export async function generateStaticParams() {
+
+  const allposts = await fetch(`${process.env.API_URL}/posts`).then((res) => res.json())
+
+    //const allposts = getAllPosts()
+
+    console.log(allposts)
+
+    function getUniqueObjectsWithDuplicates(arr, key) {
+      const countMap = {}
+      const firstSeenMap = {}
+
+      for (const obj of arr) {
+        const value = obj[key]
+
+        if (typeof value !== "string") continue
+
+        countMap[value] = (countMap[value] || 0) + 1
+
+        // store first occurrence only
+        if (!firstSeenMap[value]) {
+          firstSeenMap[value] = obj
+        }
+      }
+
+      return Object.keys(countMap)
+        .filter(value => countMap[value] > 1)
+        .map(value => firstSeenMap[value])
+    }
+
+    const similarClans_praises = getUniqueObjectsWithDuplicates(allposts, 'title')
+
+    /*function slugify(text) {
+    return text
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/\|/g, '-')
+      .trim();
+  }*/
+
+  return similarClans_praises.map(post => ({
+    tribe: post.tribe,
+    posts: post.title,
+  }));
+}

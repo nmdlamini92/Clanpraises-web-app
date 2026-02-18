@@ -3,10 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 //import Card from './CardClanPraise_HomePage'; // adjust if path differs
-import Card from './CardClanPraise';
+import Card from './CardClanPraise_HomePage';
 
 
-export default function MostPopularTribePosts({ postList }) {
+export default function MostPopularTribePosts({ postList, tribeSingular }) {
 
   const [isCardClicked, setIsCardClicked] = useState(false);
 
@@ -57,6 +57,8 @@ export default function MostPopularTribePosts({ postList }) {
               <Card
                 title={capitalizeFirstLetter(post.title)}
                 tribe={post.tribe}
+                location={post.location}
+                tribeSingular={""}
                 username={post.user.username}
                 rating={sumAndAverage(post.numbers.reviews, "rating")}
                 views={post.numbers._count.views}

@@ -20,11 +20,13 @@ model Mobcomment {
 
 model User1 {
   id        String               @id @default(uuid())
-  username  String               @unique
+  username  String?               
   tribe     String?
   clan      String?
   email     String               @unique
   password  String?
+  googleId    String?            @unique
+  facebookId  String?            @unique
   createdAt DateTime             @default(now())
   post      Post[]
   likesCP   Like_on_ClanPraise[]
@@ -36,7 +38,8 @@ model User1 {
   likesDef    Like_on_Definition[]
   disLikesRev DisLike_on_Review[]
   disLikeCom  DisLike_on_Comment[]
-  disLikeDef  DisLike_on_Definition[]       
+  disLikeDef  DisLike_on_Definition[]
+  followedPosts Follwings_on_Post[]      
 }
 
 model Tribe {
@@ -54,6 +57,11 @@ model Post {
   tribe_     Tribe?                @relation(fields: [tribeId], references: [id], onDelete: Cascade)
   tribeId   String?               
   body      String
+  bodyEnglish String?
+  bodySiswati String?
+  location  String?
+  related   String?
+  forbidden_foods  String?
   user      User1                @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
   likesCP   Like_on_ClanPraise[]
@@ -61,6 +69,7 @@ model Post {
   reviews   Review[] 
   comments  Comment[]                      
   definitions Definition[]
+  Followers Follwings_on_Post[]
   reports   Report[]
   createdAt DateTime?            @default(now())
 }
@@ -75,6 +84,7 @@ model Review {
   message   String
   rating    Int?
   index     Int?
+  page      Int?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   user      User1     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -96,6 +106,7 @@ model Comment {
   message   String
   rating    Int?
   index     Int?
+  page      Int?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   user      User1     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -117,6 +128,7 @@ model Definition {
   message   String
   rating    Float?
   index     Int
+  page      Int?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   user      User1     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -194,6 +206,15 @@ model Views {
   postId    String
   vieweeId  String
   createdAt DateTime? @default(now())
+}
+
+model Follwings_on_Post {
+  user          User1     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+  post          Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId       String
+
+  @@id([userId, postId])
 }
 
 model Like_on_Definition {

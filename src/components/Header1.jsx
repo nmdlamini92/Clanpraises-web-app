@@ -9,7 +9,7 @@ import SignInComp from "./SignInComp";
 import Validations from "./Validations";
 import { getUsers } from "../services/posts";
 import { ToastContainer, toast } from 'react-toastify';
-import { FaRegUser, FaFeather, FaPenSquare, FaFolderPlus, FaHome } from "react-icons/fa";
+import { FaRegUser, FaUser, FaFeather, FaPenSquare, FaFolderPlus, FaHome } from "react-icons/fa";
 import { IconBtn } from "./IconBtn";
 import Image from "next/image"
 import BantuLogoIcon from "./BantuIcon";
@@ -17,12 +17,18 @@ import Link from "next/link";
 
 
 /*const apiUrl = typeof window !== 'undefined'
-  ? window.env?.NEXT_PUBLIC_SERVER_URL
-  : process.env.NEXT_PUBLIC_SERVER_URL;*/ 
+  ? window.env?.NEXT_PUBLIC_API_URL
+  : process.env.NEXT_PUBLIC_API_URL;*/ 
 
-  const apiUrl = process.env.NEXT_PUBLIC_SERVER_URL
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL
 
 export default function Header1 (){
+
+  const [hydrated, setHydrated] = useState(false);
+  
+    useEffect(() => {
+      setHydrated(true); // runs only after hydration
+    }, []);
 
   const [isUserSignedIn, setIsUserSignedIn] = useState(Boolean);
   const [userName, setUserName] = useState('');
@@ -76,6 +82,7 @@ export default function Header1 (){
             setIsUserSignedIn(true);
             localStorage.setItem('isUserSignedIn', JSON.stringify({isUserSignedIn: true}));
             localStorage.setItem('VipUserId', JSON.stringify({VipUserId: data.data.UserId}));
+            localStorage.setItem('VipUserName', JSON.stringify({VipUserName: data.data.UserName}));
             localStorage.setItem('guestEmail', JSON.stringify({ guestEmail: null }));
             console.log(data.data);
             //setUserID(data.data.UserId);
@@ -176,9 +183,9 @@ export default function Header1 (){
           <div className="modal-backdrop-clear">
           <div className="modal animate-slide-in-top">
           <p>Are you sure you want to log out?</p>
-          <div className="flex gap-4">
+          <div className="flex gap-2">
             <button onClick={handleCloseSignOutModal}>No</button>
-            <button onClick={handleSignOut} className="px-1">Yes</button>
+            <button onClick={handleSignOut} className="px-1 ">Yes</button>
           </div>
           </div>
           </div>
@@ -234,8 +241,8 @@ export default function Header1 (){
                 <div className="modal-backdrop">
                 <div className="modal animate-slide-in-top">
                 <button className="mb-1" onClick={handleClose}>Close</button>
-                <p>ilan.my is an interactive platform for sharing short literature and notes.<br></br><br></br> 
-                  Add Literature and start sharing notes.</p>
+                <p>ilan.my is an interactive platform for short literature and notes.<br></br><br></br> 
+                  </p>
                 </div>
                 </div>
                 )}
@@ -262,7 +269,7 @@ export default function Header1 (){
                 <div className="modal-backdrop">
                 <div className="modal animate-slide-in-top">
                   <button onClick={handleClose}>Close</button>
-                <p>Email: nmdlamini92@gmail.com</p>
+                <p className="mt-1">Email: <strong>nmdlamini92@gmail.com</strong> <br/> Phone: <strong>+268 7669 4612</strong></p>
                 </div>
                 </div>
                 )}
@@ -318,31 +325,44 @@ export default function Header1 (){
         >
          <Link href={`/`}> <p className='text-amber-900 text-[13px]'>Home</p></Link>
         </IconBtn>
-        <p onClick={handleOpenAboutModal} className='text-amber-900 hover:bg-gray-100 text-md cursor-pointer'>ABOUT</p>
-        <p onClick={handleOpenContactModal} className='text-amber-900 hover:bg-gray-100 cursor-pointer'>CONTACT</p>
+        <Link href={`/about`}><p className='text-amber-900 hover:bg-gray-100 text-md cursor-pointer'>ABOUT</p></Link>
+        <Link href={`/contact`}><p className='text-amber-900 hover:bg-gray-100 cursor-pointer'>CONTACT</p></Link>
         </div>
         <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center leading-none">
         <Link href={`/`}>
-          <div className="flex flex-col items-center leading-none cursor-pointer">
-            {/*<Image src="/feather.svg" alt="My Logo" width={30} height={40} 
-                    className="w-[14px] h-[18px] sm:w-[15px] sm:h-[20px] md:w-[25px] md:h-[35px] lg:w-[28px] lg:h-[40px]"/>*/}
-            <h1 className="text-amber-900 leading-none font-hand text-[10px] sm:text-[12px] md:text-[15px] lg:text-[17px]">ILAN</h1>
-          <p className="text-xs text-amber-800/50 font-hand">Interactive Literature And Notes</p>
+          <div className="flex items-center leading-none cursor-pointer">
+            <Image src="/feather.svg" alt="My Logo" width={30} height={40} 
+                    className="w-[14px] h-[18px] sm:w-[15px] sm:h-[20px] md:w-[25px] md:h-[35px] lg:w-[28px] lg:h-[40px]"/>
+            <h1 className="text-amber-900 leading-none font-hand text-[10px] sm:text-[12px] md:text-[15px] lg:text-[17px]">Clan praises</h1>
+            {/*<h1 className="text-amber-900 leading-none font-hand text-[10px] sm:text-[12px] md:text-[15px] lg:text-[17px]">ILAN</h1>
+          <p className="text-xs text-amber-800/50 font-hand">Interactive Literature And Notes</p>*/}
           </div>
         </Link>
         </div>
+      {( hydrated && (
       <div className="flex flex-col items-center">
+        {(!isUserSignedIn && (
         <IconBtn
           Icon={props => <FaRegUser {...props} size={26} className="mb-0 p-0 text-amber-900"/>}
           onClick={handleProfileClick}
         > 
         </IconBtn>
+        )
+        )}
+        {(isUserSignedIn && (
+        <IconBtn
+          Icon={props => <FaUser {...props} size={26} className="mb-0 p-0 text-amber-900"/>}
+          onClick={handleProfileClick}
+        > 
+        </IconBtn>
+        )
+        )}
         <div className="relative p-0">
-        <p onClick={handleProfileClick} className="text-[10px] cursor-pointer">{userName}</p>
+        <p onClick={handleProfileClick} className="text-[10px] cursor-pointer hover:underline">{isUserSignedIn? userName : 'Login'}</p>
         {openProfileMenu && (
           <div>
           {/* Wrapper to group both menu and close button absolutely */}
-          <div className="absolute mt-0 flex items-start z-[102] right-0"> {/**right-0 */}
+          <div className="absolute mt-0 flex items-start z-[102] right-0"> {/**right-0*/}
             {/* Close Button */}
             <button
               onClick={handleCloseProfileMenue}
@@ -362,7 +382,9 @@ export default function Header1 (){
           </div>
           )}
         </div>
-        </div>
+      </div>
+      )
+    )}
     </div>
     </>
     )

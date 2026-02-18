@@ -19,7 +19,12 @@ export async function getUsers() {
 }
 
 export function getPost(id: String) {
-  return makeRequest(`/posts/${id}`)
+  console.log("data sent to /posts/:id api ", id)
+  //console.trace('🔥 getPost CALLED with id:', id)
+  return makeRequest(`/posts/${id}`, {
+   //method: "POST",
+   //data: {id},
+  })
 }
 
 export function toggleLike_onClanPraise(postId: String) {

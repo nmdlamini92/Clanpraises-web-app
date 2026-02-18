@@ -1,10 +1,11 @@
 "use client"
 import React, { useContext, createContext, useEffect, useMemo, useState } from "react"
 //import { useParams } from "react-router-dom"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { useAsync } from "../hooks/useAsync"
 import { getPost } from "../services/posts"
 import { useCookies } from "react-cookie"
+
 
 const Context = React.createContext()
 
@@ -14,6 +15,9 @@ export function usePost() {
 
 export function PostProvider({ children }) {
   console.log(children);
+
+  const router = useRouter();
+
   const [cookie, setCookie] = useCookies();
 
   //const ClanName_TribeName = JSON.parse(localStorage.getItem('selectedClanName&Tribe'));
@@ -26,13 +30,22 @@ export function PostProvider({ children }) {
       }
     }, []);
 
-  const {id} = useParams();
+  //const {id} = useParams();
+  const params = useParams();
+  console.log("PARAMS:", params);
+  const id = params.id
   console.log(id);
 
-  const { loading, error, value: post, isPostLikedByMe} = useAsync(() => getPost(id), [id])
-;
+  const { loading, error, value: post, isPostLikedByMe} = useAsync(() => getPost(id), [id]);
+
   console.log(post);
+  console.log(loading);
   console.log(isPostLikedByMe);
+
+  if ((loading === false) && (post === undefined || post === null) ) {
+    //window.location.href = `/${params.tribe}/${params.posts}`
+    router.push(`/${params.tribe}/${params.posts}`)
+  }
  
   const [comments, setComments] = useState([]);
   const [reviews, setReviews] = useState([]);
@@ -334,7 +347,20 @@ return (
     }}
   >
     {loading ? (
-      <h1>Loading</h1>
+    <>
+      {/*<h1>Loading</h1>*/}
+      <div className="flex justify-center mt-12">
+      <div className="flex flex-col items-center gap-2 w-fit min-w-[200px] max-w-[500px]">
+      <div className={`h-4 w-40 bg-stone-300/70 rounded`}  /> 
+      <div className={`h-4 w-52 bg-stone-300/70 rounded`}  />
+      <div className={`h-4 w-48 bg-stone-300/70 rounded`} />
+      <div className={`h-4 w-60 bg-stone-300/70 rounded`} />
+      <div className={`h-4 w-44 bg-stone-300/70 rounded`}  />
+      <div className={`h-4 w-56 bg-stone-300/70 rounded`}  />
+      <div className={`h-4 w-36 bg-stone-300/70 rounded`} />
+      </div>
+      </div>
+    </>
     ) : error ? (
       <h1 className="error-msg">{error}</h1>
     ) : (
@@ -343,3 +369,4 @@ return (
   </Context.Provider>
 )
 }
+

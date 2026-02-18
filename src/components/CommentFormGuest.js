@@ -32,7 +32,7 @@ export default function CommentFormGuest({loading, error, reviewee, onSubmit, po
               //console.log(values);
               try {
 
-                const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/validateCommentGuestInput`,
+                const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/validateCommentGuestInput`,
                   {...values},{withCredentials: true}
                 );
 

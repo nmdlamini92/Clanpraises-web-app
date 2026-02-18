@@ -3,14 +3,18 @@ import SearchBarWithSuggestions from "../../components/SearchBar"
 import Link from "next/link"
 import AddClanPraise from "../../components/AddClanPraise"
 import HeaderSmallScrn from "../../components/HeaderSmallScrn"
-import Card from "../../components/CardClanPraise"
+import Card from "../../components/CardClanPraise_HomePage"
 //import Card from "../../components/CardClanPraise_HomePage"
 import Footer from "../../components/Footer"
-import SendFeedback from "../../components/SendFeedback"
-import BeStakeholderUser from "../../components/BeStakeholderUser"
-import MarqueeScroller from "../../components/MostPopularAllposts"
-import MostPopularTribePosts from "../../components/MostPopularTribePosts"
+import FooterMobile from "../../components/FooterMobile"
 import AddNsearchBar from "../../components/AddClanNsearchBar"
+import { redirect, notFound } from "next/navigation";
+import { getAllPosts } from "../../lib/posts"
+
+
+export const revalidate = 60;
+export const dynamicParams = true;
+
 
   export async function generateMetadata({ params }) {
 
@@ -22,50 +26,94 @@ import AddNsearchBar from "../../components/AddClanNsearchBar"
       return str.charAt(0).toUpperCase() + str.slice(1);
     }
     
-    const clanNames1 = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/clanNames/${tribe}`).then((res) => res.json())
-    
-    console.log(clanNames1)
+    //const clanNames1 = await fetch(`${process.env.API_URL}/clanNames/${tribe}`).then((res) => res.json())
+    const res = await fetch(`${process.env.API_URL}/clanNames/${tribe}`, {
+      next: { revalidate: 60 }
+    });
 
-    const clanNames = new Set((clanNames1.post).map(obj => obj.title));
-
-    const TribeClanNames = [...clanNames].map(clanName => `${capitalizeFirstLetter(clanName)}`).join(' • ');
-
-    console.log(clanNames);
-
-    if (clanNames1.tribeId.praises_Plural !== 'clanpraises'){
-      
-      return {
-        title: clanNames1.tribeId.praises_Plural,
-        description: TribeClanNames,
-        themecolor: '#000000',
-      }
+    if (!res.ok) {
+      notFound();
     }
 
-    return {
-        title: `${capitalizeFirstLetter(tribe)}-ClanPraises`,
-        description: TribeClanNames,
-        themecolor: '#000000',
+    const clanNames1 = await res.json();
+
+
+    console.log(clanNames1)
+
+    if (clanNames1.length === 0) {
+        notFound()
+     }
+    else {
+
+      const clanNames = new Set((clanNames1.post).map(obj => obj.title));
+
+      const TribeClanNames = [...clanNames].map(clanName => `${capitalizeFirstLetter(clanName)}`).join(' • ');
+
+      console.log(clanNames);
+
+      if (tribe === 'tinanatelo'){
+        
+        return {
+          title: "Tinanatelo TemaSwati (Swati Clan-praises)",
+          keywords: ['clan praise', 'clan history', 'sinanatelo', 'tinanatelo', 'umlandvo',],
+          description: TribeClanNames,
+          themecolor: '#000000',
+        }
+      }
+
+      if (tribe === 'clan-history'){
+        
+        return {
+          title: "Clan-history (Umlandvo wemaSwati)",
+          keywords: ['clan praise', 'clan history', 'sinanatelo', 'tinanatelo', 'umlandvo',],
+          description: TribeClanNames,
+          themecolor: '#000000',
+        }
+      }
+
+      return {
+          title: `${capitalizeFirstLetter(tribe)}`,
+          description: TribeClanNames,
+          themecolor: '#000000',
+      }
     }
   }
 
   export default async function TribePage({params}) {
 
+
     const {tribe} = await params
     console.log(tribe)
     
-    const clanNames1 = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/clanNames/${tribe}`).then((res) => res.json())
+    //const clanNames1 = await fetch(`${process.env.API_URL}/clanNames/${tribe}`).then((res) => res.json())
+    
+    const res = await fetch(`${process.env.API_URL}/clanNames/${tribe}`, {
+      next: { revalidate: 60 }
+    })
+
+    if (!res.ok) {
+      redirect("/");
+    }
+
+    const clanNames1 = await res.json();
+
     console.log(clanNames1)
 
-    const clanNamesPosts = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/${tribe}/mostPopularTribePosts`).then((res) => res.json())
-    console.log(clanNamesPosts)
+     if (clanNames1.length === 0) {
+        redirect("/");
+     }
 
-    const clanNamesPostsPop = clanNamesPosts.slice(0, 5);
-    console.log(clanNamesPostsPop)
+    //const clanNamesPosts = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/${tribe}/mostPopularTribePosts`).then((res) => res.json())
+    //console.log(clanNamesPosts)
+
+    //const clanNamesPostsPop = clanNamesPosts.slice(0, 5);
+    //console.log(clanNamesPostsPop)
+
 
     function removeDuplicates(array, property) {
       const seen = new Set();
       return array.filter(item => {
-        const propValueLower = item[property].toLowerCase();
+        const propValueLower = item[property].toLowerCase().trim();
         if (seen.has(propValueLower)) {
           return false;
         }
@@ -73,6 +121,7 @@ import AddNsearchBar from "../../components/AddClanNsearchBar"
         return true;
       });
     }
+
     const clanNames = removeDuplicates((clanNames1.post), 'title');
 
     console.log(clanNames);
@@ -93,66 +142,31 @@ import AddNsearchBar from "../../components/AddClanNsearchBar"
       return { sum, average };
     }
 
-    if (clanNamesPosts.length > 0 && clanNamesPosts.length < 7) return (
-        <>
-        <div className="flex flex-col min-h-screen">
-        <div className="hidden md:block">
-          <Header1/>
-        </div>
-        <div className="md:hidden">
-          <HeaderSmallScrn/>
-        </div>
-        <div className="flex flex-col items-center mt-8 flex-grow">
-          <AddNsearchBar/>
-          <div className="flex flex-col justify-center items-center mt-8">
-              {(clanNames1.tribeId.praises_Plural !== 'clanpraises' &&
-              <h5 className="text-[20px] sm:text-[27px] md:text-[32px] lg:text-[40px] font-bold text-transparent
-               stroke-black fill-red-500">{capitalizeFirstLetter(clanNames1.tribeId.praises_Plural)}</h5>
-              )}
-              {(clanNames1.tribeId.praises_Plural === 'clanpraises' &&
-              <p className="text-[20px] sm:text-[27px] md:text-[32px] lg:text-[40px] font-bold text-transparent
-               stroke-black fill-red-500">{capitalizeFirstLetter(tribe)}-Clanpraises</p>
-              )}
-              <div className="flex flex-wrap justify-center items-center">
-                {clanNamesPosts.map((post, index) => (
-                <div key={index} className="flex flex-row flex-wrap">
-                <Link key={index} href={`/${post.tribe}/${post.title}/${post.id}`}>
-                  <Card
-                     title={capitalizeFirstLetter(post.title)}
-                      tribe={post.tribe}
-                      username={post.user.username}
-                      rating={sumAndAverage(post.numbers.reviews, "rating")}
-                      views={post.numbers._count.views}
-                      definitions={post.numbers._count.definitions}
-                      reviews={post.numbers.reviews.length}
-                      comments={post.numbers.comments.length}
-                      description={post.body}
-                      createdAt={post.createdAt}
-                      linkUrl={`/${post.tribe}/${post.title}/${post.id}`}
-                  />
-                </Link>
-                </div>
-                ))
-                }
-              </div>
-          </div>
-          <div className="hidden sm:flex justify-center gap-5 mt-6">
-             {/*<BeStakeholderUser/>*/}
-            <SendFeedback/>
-          </div>
-          <div className="sm:hidden mt-6">
-             {/*<BeStakeholderUser/>*/}
-            <div className="mt-6">
-            <SendFeedback/>
-            </div>
-          </div>
-        </div>
-          <div className="mt-6 sm:mt-20 lg:mt-6">
-            <Footer/>
-          </div>
-        </div>
-        </>
-      )
+    /*const groupedClans = clanNames.reduce((acc, clan) => {
+      const firstLetter = clan.title[0].toUpperCase();
+      if (!acc[firstLetter]) acc[firstLetter] = [];
+      acc[firstLetter].push(clan);
+      return acc;
+    }, {});
+
+    const sortedLetters = Object.keys(groupedClans).sort();*/
+
+    const chunkArray = (arr, size = 4) => {
+      const chunks = [];
+      for (let i = 0; i < arr.length; i += size) {
+        chunks.push(arr.slice(i, i + size));
+      }
+      return chunks;
+    };
+
+    // ✅ SORT FIRST (A → Z)
+    const sortedClans = [...clanNames].sort((a, b) =>
+      a.title.localeCompare(b.title)
+    );
+
+    // ✅ THEN CHUNK INTO MAX 3 PER COLUMN
+    const chunkedClans = chunkArray(sortedClans, 4);
+
     
     return (
         <>
@@ -167,59 +181,74 @@ import AddNsearchBar from "../../components/AddClanNsearchBar"
                 <AddNsearchBar/>
                   {/*{(clanNames1.post).length !== 0?<h1 className="mt-10">{capitalizeFirstLetter(tribe)}-ClanPraises ({clanNamesPosts.length})</h1> : ""}*/}
                   {clanNames1.post.length !== 0 && (
-                    clanNames1.tribeId.praises_Plural !== 'clanpraises' ? (
-                      <h5 className="mt-6 text-[20px] sm:text-[27px] md:text-[32px] lg:text-[40px] font-bold text-transparent stroke-black fill-red-500">
-                        {capitalizeFirstLetter(clanNames1.tribeId.praises_Plural)}
+                    tribe === 'tinanatelo' ? (
+                      <h5 className="mt-6 text-[24px] sm:text-[27px] md:text-[32px] lg:text-[35px] font-bold stroke-black text-amber-500/40">  
+                        {capitalizeFirstLetter(tribe)}
                       </h5>
                     ) : (
-                      <p className="mt-6 text-[20px] sm:text-[27px] md:text-[32px] lg:text-[40px] font-bold text-transparent stroke-black fill-red-500">
-                        {capitalizeFirstLetter(tribe)}-Clanpraises
+                      <p className="mt-6 text-[24px] sm:text-[27px] md:text-[32px] lg:text-[35px] font-bold stroke-black text-amber-600/10">
+                        {capitalizeFirstLetter(tribe)}
                       </p>
                     )
                   )}
 
-                  <div>
-                    {(clanNames1.post).length !== 0?<h1 className="mt-4 text-sm text-gray-500">Most recent engagement</h1> : ""}
-                  <MostPopularTribePosts postList={clanNamesPostsPop} tribe={tribe} />
-                  </div>
-                  <div className="flex justify-center mt-12">
-                    {(clanNames1.post).length == 0? <h1>0 results for {capitalizeFirstLetter(tribe)} clan</h1>: <h1 className="text-stone-600 text-[12px] md:text-[20px] lg:pr-60 lg:mr-8 underline font-serif">
-                    Tinanatelo literature collection {capitalizeFirstLetter(tribe)} ({(clanNames1.post).length})</h1>}
-                  </div>
-                  <div className="flex">
-                    <div className="flex justify-center flex-wrap gap-1 mt-4 lg:mt-5 sm:gap-3 md:gap-4 lg:gap-6 max-w-2xl mx-auto p-1"> {/**bg-white/60 bg-amber-600/10*/}
-                      {clanNames.map((clanNameObj, index) => (     
-                      <Link key={index} href={(((clanNames1.post).filter(item => item.title === clanNameObj.title).length) > 1)?
-                        `/${tribe}/${clanNameObj.title}`: `/${tribe}/${clanNameObj.title}/${clanNameObj.id}`}
-                        className={`font-serif text-md md:text-lg mr-4 hover:underline ${colors[index % colors.length]}`}>
-                        • {capitalizeFirstLetter(clanNameObj.title)}</Link>
+                  {/*<div className="flex justify-center mt-12">
+                    {(clanNames1.post).length === 0? <h1>0 results for {capitalizeFirstLetter(tribe)} clan</h1>: <h1 className="text-stone-600 text-[16px] md:text-[20px] lg:pr-60 lg:mr-8 underline font-serif">
+                    {capitalizeFirstLetter(clanNames1.tribeId.praises_Plural)} ({clanNames.length})</h1>}
+                  </div>*/}
+                  <div className="flex-col justify-center items-center">
+                    <div className="flex justify-center flex-wrap mt-4 lg:mt-5 lg:max-w-2xl md:max-w-2xl max-auto p-1">
+                      {chunkedClans.map((chunk, colIndex) => (
+                        <div key={colIndex} className="flex flex-col items-center min-w-[135px] p-1.5">
+                          {chunk.map((clan, index) => (
+                            <Link
+                              key={index}
+                              href={
+                                clanNames1.post.filter(item => item.title.trim() === clan.title.trim()).length > 1
+                                  ? `/${tribe}/${clan.title}`
+                                  : `/${tribe}/${clan.title}/${clan.id}`
+                              }
+                              className={`font-serif text-md md:text-lg hover:underline ${colors[(colIndex + index) % colors.length]}`}
+                            >
+                              {capitalizeFirstLetter(clan.title)}
+                            </Link>
+                          ))}
+                        </div>
                       ))}
                     </div>
-                    <div className="hidden lg:block">
-                      <div className="flex flex-col items-center">
-                        <div className="mb-6">
-                          {/*<BeStakeholderUser/>*/}
-                        </div>
-                        <SendFeedback/>
-                      </div>
-                    </div>
-                  </div>
-                    <div className="sm:hidden mt-4">
-                      {/*<BeStakeholderUser/>*/}
-                    </div>
-                    <div className="sm:hidden mt-4">
-                      <SendFeedback/>
-                    </div>
-                  <div className="hidden sm:flex lg:hidden gap-5 mt-6 md:mt-8 lg:mt-6">
-                     {/*<BeStakeholderUser/>*/}
-                    <SendFeedback/>
-                  </div>
-              </div>
-              <div className="mt-8 md:mt-12 lg:mt-8">
-                <Footer/>
-              </div>
+                  </div> 
+                </div>
+                <div className="hidden md:block mt-8 md:mt-12">
+                  <Footer />
+                </div>
+                <div className="md:hidden mt-8 md:mt-12">
+                  <FooterMobile />
+                </div>
               </div>
               </>
         
     )
+}
+
+
+export async function generateStaticParams() {
+
+  const allposts = await fetch(`${process.env.API_URL}/posts`).then((res) => res.json())
+
+  //const allposts = getAllPosts()
+
+    console.log(allposts)
+
+    const removeDuplicatesBy = (array, key) => {
+      return [...new Map(array.map(item => [item[key], item])).values()];
+    };
+
+
+    const tribePages_clansList = removeDuplicatesBy(allposts, 'tribe')
+
+    console.log(tribePages_clansList)
+
+  return tribePages_clansList.map(post => ({
+    tribe: post.tribe,
+  }));
 }

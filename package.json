@@ -1,6 +1,7 @@
 {
   "type": "module",
   "dependencies": {
+    "@tailwindcss/typography": "^0.5.16",
     "axios": "^0.27.2",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.1",
@@ -8,10 +9,12 @@
     "jwt-decode": "^4.0.0",
     "next": "^15.2.1",
     "process": "^0.11.10",
+    "quill-render": "^1.0.5",
     "react": "18.3.1",
     "react-cookie": "^7.2.0",
     "react-dom": "18.3.1",
     "react-icons": "^4.4.0",
+    "react-quill": "^2.0.0",
     "react-select": "^5.8.3",
     "react-toastify": "^10.0.6",
     "stream-browserify": "^3.0.0",

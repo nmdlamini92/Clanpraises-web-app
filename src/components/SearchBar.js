@@ -11,6 +11,13 @@ const SearchBarWithSuggestions = ({setButtonBorderBold, setButtonBorderNormal}) 
 
   //const navigate = useNavigate(); 
 
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    setHydrated(true); // runs only after hydration
+  }, []);
+
+
   const inputRef = useRef(null);
 
   const [fetchedPosts, setFetchedPosts] = useState();
@@ -160,10 +167,10 @@ const SearchBarWithSuggestions = ({setButtonBorderBold, setButtonBorderNormal}) 
     const uiqueArrLowerCase1 = uniqueArr.map(obj => ({...obj, title: obj.title.toLowerCase(), tribe: obj.tribe.toLowerCase()}));
     console.log(uiqueArrLowerCase1);
 
-    const DropDown1 = ArrayList.map(item => `${item.title} (${item.tribe})`.toLowerCase());
+    const DropDown1 = ArrayList.map(item => `${item.title} (${item.tribe_.praises_Singular})`.toLowerCase());
 
     ArrayList.forEach(post => {
-        post.suggestion = `${post.title} (${post.tribe})`.toLowerCase();
+        post.suggestion = `${post.title} (${post.tribe_.praises_Singular})`.toLowerCase();
     });
     console.log(ArrayList);
     setArrayListWithSugg(ArrayList);
@@ -177,7 +184,7 @@ const SearchBarWithSuggestions = ({setButtonBorderBold, setButtonBorderNormal}) 
     setStoredSugg(DropDown);
 
     uniqueArr.forEach(post => {
-      post.suggestion = `${post.title} (${post.tribe})`.toLowerCase();
+      post.suggestion = `${post.title} (${post.tribe_.praises_Singular})`.toLowerCase();
     });
     console.log(uniqueArr);
 
@@ -318,17 +325,19 @@ const SearchBarWithSuggestions = ({setButtonBorderBold, setButtonBorderNormal}) 
       {isSearchTelescopeVisible && (
         <FaSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500/50" />
       )}
+      {hydrated && (
       <input
         type="text"
-        placeholder="Search Literature..."
+        placeholder="search Clan name..."
         value={searchTerm}
         onChange={handleInputChange}
         onFocus={handleFocus}
-        style={{backgroundColor: 'rgb(255 255 255 / 0.8)', border: '1.5px solid #fbbf24' }}
-        className="w-full p-2 md:p-2 lg:p-3 rounded border-1.5 border-amber-400 box-border bg-[#fff7ed]"
+        style={{backgroundColor: 'rgb(255 255 255 / 0.8)', border: '1.5px solid #ca8a04' }} //#fbbf24
+        className="w-full p-2 md:p-2 lg:p-3 rounded border-1.5 border-amber-400 box-border bg-[#eae2d9]"
         //onBlur={console.log('clicked')}
         //style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ccc',boxSizing: 'border-box',}}
       />
+      )}
       {suggestions.length > 0 && (
         <ul
           style={{listStyleType: 'none', padding: '0', margin: '5px 0', border: '1px solid #ca8a04', borderRadius: '4px',

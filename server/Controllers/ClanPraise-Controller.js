@@ -11,11 +11,12 @@ export default class ClanPraiseController {
 
     static async addClanPraise(req, reply) {
         console.log("now inside ADD CLAN-PRAISE server");
+        console.log(req.body.siswatiVersion)
         console.log(req.body)
 
-        const clanName = req.body.clanName;
-        const tribe = req.body.tribe;
-        const clanPraise = req.body.clanPraise;
+        //const clanName = req.body.clanName;
+        //const tribe = req.body.tribe;
+        //const clanPraise = req.body.clanPraise;
         console.log(req.body.tribeId);
 
         const token = req.cookies.jwt;
@@ -45,6 +46,11 @@ export default class ClanPraiseController {
               tribe: req.body.tribe,
               tribe_: { connect: {id: newTribe.id} },
               body: req.body.clanPraise,
+              bodyEnglish: req.body.englishVersion,
+              bodySiswati: req.body.siswatiVersion,
+              location: req.body.location,
+              related: req.body.related,
+              forbidden_foods: req.body.forbidden_foods,
               user: {
                 connect: { id: decodedToken.id } // Use connect to link the post to a user by id
               },
@@ -64,6 +70,11 @@ export default class ClanPraiseController {
               tribe: req.body.tribe,
               tribe_: { connect: {id: req.body.tribeId} },
               body: req.body.clanPraise,
+              bodyEnglish: req.body.englishVersion,
+              bodySiswati: req.body.siswatiVersion,
+              location: req.body.location,
+              related: req.body.related,
+              forbidden_foods: req.body.forbidden_foods,
               user: {
                 connect: { id: decodedToken.id } // Use connect to link the post to a user by id
               },
@@ -113,7 +124,6 @@ export default class ClanPraiseController {
               }
               else {
     
-
                 const userID = await prisma.user1.findUnique({
                   where: { email: req.body.yourEmail },
                   select: { id: true }
@@ -257,5 +267,30 @@ export default class ClanPraiseController {
         reply.send({status: false, errors: error});
     }
   }
+
+
+    static async followPost(req, reply) {
+
+    const verifyEmailDeliverability = async (email) => {
+                const apiKey = process.env.MAILBOXLAYER_API_KEY;
+                const res = await fetch(`https://apilayer.net/api/check?access_key=${apiKey}&email=${email}&smtp=1&format=1`);
+                const data = await res.json();
+                return data;
+              };
+    
+              const emailValidation = await verifyEmailDeliverability(req.body.email);
+    
+              if (!emailValidation.smtp_check || !emailValidation.mx_found) {
+                return reply.send({
+                  status: false,
+                  errors: {
+                    email: "please enter a valid email",
+                    //yourName: "",
+                  }
+                });
+              }
+
+  }
+
 }
 //module.exports = ClanPraiseController;

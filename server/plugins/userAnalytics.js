@@ -1,4 +1,6 @@
 // plugins/userAnalytics.js
+
+/*
 import fp from 'fastify-plugin';
 import geoip from 'geoip-lite';
 
@@ -41,3 +43,4 @@ export default fp(async function userAnalyticsPlugin(fastify) {
     }
   });
 });
+*/

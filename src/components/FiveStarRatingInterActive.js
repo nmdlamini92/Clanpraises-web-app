@@ -44,7 +44,7 @@ const StarRatingInterActive = forwardRef(({ totalStars = 5, onRate}, ref ) => {
       </div>
 
       {/* Tooltip Label */}
-      <div className="text-sm font-semibold text-gray-400 ml-1 h-5">
+      <div className="text-xs font-semibold text-gray-400 ml-1 h-5">
         {hover ? labels[hover - 1] : labels[rating - 1] || ""}
       </div>
     </div>

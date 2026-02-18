@@ -1,16 +1,21 @@
 'use client'
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import Validations from "./Validations";
 
 export default function SendFeedback() {
 
+   const [isUserSignedIn, setIsUserSignedIn] = useState({isUserSignedIn: null});
+       
+           useEffect(() => {
+               // This code runs only in the browser
+               const signInStatus = JSON.parse(localStorage.getItem('isUserSignedIn'));
+               setIsUserSignedIn(signInStatus);
+             }, []);
+
     const [showUserProfileModal, setShowUserProfileModal] = useState(false);
     //const [feedback, setFeedback] = useState("");
-
-    
-    
     
                 const handleOpenUserProfileModal = () => {
                   setShowUserProfileModal(true);
@@ -25,39 +30,36 @@ export default function SendFeedback() {
                   const [values, setvalues] = useState({message: "", yourName: "", yourEmail: ""});
                   const [errors, setErrors] = useState({message: "", yourName: "", yourEmail: ""});
 
-                  //const [feedback, setFeedback] = useState("");
-                  //const [error, setError] = useState("");
+                
                   const [isLoading, setIsLoading] = useState(false);
 
                   const handlesSubmitFeedback = async (e) => {
                     e.preventDefault();
-                    setIsLoading(true)
+                    setIsLoading(true);
+                      
+                      console.log(values.message)
 
-                    const validationError = Validations.addCommentGuestValidations(values);
-                    
-                                if (validationError){
-                                  console.log(validationError)
-                                  setErrors(validationError);
-                                  setIsLoading(false);
-                                }
-                                else{
-                                  setErrors({message:"", yourName:"", yourEmail:""});
+                      const validationError = Validations.sendFeedbackGuestlidations(values);
+
+                      if (isUserSignedIn.isUserSignedIn===null || isUserSignedIn.isUserSignedIn===false || isUserSignedIn.isUserSignedIn===undefined) { 
+
+                            if (validationError) {
+                              setErrors(validationError);
+                              setIsLoading(false);
+                            }
+                            else {
+                              setErrors({message:"", yourName:"", yourEmail:""});
                                   //console.log(values);
                                   try {
                     
-                                    const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/validateCommentGuestInput`,
-                                      {...values},{withCredentials: true}
-                                    );
-                    
+                                      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/checkEmailValidity`,
+                                        {...values},{withCredentials: true}
+                                      );
+                      
                                     console.log(response)
                     
                                     if (response.data.status===false) {
-                                      //console.log(response);
-                    
-                                      if (!(response.data.existingName === undefined)){
-                                        setvalues({ ...values, ['yourName']: response.data.existingName })
-                                      }
-                                      console.log("values:", values);
+                                     
                                       setErrors(response.data.errors);
                                       setIsLoading(false);
                     
@@ -67,7 +69,7 @@ export default function SendFeedback() {
                                       //console.log(response);
                     
                                       try {
-                                        const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/feedback`,
+                                        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/feedback`,
                                             {...values},{withCredentials: true}
                                           );
                                           console.log(response);
@@ -87,39 +89,48 @@ export default function SendFeedback() {
                                         console.error("Error while sending feeback:", error);
                                       }
                                     }
-                          
+    
                                   }
                                   catch (error) {
                                     console.log(error);
                                     setIsLoading(false);
                                   }
-                                }
-                    
-                    
-                    /*if (feedback === "") {
-                      setError("Please enter your feedback");
-                    }
-                    else {
-                      setError("");
-                      try {
-                        const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/feedback`,
-                            {feedback},{withCredentials: true}
-                          );
-                          console.log(response);
-                  
-                          if (response.data.isFeedbackSent) {
-                            //toast.success("Feedback sent successfully");
-                            alert("Thank you for your feedback")
-                            handleCloseUserProfileModal();
+                            }
+                        }
+                        else{
+
+                          if (!values.message || values.message.trim() === ""){
+                            setErrors({ ...errors, message: "*required" });
+                            setIsLoading(false);
                           }
                           else {
-                            console.log(response.data);
-                          }
-                      } 
-                      catch (error) {
-                        console.error("Error while sending feeback:", error);
-                      }
-                  };*/
+
+                              setErrors({message:"", yourName:"", yourEmail:""});
+                              //console.log(values);
+
+                              try {
+                                        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/feedback`,
+                                            {...values},{withCredentials: true}
+                                          );
+                                          console.log(response);
+                                  
+                                          if (response.data.isFeedbackSent) {
+                                            //toast.success("Feedback sent successfully");
+                                            setIsLoading(false)
+                                            alert("Thank you for your feedback")
+                                            handleCloseUserProfileModal();
+                                          }
+                                          else {
+                                            console.log(response.data);
+                                            setIsLoading(false)
+                                            setErrors({ ...errors, ['message']: "server error" })
+                                          }
+                                      } 
+                                      catch (error) {
+                                        console.error("Error while sending feeback:", error);
+                                      }
+                                    }
+                              }
                     }          
                   return(
                     <>
@@ -151,22 +162,24 @@ export default function SendFeedback() {
                         </div>
                         <div className="error-msg text-xs">{errors.message}</div>
                         <div className="flex my-2 gap-2 w-[60%]">
-                          <div className="flex-col gap-2">
+                          {/*<div className="flex-col gap-2">
                           <input className="w-full border rounded border-amber-400" name="yourName" placeholder=" name"  //value={values.clanName || ""}  
                             onChange={(e) => setvalues({ ...values, [e.target.name]: e.target.value })}
                             //onFocus={handleFocus_ClanName}
                             value={values.yourName}
                           />
                           {<p className="error-msg text-xs">{errors.yourName}</p>}
-                          </div>
-                          <div className="flex-col gap-2">
-                          <input className="w-full border rounded border-amber-400" name="yourEmail" placeholder=" email"  //value={values.clanName || ""}  
-                            onChange={(e) => setvalues({ ...values, [e.target.name]: e.target.value })}
-                            //onFocus={handleFocus_ClanName}
-                            value={values.yourEmail}
-                          />
-                          {<p className="error-msg text-xs">{errors.yourEmail}</p>}
-                          </div>
+                          </div>*/}
+                          {(isUserSignedIn.isUserSignedIn===null || isUserSignedIn.isUserSignedIn===false || isUserSignedIn.isUserSignedIn===undefined) && (
+                            <div className="flex-col gap-2">
+                            <input className="w-full border rounded border-amber-400" name="yourEmail" placeholder=" your email"  //value={values.clanName || ""}  
+                              onChange={(e) => setvalues({ ...values, [e.target.name]: e.target.value })}
+                              //onFocus={handleFocus_ClanName}
+                              value={values.yourEmail}
+                            />
+                            {<p className="error-msg text-xs">{errors.yourEmail}</p>}
+                            </div>
+                          )}
                         </div>
                         </div>
                         </form>

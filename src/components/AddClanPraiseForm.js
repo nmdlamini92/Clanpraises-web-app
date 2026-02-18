@@ -8,9 +8,9 @@ import { getTribes, getClanNames } from "../services/posts";
 import { useAsync} from "../hooks/useAsync";
 
 /*const apiUrl = typeof window !== 'undefined'
-  ? window.env?.NEXT_PUBLIC_SERVER_URL
-  : process.env.NEXT_PUBLIC_SERVER_URL;*/
-const apiUrl = process.env.NEXT_PUBLIC_SERVER_URL
+  ? window.env?.NEXT_PUBLIC_API_URL
+  : process.env.NEXT_PUBLIC_API_URL;*/
+const apiUrl = process.env.NEXT_PUBLIC_API_URL
 
 
 export default function AddClanPraiseForm() {
@@ -38,9 +38,12 @@ export default function AddClanPraiseForm() {
       const [values, setvalues] = useState({clanName:"", tribe:"", clanPraise:""});
       const [errors, setErrors] = useState({clanName:"", tribe:"", clanPraise:""});
 
+      const [values2, setvalues2] = useState({location:"", related:"", forbidden_foods:"", englishVersion: "", siswatiVersion:""});
+
       const handleFocus_ClanName = () => {
 
         const dropdownClanNames = [...new Set(ClanNamesList.map(clanName => clanName.title.toLowerCase()))]
+        //const dropdownClanNames = [...new Set(ClanNamesList.map(clanName => clanName.title.toLowerCase()))]
 
         setClanNameListDropdown(dropdownClanNames)
 
@@ -61,7 +64,8 @@ export default function AddClanPraiseForm() {
       }
 
       const handleFocus_Tribe = () => {
-        const dropdownTribe = [...new Set(TribesList.map(tribe => tribe.tribe.toLowerCase()))]
+        //const dropdownTribe = [...new Set(TribesList.map(tribe => tribe.tribe.toLowerCase()))]
+        const dropdownTribe = [...new Set(TribesList.map(tribe => tribe.tribe))]
 
         setTribeListDropdown(dropdownTribe)
         setTribesArray(TribesList)
@@ -113,6 +117,7 @@ export default function AddClanPraiseForm() {
 
         if (input.length > 0) {
           const filteredSuggestions = clanNameListDropdown.filter(item => item.toLowerCase().includes(input.toLowerCase()));
+          //const filteredSuggestions = clanNameListDropdown.filter(item => item.includes(input));
           setSuggestionsClanName(filteredSuggestions)
         } else {
           setSuggestionsClanName([]);
@@ -130,7 +135,8 @@ export default function AddClanPraiseForm() {
         setQueryTribe(input);
 
         if (input.length > 0) {
-          const filteredSuggestions = tribeListDropdown.filter(item => item.toLowerCase().includes(input.toLowerCase()));
+          //const filteredSuggestions = tribeListDropdown.filter(item => item.toLowerCase().includes(input.toLowerCase()));
+          const filteredSuggestions = tribeListDropdown.filter(item => item.includes(input));
           setSuggestionsTribe(filteredSuggestions)
         } else {
           setSuggestionsTribe([]);
@@ -179,7 +185,7 @@ export default function AddClanPraiseForm() {
           console.log(values);
           try {
               const response = await axios.post(`${apiUrl}/addclanpraise`,
-                {...values, tribeId: tribeId},{withCredentials: true}
+                {...values, ...values2, tribeId: tribeId},{withCredentials: true}
               );
       
               if (response.data.status) {
@@ -276,6 +282,26 @@ export default function AddClanPraiseForm() {
                     onChange={(e) => setvalues({ ...values, [e.target.name]: e.target.value })}
                   />
                   {errors.clanPraise && (<span className="error-msg text-xs">{errors.clanPraise}</span>)}
+                  <textarea className="ClanPraiseInput mt-1 border rounded border-amber-500" name="englishVersion" placeholder="englishVersion..." value={values2.englishVersion}  
+                    onChange={(e) => setvalues2({ ...values2, [e.target.name]: e.target.value })}
+                  />
+                  <textarea className="ClanPraiseInput mt-1 border rounded border-amber-500" name="siswatiVersion" placeholder="SiswatiVersion..." value={values2.siswatiVersion}  
+                    onChange={(e) => setvalues2({ ...values2, [e.target.name]: e.target.value })}
+                  />
+                </div>
+                <div className="flex flex-col gap-2 mt-2">
+                  <input className="w-full border rounded border-amber-500" name="location" placeholder="Location"        //value={values.tribe || ""}  
+                    onChange={(e) => setvalues2({ ...values2, [e.target.name]: e.target.value })}
+                    value={values2.location}
+                  />
+                  <input className="w-full border rounded border-amber-500" name="related" placeholder="Related"        //value={values.tribe || ""}  
+                    onChange={(e) => setvalues2({ ...values2, [e.target.name]: e.target.value })}
+                    value={values2.related}
+                  />
+                  <input className="w-full border rounded border-amber-500" name="forbidden_foods" placeholder="Forbidden-foods"        //value={values.tribe || ""}  
+                    onChange={(e) => setvalues2({ ...values2, [e.target.name]: e.target.value })}
+                    value={values2.forbidden_foods}
+                  />
                 </div>
                 <button className={`mt-1 p-1 px-2  border-black ${isLoading ? "bg-amber-200" : " bg-amber-400"}`} 
                   type='submit'>{isLoading ? "Loading..." : "Add Literature"}</button>

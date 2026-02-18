@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const env = {
-  NEXT_PUBLIC_SERVER_URL: process.env.NEXT_PUBLIC_SERVER_URL || '',
+  NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || '',
   HOST: process.env.HOST || '',
 };
 

@@ -52,16 +52,16 @@ export default function Card ({ title, imageUrl, description, createdAt, usernam
          >
      <div className="flex justify-between">
                    <span className="username">
-                   <IconBtn 
+                   {/*<IconBtn 
                    Icon={props => <FaUser {...props} //size={12} 
                    className="text-[10px] sm:text-xs text-amber-900"/>} 
                    style={{ marginBottom: 0, marginLeft: 2, marginTop: 2 }}
                    >
                    <p className="text-amber-900 text-[10px] sm:text-xs lowercase"><strong>{username}</strong></p>
-                   </IconBtn> 
+                   </IconBtn>*/}
                    </span>
                    <span className="text-gray-500/50 text-[8px] sm:text-[10px] mt-2 mr-2" >
-                   <strong>{dateFormatter.format(Date.parse(createdAt))}</strong>
+                   {/*<strong>{dateFormatter.format(Date.parse(createdAt))}</strong>*/}
                    </span>
                  </div>
       <div className="flex justify-center items-baseline gap-1">
@@ -95,13 +95,13 @@ export default function Card ({ title, imageUrl, description, createdAt, usernam
       </div>
       </div>
       <div className="flex justify-around">
-        <IconBtn
+        {/*<IconBtn
               Icon={props => <FaComment {...props} //size={15} 
               className="text-[9px] sm:text-[10px] text-gray-400"/>}
               style={{ marginLeft: 6 }}
               >
               <p className="text-[9px] sm:text-[10px] text-gray-500">{comments}</p>
-        </IconBtn>
+        </IconBtn>*/}
         {/*<IconBtn
               Icon={props => <FaScroll {...props} //size={15} 
               className="text-[10px] sm:text-xs text-amber-700/30"/>}

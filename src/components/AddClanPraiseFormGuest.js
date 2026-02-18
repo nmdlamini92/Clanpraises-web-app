@@ -8,9 +8,9 @@ import { getTribes, getClanNames } from "../services/posts";
 import { useAsync} from "../hooks/useAsync";
 
 /*const apiUrl = typeof window !== 'undefined'
-  ? window.env?.NEXT_PUBLIC_SERVER_URL
-  : process.env.NEXT_PUBLIC_SERVER_URL;*/
-const apiUrl = process.env.NEXT_PUBLIC_SERVER_URL
+  ? window.env?.NEXT_PUBLIC_API_URL
+  : process.env.NEXT_PUBLIC_API_URL;*/
+const apiUrl = process.env.NEXT_PUBLIC_API_URL
 
 
 export default function AddClanPraiseFormGuest() {

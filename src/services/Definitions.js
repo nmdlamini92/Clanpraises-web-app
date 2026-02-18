@@ -7,10 +7,10 @@ export function getVipUserId({ cookies}) {
   })
 }
 
-export function createDefinition({ postId, message, rating, index, yourName, yourEmail }) {
+export function createDefinition({ postId, message, rating, index, page, yourName, yourEmail }) {
   return makeRequest(`posts/${postId}/definitions`, {
     method: "POST",
-    data: { message, rating, index, yourName, yourEmail },
+    data: { message, rating, index, page, yourName, yourEmail },
   })
 }
 

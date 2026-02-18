@@ -10,22 +10,34 @@ import { DefinitionList } from "./DefinitionList"
 import HighlightableTex33 from "./HighlightableTex33"
 import {React, useState, useEffect, useRef} from "react"
 import { IconBtn } from "./IconBtn"
-import { FaTrash, FaShareAlt, FaRegComment, FaRegEye, FaFlag, FaUser, FaScroll, FaStar, FaComment, FaChartBar, FaPoll, FaChartLine, FaEye } from "react-icons/fa"
+import { FaTrash, FaShareAlt, FaMapMarkerAlt, FaFlag, FaUser, FaScroll, FaStar, FaComment, FaChartBar, FaPoll, FaChartLine, FaEye } from "react-icons/fa"
 //import { useCookies } from "react-cookie"
 import axios from "axios"
 import SignUpComp from "./SignUpComp"
 import SignInComp from "./SignInComp"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'
-import FormattedParagraph from "./FormattedParagraph";
+import FormattedPoem from "./FormattedPoem";
+import FormattedParagraphs from "./FormattedParagraphs";
 import StarRating from "./FiveStarRating"
 import FacebookShareButton from "./ShareOnFacebook"
+import ShareButton from "./Sharebutton"
+import ShareClanPraise from "./ShareClanPraise"
 import Validations from "./Validations"
 import StarRatingInterActive from "./FiveStarRatingInterActive"
 import { createComment, deleteComment, createCommentOnDef} from "../services/Comments"
 import { CommentList } from "./CommentList"
 import { CommentForm } from "./CommentForm"
 import NotificationToggle from "./EmailNotificationsButton"
+import Card from "./CardClanPraise_HomePage"
+import Link from "next/link"
+import FormattedParagraphsUnclickable from "./FormattedParagraphsUnclickable"
+import WhatsAppShareButton from "./ShareOnWhatsApp"
+import TwitterShareButton from "./ShareOnTwitter"
+import { useParams } from "next/navigation"
+import { useRouter } from "next/navigation";
+
+
 
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
@@ -34,14 +46,21 @@ const dateFormatter = new Intl.DateTimeFormat(undefined, {
 
 
 export function Post() {
+
     console.log('you clicked this clan praise');
     console.log(window.location.href);
+
+    //const params = useParams();
+    //console.log("PARAMS:", params);
+
+    //const router = useRouter();
 
     const childRef = useRef()
 
     const { post, rootReviews = [], rootComments = [], rootDefinitions = [], createLocalReview, deleteLocalReview, createLocalComment, deleteLocalComment, createLocalDefinition, updateLocalDefinition, deleteLocalDefinition} = usePost()
     console.log(post);
     console.log(post.definitions);
+
     
     console.log(rootComments) 
     console.log(rootDefinitions);
@@ -82,7 +101,7 @@ export function Post() {
 
         const viewpost = async () => {
           try{
-            const  data  = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/posts/:id/viewpost`,
+            const  data  = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/posts/${postId}/viewpost`,
               {postId},
               { withCredentials: true }
             );
@@ -201,7 +220,7 @@ export function Post() {
             })
           }
           try {
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/delete_ClanPraise`,
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/delete_ClanPraise`,
                 {post},{withCredentials: true}
               );
               console.log(response);
@@ -258,7 +277,7 @@ export function Post() {
       const ReportModal = ({ show, handleClose, children }) => {
 
         const [errors11, setErrors11] = useState("");
-        const [comment, setComment] = useState();
+        const [comment, setComment] = useState("");
         const [isWhyReportlVisible, setIsWhyReportVisible] = useState(false);
         const [selectedOption, setSelectedOption] = useState("");
 
@@ -282,8 +301,8 @@ export function Post() {
             e.preventDefault();
             console.log(selectedOption);
           
-            if(!selectedOption){
-                setErrors11("reason for report required");
+            if((selectedOption === 'other') && (errors11 === "" || comment === "")){
+                setErrors11("*required*");
             }
             else{
               setErrors11("");
@@ -330,11 +349,19 @@ export function Post() {
           </select>
             {isWhyReportlVisible && 
               <>
-              <p className= 'error-msg text-sm'>please specify reason</p>
-              <input type="text" className="border border-amber-500 w-fit"/> {/*onChange={(e) => setComment(e.target.value)}*/}
-              </>}
+              <p className= 'error-msg text-sm'>please specify reason {errors11}</p>
+              <input 
+              type="text" className="border border-amber-500 w-fit" 
+              value={comment} 
+              onChange={(e) => setComment(e.target.value)}
+              />
+              </>
+            }
+            {(selectedOption && (
             <button onClick={handleSendReport} className="mt-1 border border-black w-fit">Send Report</button>
-            {errors11 && <span className= 'error-msg'> {errors11} </span>}
+            )
+            )}
+            {/*{errors11 && <span className= 'error-msg'> {errors11} </span>}*/}
           </div>
           </div>
           </div>
@@ -450,6 +477,7 @@ export function Post() {
       const [currentNumOfDefReviews, setCurrentNumOfDefReviews] = useState();
       //const [definitionReviews, setDefinitionReviews] = useState([]);
       const [selectedLineIndex, setSelectedLineIndex] = useState();
+      const [selectedPageIndex, setSelectedPageIndex] = useState();
       const [line_nd_index, setLine_nd_index] = useState();
       const [showDefinitions_Modal, setShowDefinitions_Modal] = useState(false);
 
@@ -457,6 +485,10 @@ export function Post() {
 
         console.log(selectedLine);
         setSelectedLineIndex(selectedLine.index);
+
+        //if (!(selectedLine.pageIndex)) {
+          setSelectedPageIndex(selectedLine.pageIndex)
+        //}
         setLine_nd_index(selectedLine);
        
         setShowDefinitions_Modal(true);
@@ -514,64 +546,10 @@ export function Post() {
 
           if (isUserSignedIn.isUserSignedIn===false){   //isUserSignedIn.isUserSignedIn===false
             
-            const validationError = Validations.addCommentGuestValidations(valuesNote);
-            
-            if (validationError){
-              console.log(validationError)
-              setErrorsNote(validationError);
-              setLoadingNote(false);
-            }
-            else{
-              setErrorsNote({message:"", yourName:"", yourEmail:""});
-              //console.log(values);
-              try {
-
-                const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/validateCommentGuestInput`,
-                  {...valuesNote},{withCredentials: true}
-                );
-
-                console.log(response)
-
-                if (response.data.status===false) {
-                  //console.log(response);
-
-                  if (!(response.data.existingName === undefined)){
-                    setValuesNote({ ...valuesNote, ['yourName']: response.data.existingName })
-                  }
-
-                  console.log("values:", valuesNote);
-                  setErrorsNote(response.data.errors);
-                  setLoadingNote(false);
-                }
-                      
-                if (response.data.status===true) {
-                  //console.log(response);
-                  try{
-                      return createDefinitionFn({ postId: post.id, message: valuesNote.message, index: selectedLineIndex, rating: 0, 
-                         yourEmail: valuesNote.yourEmail })
-                        .then(response => {
-                          createLocalDefinition(response);
-                          setDefinitionsArray([response, ...definitionsArray])
-                        })
-                        .catch(error => {console.error("Error creating definition:", error);
-                          //setErrorDef(error)
-                          setErrorDef(error)
-                        })
-                  }
-                  catch(error){
-                    console.log(error);
-                    setErrorDef(error)
-                  } 
-                }
-              }
-              catch(error) {
-                console.log(error)
-                setErrorDef(error)
-              }
-            }
+           handleOpenLogInModal()
           }
           else{
-            if (valuesNote.message ==="" && isUserSignedIn === true) {
+            if (valuesNote.message.trim() ==="" && isUserSignedIn.isUserSignedIn === true) {
               //setErrorNote("*required");
               setErrorsNote({ ...valuesNote, ['message']: "*required" })
               console.log('ya')
@@ -579,7 +557,7 @@ export function Post() {
             else{
               setErrorsNote({ ...valuesNote, ['message']: "" });
               try{
-                return createDefinitionFn({ postId: post.id, message: valuesNote.message, index: selectedLineIndex, rating: 0 })
+                return createDefinitionFn({ postId: post.id, message: valuesNote.message, index: selectedLineIndex, page: selectedPageIndex, rating: 0 })
                 .then(response => {
                 createLocalDefinition(response);
                 setDefinitionsArray([response, ...definitionsArray])
@@ -611,15 +589,30 @@ export function Post() {
           setShowDefCommentsModal(true)
         }
 
+        const handleOnFocus = (e) => {
+          e.target.nextSibling.style.display = "none";
+
+          if (isUserSignedIn.isUserSignedIn===false){   //isUserSignedIn.isUserSignedIn===false
+            setTimeout(() => {
+              handleOpenLogInModal();
+            }, 1000); 
+          } 
+          
+        }
+
+        //console.log(line_nd_index.line.trim().split(/\s+/).filter(Boolean).length)
+
         return(
           <>
           {show && (               // min-w-[300px] max-w-[90vw] min-h-[200px]
           <div className="fixed inset-0 z-[999] bg-black bg-opacity-50 flex items-center justify-center ">
-          <div className="relative w-[95%] md:w-[45%] lg:w-[35%] max-h-[60%] overflow-y-auto p-4 pt-2 rounded-lg shadow-lg" 
+          <div className="relative w-[95%] sm:w-[60%] md:w-[45%] lg:w-[35%] max-h-[60%] overflow-y-auto p-4 pt-2 rounded-lg shadow-lg" 
                 style={{ backgroundColor: "rgba(205, 187, 167)" }}>
           <button onClick={handleCloseDefinitions_Modal} className="p-1 mb-2"
             style={{ backgroundColor: "rgba(214, 131, 108)" }}>Close</button>
-          <p className="font-bold mt-2 mb-3 text-amber-900 bg-yellow-50 w-fit text-md"> "{line_nd_index.line}"</p>
+          <p className="font-bold mt-2 mb-3 whitespace-pre-wrap text-amber-900 bg-yellow-50 w-fit"
+             style={{ fontSize: post.tribe === "history"? "11px" : "14px" }}>
+            "{line_nd_index.line}"</p>
           <div className= "p-2 pb-0.5 bg-gray-100/60 rounded-md md:max-w-[90%] lg:max-w-[76%]">  {/*bg-amber-50/50*/}
           <form onSubmit={onDefinitioncreate}>  
             <div className="flex flex-col">
@@ -627,7 +620,7 @@ export function Post() {
             <div className="relative">
               <textarea
                 className="message-input w-full border-[1.3px] border-yellow-400 bg-gray-50"
-                onFocus={(e) => (e.target.nextSibling.style.display = "none")}
+                onFocus={(e) => handleOnFocus(e)}
                 onBlur={(e) => {if (!e.target.value) e.target.nextSibling.style.display = "block";}}
                 name="message"
                 value={valuesNote.message}
@@ -635,37 +628,27 @@ export function Post() {
               />
               <div className="absolute left-2 top-2 text-gray-400 pointer-events-none text-sm">
                 {/*faka lwati ngale'sisho... <br></br>*/}
-                Add context...
+                {(((line_nd_index.line.replace(/,/g, "").trim().split(/\s+/).filter(Boolean).length > 1) && (post.tribe !== "clan-history"))  && (
+                  <p className="text-gray-400">Add meaning/context...</p>
+                )
+                )}
+                {(((line_nd_index.line.replace(/,/g, "").trim().split(/\s+/).filter(Boolean).length === 1) && (post.tribe !== "clan-history"))   && (
+                  <p className="text-gray-400">Add context...</p>
+                )
+                )}
+                {((post.tribe === "history")   && (
+                  <p className="text-gray-400"></p>
+                )
+                )}
               </div>
             </div>
-              <button className="bg-yellow-400 border-[1.3px] border-solid border-yellow-400/80 text-sm" type="submit" disabled={loading}>
+              <button className="bg-amber-300/60 border-[1.3px] border-solid border-yellow-400/80 text-sm" type="submit" disabled={loading}>
               {loadingNote ? "Loading" : <p className="text-sm">add <br></br> note</p>}
               </button>
             </div>
-            <p className="text-[11px] text-lime-700 w-fit leading-none">*use {capitalizeFirstLetter(post.tribe)} lang preferably*</p>
+            {/*<p className="text-[11px] text-lime-700 w-fit leading-none">*bhala ngesiSwati nawukhonile*</p>*/}
               <div className="text-red-500 w-fit text-xs mt-1">{errorsNote.message}</div>
           <div className="flex w-[75%] mt-1.5 mb-1.5">
-          {(isUserSignedIn.isUserSignedIn===null || isUserSignedIn.isUserSignedIn===false || 
-              isUserSignedIn.isUserSignedIn===undefined) && (
-            <div className="flex gap-2 w-fit">
-                  <div className="flex-col w-fit">
-                  <input className="w-full border-[1.3px] rounded border-amber-400 text-sm" name="yourName" placeholder="name"  //value={values.clanName || ""}  
-                    onChange={(e) => setValuesNote({ ...valuesNote, [e.target.name]: e.target.value })}
-                    //onFocus={handleFocus_ClanName}
-                    value={valuesNote.yourName}
-                  />
-                  {<p className="text-xs text-red-600">{errorsNote.yourName}</p>}
-                  </div>
-                  <div className="flex-col w-fit">
-                  <input className="w-full border-[1.3px] rounded border-amber-400 text-sm" name="yourEmail" placeholder="email"  //value={values.clanName || ""}  
-                    onChange={(e) => setValuesNote({ ...valuesNote, [e.target.name]: e.target.value })}
-                    //onFocus={handleFocus_ClanName}
-                    value={valuesNote.yourEmail}
-                  />
-                  {<p className="text-xs text-red-500">{errorsNote.yourEmail}</p>}
-                  </div>
-        </div>
-          )}
           </div>       
           </div>
           </form>
@@ -673,14 +656,15 @@ export function Post() {
            <p>{errorDef}</p>
             <div className="boarder boarder-red-500">
               
-            <h3 className="font-bold mt-3 mb-1 ml-1">Notes ({rootDefinitions.filter(definition => definition.index === selectedLineIndex).length})</h3>
+            <h3 className="font-bold mt-3 mb-1 ml-1">Notes ({rootDefinitions.filter(definition => definition.index ===  selectedLineIndex && definition.page === selectedPageIndex).length})</h3>
               {((rootDefinitions.filter(definition => definition.index === selectedLineIndex).length==0) && (false)) &&  //(currentUser.id==null))
               (<div className="text-xs flex text-stone-400 ml-1">get notified when new note is added <p onClick={handleOpenLogInModal} className="text-blue-500 ml-1 underline cursor-pointer">Sign-Up</p></div>)}
               <>
               
               {rootDefinitions.filter(definition => definition.index === selectedLineIndex) != null && rootDefinitions.filter(definition => definition.index === selectedLineIndex).length > 0 && (
                   <div className="mt-4">
-                    <DefinitionList definitions={rootDefinitions.filter(definition => definition.index === selectedLineIndex)} passDefReviews={handleReviewDef} passOpenDefComments={handleOpenDefCommentsModal} passOpenLogin={handleOpenLogInModal} passOpenReport={handleOpenReportModal} passOpenDelete={handleOpenDelete_Modal}/>
+                    <DefinitionList definitions={rootDefinitions.filter(definition => definition.index === selectedLineIndex && definition.page === selectedPageIndex)} 
+                    passDefReviews={handleReviewDef} passOpenDefComments={handleOpenDefCommentsModal} passOpenLogin={handleOpenLogInModal} passOpenReport={handleOpenReportModal} passOpenDelete={handleOpenDelete_Modal}/>
                   </div>
                 )}
               </>
@@ -713,10 +697,7 @@ export function Post() {
               const [errorsReview, setErrorsReview] = useState({errorRating: "", errorMessage: "", errorName: "", errorEmail: "", message: ""});
               const [errorReview, setErrorReview] = useState('');
              
-
-              const [yourName, setYourName] = useState("");
-              const [yourEmail, setYourEmail] = useState("");
-              const [errors, setErrors] = useState('');
+              const labelsRating = ["ukhe eceleni", "akunetisi", "kuya ngakhona", "kuyamukeleka", "ushaye esicongweni"]   
 
               console.log(currentDefRating)
               console.log(currentNumOfDefReviews)
@@ -735,64 +716,9 @@ export function Post() {
                 const isUserSignedIn = JSON.parse(localStorage.getItem('isUserSignedIn'));
                 console.log(isUserSignedIn.isUserSignedIn);
 
-                if (isUserSignedIn.isUserSignedIn===false){   //isUserSignedIn.isUserSignedIn===false
+                if (isUserSignedIn.isUserSignedIn===false || isUserSignedIn.isUserSignedIn===undefined || isUserSignedIn.isUserSignedIn===null){   //isUserSignedIn.isUserSignedIn===false
 
-                  const validationError = Validations.addReviewValidations(valuesReview);
-                  console.log(validationError);
-
-                  if (Object.keys(validationError).length > 0){
-                    console.log(validationError)
-                    setErrorsReview(validationError);
-                    setValuesReview({ ...valuesReview, ['message']: validationError.message })
-                    setLoadingReview(false);
-                  }
-                  else{
-                    setErrorsReview({errorRating: "", errorMessage: "", errorName: "", errorEmail: "", message: ""});
-                    //console.log(values);
-                    try {
-
-                      const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/validateCommentGuestInput`,
-                        {...valuesReview},{withCredentials: true}
-                      );
-
-                      console.log(response)
-
-                      if (response.data.status===false) {
-                        //console.log(response);
-
-                        if (!(response.data.existingName === undefined)){
-                          setValuesReview({ ...valuesReview, ['yourName']: response.data.existingName })
-                        }
-
-                        console.log("values:", valuesReview);
-                        setErrorsReview({errorName: response.data.errors.yourName, errorEmail: response.data.errors.yourEmail, 
-                          errorMessage: response.data.errors.message, existingName: response.data.existingName});
-                        setLoadingReview(false);
-                      }
-                            
-                      if (response.data.status===true) {
-                        //console.log(response);
-                        try{
-                            return createReviewDefinitionFn({ message: valuesReview.message, rating: valuesReview.rating, index: line_nd_index.index, parentId: null, 
-                              definitionId: definitionId, postId: post.id, newDefRating: ((currentDefRating + valuesReview.rating)/(currentNumOfDefReviews + 1)),
-                              yourEmail: valuesReview.yourEmail, yourName: valuesReview.yourName })
-                          .then(response => {
-                            createLocalReview(response);
-                            updateLocalDefinition({id: definitionId, rating: (currentDefRating + valuesReview.rating)/(currentNumOfDefReviews + 1)})  
-                        })
-                        .catch(error => {console.error("Error creating Def-review:", error);})
-                        }
-                        catch(error){
-                          console.log(error);
-                          setErrorReview(error)
-                        } 
-                      }
-                    }
-                    catch(error) {
-                      console.log(error)
-                      setErrorReview(error)
-                    }
-                  }
+                  handleOpenLogInModal()
                 }
                 else{
                   if (rootDefinitions.filter(definition => definition.id === definitionId)[0].user.id === VipUserID.VipUserId) {
@@ -804,6 +730,8 @@ export function Post() {
                     //const validationError = Validations.addReviewValidations({message: DefReview, rating: rating, author: post.user.username});
                     const validationError = Validations.addReviewValidations(valuesReview);
                     console.log(validationError);
+
+                    if ((validationError.errorRating) || (validationError.errorMessage)) {
                     setErrorsReview(validationError)
                     setLoadingReview(false);
                     //setErrorDefReview(validationError.errorComment);
@@ -830,13 +758,24 @@ export function Post() {
                     }
                   }
                 }
+              }
 
-                }
+            }
 
               const handleRating = (rate) => {
                 setValuesReview({...valuesReview, ['rating']: rate});
                 console.log("User rated:", rate);
               };
+
+              const handleOnFocus = (e) => {
+                //e.target.nextSibling.style.display = "none";
+
+                if (isUserSignedIn.isUserSignedIn===false){   //isUserSignedIn.isUserSignedIn===false
+                  setTimeout(() => {
+                    handleOpenLogInModal();
+                  }, 1000); 
+                }
+              } 
       
               return(
                 <>
@@ -860,6 +799,7 @@ export function Post() {
                         <textarea
                             autoFocus={false} //${rootDefinitions.filter(definition => definition.id === definitionId)[0].user.username}
                             placeholder={`review...`}
+                            onFocus={(e) => handleOnFocus(e)}
                             value={valuesReview.message}
                             name="message"
                             onChange={e => setValuesReview({...valuesReview, [e.target.name]:e.target.value})}
@@ -871,11 +811,11 @@ export function Post() {
                             {loadingReview ? "Loading" : "Review"}
                           </button>
                         </div>
-                        <div className="error-msg text-xs ml1">{errorsReview.errorMessage}</div>
+                        <div className="error-msg text-xs ml1">{errorsReview.errorMessage}{errorDefReview}</div>
                       </form>
                   </div>
                   <div className="flex w-[75%] mt-1 mb-1.5">
-                  {(isUserSignedIn.isUserSignedIn===null || isUserSignedIn.isUserSignedIn===false || 
+                  {/*{(isUserSignedIn.isUserSignedIn===null || isUserSignedIn.isUserSignedIn===false || 
                       isUserSignedIn.isUserSignedIn===undefined) && (
                     <div className="flex gap-2 w-fit">
                           <div className="flex-col">
@@ -895,7 +835,7 @@ export function Post() {
                           {<p className="error-msg text-xs">{errorsReview.errorEmail}</p>}
                           </div>
                     </div>
-                  )}
+                  )}*/}
                   </div>   
                   </div>
                   <p>{errorReview}</p>
@@ -1059,8 +999,48 @@ export function Post() {
       console.log("Notifications enabled:", enabled);
     };
 
+    const [showHint, setShowHint] = useState(false);   // controls DOM presence
+    const [visible, setVisible] = useState(false);     // controls opacity
+
+    const handleScrollClick = () => {
+      // Run your existing FaScroll click logic
+      //handleClickOnFaScroll();
+
+      // Show the hint modal
+      setShowHint(true);
+      setVisible(true);
+
+      // Start fade immediately
+      setTimeout(() => setVisible(false), 0);
+
+      // Remove from DOM after fade completes
+      setTimeout(() => setShowHint(false), 5000);
+    };
+
+    
+
+    //const pagesArray = post.bodyEnglish.split(/(?=^.*?page\s+\d+.*\n\s*draft of .*? by .*? PATRICKS, Museum, )/m)
+    //console.log(pagesArray)
+
+    const [historyTextlanguage, setHistoryTextLanguage] = useState(post.bodyEnglish)
+
+    
+    const handleChangeLanguage = (event) => {  
+
+      if (event.target.value === "Swati") {
+        setHistoryTextLanguage(post.bodySiswati)
+      }
+      if (event.target.value === "English") {
+        setHistoryTextLanguage(post.bodyEnglish)
+      }
+
+    }
+    
   return (
-    <div className="flex flex-col justify-center items-center">
+    <>
+    {/*<div className="flex flex-col justify-center items-center">*/}
+    <div className="text-left max-w-2xl mx-auto">
+      {/*<div className="flex flex-col justify-center items-center">*/}
       <ToastContainer/>
       <Definitions_Modal show={showDefinitions_Modal} handleClose={handleCloseDefinitions_Modal}  line_nd_index={line_nd_index} ></Definitions_Modal>
       <ReviewDef_Modal show={showReviewDefModal} handleClose={handleCloseReviewDefModal}></ReviewDef_Modal> 
@@ -1068,192 +1048,209 @@ export function Post() {
       <LogInModal show={showLogInModal} handleClose={handleCloseLogInModal} isSignUpCompVisible={isSignUpCompVisible} setIsSignUpCompVisible={setIsSignUpCompVisible} isSignInCompVisible={isSignInCompVisible} setIsSignInCompVisible={setIsSignInCompVisible} setShowLogInModal={setShowLogInModal}></LogInModal>
       <ReportModal show={showReportModal} handleClose={handleCloseReportModal}> </ReportModal>
       <DeletePost_Modal show={show_DeletePost_Modal} handleClose={handleCloseDelete_Modal}> </DeletePost_Modal>
-      <UserProfile_Modal></UserProfile_Modal> 
-      {/*<p className="text-xs mb-1 text-stone-500">subscribe to {capitalizeFirstLetter(post.title)} to get notified about added notes (meaning/context)</p>*/}
-      <div className="sm:px-1 md:px-0 w-[100%] md:min-w-[50%] md:max-w-[50%] lg:min-w-[40%] lg:max-w-[40%] border-t border-[#ccc] rounded-lg shadow-md"> 
-      <div className="flex justify-between bg-white/20">
-                         <span className="username">
-                         <IconBtn 
-                         Icon={props => <FaUser {...props} //size={12} 
-                         className="text-[10px] sm:text-xs text-amber-900"/>} 
-                         style={{ marginBottom: 0, marginLeft: 2, marginTop: 2 }}
-                         >
-                         <p className="text-amber-900 text-[10px] sm:text-xs lowercase"><strong>{post.user.username}</strong></p>
-                         </IconBtn> 
-                         </span>
-                         <span className="text-gray-500/50 text-[8px] sm:text-[10px] mt-2 mr-2" >
-                         <strong>{dateFormatter.format(Date.parse(post.createdAt))}</strong>
-                         </span>
-            </div>
-      <div className="flex flex-row justify-center bg-white/20"> 
-       <h1 className='text-stone-600 text-2xl font-bold lg:text-[30px]'>{capitalizeFirstLetter(post.title)}</h1>
-       <IconBtn
-          Icon={props => <FaShareAlt {...props} size={15} className="text-gray-400"/>}
-          style={{ marginLeft: 4}}
-        >
-        </IconBtn>
-        <FacebookShareButton  text={post.body} url={`https://clanpraises.com/${post.tribe}/${post.title}/${post.id}`}/>
-
-       </div>
-       <div>
-      <div className="flex flex-row justify-center pt-3 gap-2 bg-white/20"> 
-        {/*<IconBtn
+      <UserProfile_Modal></UserProfile_Modal>
+      <div className="">
         
-          Icon={props => <FaRegEye {...props}  className="text-gray-600 text-[10px] sm:text-[12px]"/>}
-          style={{ marginLeft: 6 }}
-        >
-          <p className="text-gray-500 text-[8px] sm:text-[10px]">{post._count.views}</p>
-        </IconBtn>*/}
-        <div className="">
-          <NotificationToggle initialOn={true} clanName={post.title} onChange={handleToggle} />
-        </div>
-        <IconBtn
-                  Icon={props => <FaScroll {...props} size={15} className="text-bg-amber-700"/>} //className="text-gray-600"
-                  onClick={handleClickDiscussionTab}
-                  style={{ marginLeft: 6, color: "rgba(180, 83, 9, 0.5)" }}
-               >
-                <p className="text-gray-500 loweercase underline text-[10px]">{rootDefinitions.length} notes</p>
-        </IconBtn>
-        {/*<div className="flex flex-col justify-center items-center mr-2 cursor-pointer" onClick={handleClickReviewsTab}>
-        <StarRating rating={(sumProperty(rootReviews.filter(review => review.index === null), "rating"))/(rootReviews.filter(review => review.index === null).length)}/>
-        <p className="text-[9px] text-gray-600">({rootReviews.filter(review => review.index === null).length} Reviews)</p>
-        </div>*/}
-          </div>   
-            <div className=" flex items-center justify-center bg-white/20 h-fit"> {/*boader border-red-500 */}
-            <FormattedParagraph text={post.body} onLineClick={handle_ShowDefinitions_Modal} definitions={rootDefinitions} />
-          </div>
-          <div className="flex justify-between text-blue bg-white/20"> {/*border-orange-500 */}
-            <div className="flex flex-col">
-              <span className="username">
-              {/*<IconBtn 
-              Icon={props => <FaUser {...props} size={16} className="text-amber-900"/>} 
-              style={{ marginBottom: 0 }}
-              onClick={handleOpenUserProfileModal}
-              >
-              <p className="text-amber-900 lowercase"><strong>{post.user.username}</strong></p>
-              </IconBtn>*/}
-              <IconBtn
-        
-                Icon={props => <FaEye {...props}  className="text-gray-500/60 text-[14px] sm:text-[14px]"/>}
-                style={{ marginLeft: 6 }}
-              >
-                <p className="text-gray-500/60 text-[8px] sm:text-[10px]">{post._count.views}</p>
-              </IconBtn>
-              </span>
-              {/*<span className="text-gray-400 text-[9px] mt-0 ml-1 " >
-              <strong>{dateFormatter.format(Date.parse(post.createdAt))}</strong>
-              </span>*/}
-            </div>
-              {/*<span>
-              <div className=" flex items-center">
-               <IconBtn
-                  Icon={props => <FaRegComment {...props} size={15} className="text-gray-500"/>} //className="text-gray-600"
-                  onClick={handleClickDiscussionTab}
-                  style={{ marginLeft: 6 }}
-               >
-                <p className="text-gray-600">{numOfDissCussionComments}</p>
-              </IconBtn>
-              </div>
-              </span>*/}
-            <span>
-            {!((post.user.id === currentUser.id) || ((guestEmail) && guestEmail.guestEmail === post.user.email)) && (
-            <>
-            <IconBtn
-                Icon={props => <FaFlag {...props} size={15} className="text-white/50"/>}
-                onClick={handleOpenReportModal}
-              >
-                <p className="text-red-700 text-[10px]"></p>
-              </IconBtn>
-              </>
-                )}
-                {(guestEmail) && (
-                  (post.user.id === currentUser.id || guestEmail.guestEmail === post.user.email) && (
-                    <>
-                      <IconBtn
-                        onClick={handleOpenDelete_Modal}
-                        Icon={props => <FaTrash {...props} size={20} className="text-stone-400" />}
-                        aria-label="Delete"
-                      //color="danger"
-                      style={{ marginLeft: 12 }}
-                    />
-                  </>
-                )
-              )}
-          </span>
-          </div>
-          </div>
-           <div className=" flex flex-col items-center h-2 bg-white/20 border-b border-[#9a9393] rounded-lg shadow-md ">           
-            </div>
-          <div className="boarder"> {/* border-red-500 */}
-            {/*<div className="flex">
-            <h3 className={`font-bold mt-3 mb-1 ml-1 p-1 bg-gray-100 w-[40%]  hover:bg-yellow-100 
-                              transition-colors cursor-pointer ${isReviewTabActive ? "bg-yellow-100" : ""}`}
-                  onClick={handleClickReviewsTab}> Reviews ({rootReviews.filter(review => review.index === null).length})</h3>           
-              <h3 className={`font-bold mt-3 mb-1 ml-1 p-1 bg-gray-100 w-[40%] hover:bg-yellow-100 
-                              transition-colors cursor-pointer ${isDiscussionTabActive ? "bg-yellow-100" : ""}`}
-                  onClick={handleClickDiscussionTab}> Discussion ({rootComments.filter(comment => comment.index === null).length})</h3>
-            </div>*/}
-            {/*<>
-            {(isUserSignedIn.isUserSignedIn===null || isUserSignedIn.isUserSignedIn===false || 
-              isUserSignedIn.isUserSignedIn===undefined) && (
-                <div className="mt-4 mb-4">
-                <CommentFormGuest
-                  loading={loading1}
-                  error={errorMessage}
-                  reviewee={post.user.username}
-                  onSubmit={onCommentCreate}
-                  popLoginModal={handleOpenLogInModal}
-                  postId={post.id}
-                  index={null}
-                />
-                </div>
-              )}
-              {(isUserSignedIn.isUserSignedIn===true) && (
-              <div className="mt-4 mb-4">
-                <CommentForm
-                  loading={loading1}
-                  error={errorMessage}
-                  reviewee={post.user.username}
-                  onSubmit={onCommentCreate}
-                  popLoginModal={handleOpenLogInModal}
-                  postId={post.id}
-                  index={null}
-                />
-              </div>
-              )}
-              </>*/}
               <>
-            {/*{((rootComments != null && rootComments.length > 0) && isDiscussionTabActive) && (*/}
-                {/*<div className="mt-4 mb-4">
-                  <CommentList comments={rootComments.filter(comment => comment.index === null)} passOpenLogin={handleOpenLogInModal} passOpenReport={handleOpenReportModal} passOpenDelete={handleOpenDelete_Modal}/>
-                </div>*/}
-            {/*)}*/}
-            </>
-            {/*<>
-            {(isUserSignedIn.isUserSignedIn===true) && (
-              <div className="mt-4 mb-4">
-              <CommentForm
-              loading={loading1}
-              error={errorMessage}
-              reviewee={post.user.username}
-              onSubmit={onCommentCreate}
-              popLoginModal={handleOpenLogInModal}
-              postId={post.id}
-              index={null}
-              />
-              </div>
-            )}
-            </>
-            <>
-            {((rootComments != null && rootComments.length > 0) && isDiscussionTabActive) && (
-                <div className="mt-4 mb-4">
-                  <CommentList comments={rootComments.filter(comment => comment.index === null)} passOpenLogin={handleOpenLogInModal} passOpenReport={handleOpenReportModal} passOpenDelete={handleOpenDelete_Modal}/>
+              <div>
+                <h1 className="mt-8 text-sm text-gray-600 font-medium ml-1">Clan praise</h1>
+                <div className="flex justify-end gap-1 mr-0.5">
+                  <FaShareAlt size={18} className="text-gray-500/30 mt-1"/>
+                  <FacebookShareButton text={post.body} url={`https://clanpraises.com/${post.tribe.trim()}/${post.title.trim()}/${post.id}`}></FacebookShareButton>
+                  <WhatsAppShareButton text={post.body} url={`https://clanpraises.com/${post.tribe.trim()}/${post.title.trim()}/${post.id}`}></WhatsAppShareButton>
+                  <TwitterShareButton text={post.body} url={`https://clanpraises.com/${post.tribe.trim()}/${post.title.trim()}/${post.id}`}></TwitterShareButton>
+                  {/*<ShareButton text={post.title} url={`https://192.168.1.172:3000/tinanatelo/${post.title.trim()}/${post.id}`}> </ShareButton>*/}
                 </div>
+                <div className="flex flex-col gap-2 bg-white/10 pt-3 pb-3 rounded-sm"> 
+                  <div>
+                    <span className="username">
+                      <IconBtn
+                            Icon={props => <FaMapMarkerAlt {...props}  className="text-stone-500/60 text-[10px] sm:text-[14px]"/>}
+                            style={{ marginLeft: 6 }}
+                          >
+                            <p className="text-stone-500/60 text-[9px] normal-case"><strong>{post.location}</strong></p>
+                        </IconBtn>
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-center">  
+                      <h1 className='text-stone-600 text-2xl font-bold lg:text-[30px]'>{capitalizeFirstLetter(post.title)}</h1>
+                  </div>
+                </div>
+              <div className="flex items-center justify-center bg-white/10 "> 
+                  {/*<h1 className='text-stone-600 text-2xl font-bold lg:text-[30px]'>{capitalizeFirstLetter(post.title)}</h1>*/}
+                  <div className="flex gap-20">
+                          <IconBtn
+                            Icon={props => <FaEye {...props}  className="text-gray-500/60 text-[14px] sm:text-[14px]"/>}
+                            style={{ marginLeft: 6 }}
+                          >
+                            <p className="text-gray-500/60 text-[10px]">{post._count.views}</p>
+                        </IconBtn>
+                         <div className="flex gap-20 relative">
+                          <IconBtn
+                            Icon={(props) => (
+                              <FaScroll
+                                {...props}
+                                size={15}
+                                className="text-bg-amber-700 cursor-pointer"
+                              />
+                            )}
+                            onClick={handleScrollClick}
+                            style={{ marginLeft: 6, color: "rgba(180, 83, 9, 0.5)" }}
+                          >
+                            <p className="text-gray-500 underline text-[9.5px]">
+                              {rootDefinitions.length} notes
+                            </p>
+                          </IconBtn>
+
+                          {/* Thin horizontal hint modal */}
+                          {showHint && (
+                            <div
+                              className={`
+                                absolute left-12 top-18
+                                bg-amber-100 text-amber-800 text-[10px]
+                                px-3 py-0.5 rounded-sm shadow-sm
+                                transition-opacity duration-[5000ms] ease-in-out
+                                ${visible ? "opacity-100" : "opacity-0"}
+                              `}
+                            >
+                             click on any line to view or add notes
+                            </div>
+                          )}
+                        </div>
+                          {/*<IconBtn
+                                    Icon={props => <FaScroll {...props} size={15} className="text-bg-amber-700 cursor-pointer"/>} //className="text-gray-600"
+                                    onClick={handleClickOnFaScroll}
+                                    style={{ marginLeft: 6, color: "rgba(180, 83, 9, 0.5)" }}
+                                >
+                                  <p className="text-gray-500 loweercase underline text-[10px]">{rootDefinitions.length} notes</p>
+                          </IconBtn>*/}
+                          {/*< NotificationToggle initialOn={true} clanName={post.title} onChange={handleToggle} />*/}
+                  </div>
+                </div>
+              <div className="flex items-center justify-center bg-white/10 h-fit"> {/*boader border-red-500 */}
+                <FormattedPoem text={post.body} onLineClick={handle_ShowDefinitions_Modal} definitions={rootDefinitions} />
+              </div>
+                <div className="flex justify-between bg-white/10">
+                <span>
+                  <p className="text-[8px] ml-1 pt-2 italic">
+                    {(post.user.username === "mave" || post.user.username === "nmd") && (
+                      <>Tibongo Netinanatelo TemaSwati - R. Mdvumowencwala Patrick</>
+                    )}
+                    {(!(post.user.username === "mave") && !(post.user.username === "nmd")) && (
+                      <div className="flex justify-center items-align items-center gap-1">
+                      <p>Source: </p>
+                      <IconBtn 
+                         Icon={props => <FaUser {...props} //size={12} 
+                         className="text-[8px] sm:text-xs text-amber-900"/>} 
+                         style={{ marginBottom: 0}}
+                         >
+                         <p className="text-amber-900 text-[8px] sm:text-xs lowercase"><strong>{post.user.username}</strong></p>
+                      </IconBtn>
+                      </div>
+              
+                    )}
+                  </p>
+                </span>
+                <span>
+                  {!((post.user.id === currentUser.id) || ((guestEmail) && guestEmail.guestEmail === post.user.email)) && (
+                  <>
+                  {/*<IconBtn
+                      Icon={props => <FaFlag {...props} size={15} className="text-white/50"/>}
+                      onClick={handleOpenReportModal}
+                    >
+                      <p className="text-red-700 text-[10px]"></p>
+                    </IconBtn>*/}
+                    </>
+                      )}
+                      {(guestEmail) && (
+                        (post.user.id === currentUser.id || guestEmail.guestEmail === post.user.email) && (
+                          <>
+                            <IconBtn
+                              onClick={handleOpenDelete_Modal}
+                              Icon={props => <FaTrash {...props} size={20} className="text-stone-400" />}
+                              aria-label="Delete"
+                            //color="danger"
+                            style={{ marginLeft: 12 }}
+                          />
+                          </>
+                      )
+                    )}
+          </span>
+              </div>
+              </div>
+              <div className=" flex flex-col items-center h-2 bg-white/10 border-b border-[#9a9393] rounded-lg shadow-md ">           
+            </div>
+              {/*<h1 className="mt-8 text-sm text-gray-600 mb-4 font-medium ml-1">Related Posts</h1>*/}
+              </>
+             
+             
+      {( (post.bodyEnglish !== "" && post.bodyEnglish !== null ) && (
+        <>
+            <div>
+              <div className="flex justify-between">
+              <h1 className="mt-8 text-sm text-gray-600 mb-4 font-medium ml-1">Clan history</h1>
+              <div className="flex justify-center gap-1 mr-0.5 mb-0.5">
+                <p className="text-sm italic mt-14 text-gray-500 font-thin">lang:</p>
+                <select
+                  id="dropdown"
+                  //value={selectedOption}
+                  onChange={handleChangeLanguage}
+                  className="border border-amber-500 text-xs mt-14 w-fit h-fit py-0.5 px-1"
+                //style={{ marginLeft: "1px", padding: "1px" }}
+                >
+                  <option className="text-xs"value="English">English</option>
+                  <option className="text-xs" value="Swati">Swati</option>
+                </select>
+              </div>
+              </div>
+              {historyTextlanguage.split(/(?=^.*?page\s+\d+.*\n\s*draft of .*? by .*? PATRICKS, Museum, )/m)   //Mdvumowencwala PATRICKS, Museum, Lobamba
+                        .map((page, index) => (
+                <div key={index}>
+                  <div className="whitespace-pre-wrap font-mono text-sm text-left max-w-2xl mx-auto bg-white/10 p-1 mb-8">
+                    <FormattedParagraphsUnclickable text={page} pageIndex={index} PostFullText={historyTextlanguage}/>
+                  </div>
+                </div>
+              ))}
+            </div>
+            </>
+              )
             )}
-            </>*/}
-          </div>
-          </div>
-          <p>is to bani nbsjjhsd hjakjs jakjjkas askjjksa kzkaskj Zksjaj nsahhj sajhas kkjsjk ksdlklds klsd</p>
-    </div>
+      </div>  
+      
+           
+      {(post.relatedPosts.filter(obj => obj['id'] !== post.id).length > 0  &&
+        <p className="mt-10 text-sm text-gray-600 mb-1 font-medium ">Related clans</p>
+      )}
+      </div>
+        <div className="flex overflow-auto max-w-3xl mx-auto">
+          {(post.relatedPosts.filter(obj => obj['id'] !== post.id).length > 0  &&
+          <>
+            {post.relatedPosts.filter(obj => obj['id'] !== post.id).map((post, index) => (
+              <div key={index} className="flex">
+              <Link key={index} href={`/${post.tribe}/${post.title}/${post.id}`}>
+                <Card
+                  title={capitalizeFirstLetter(post.title)}
+                      tribe={post.tribe}
+                      location={post.location}
+                      tribeSingular={post.tribe_.praises_Singular}
+                      username={post.user.username}
+                      rating={sumAndAverage(post.reviews, "rating")}
+                      views={post._count.views}
+                      definitions={post._count.definitions}
+                      reviews={post.reviews.length}
+                      comments={post.comments.length}
+                      description={post.body}
+                      createdAt={post.createdAt}
+                      linkUrl={`/${post.tribe}/${post.title}/${post.id}`}
+                />
+              </Link>
+            </div>
+          ))
+          }  
+        </>   
+        )}
+        </div>
+    {/*</div>*/}
+    </>
   )
 }

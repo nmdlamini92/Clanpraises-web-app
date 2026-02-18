@@ -3,8 +3,6 @@ import nodemailer from 'nodemailer'
 import dotenv from "dotenv"
 import { google } from "googleapis"
 import { PrismaClient } from '@prisma/client'
-import fastifyCookie from '@fastify/cookie'
-import cookie from "@fastify/cookie"
 import jwt from "jsonwebtoken";
 
 
@@ -60,6 +58,51 @@ export default class AuthController {
     }
   }
 
+
+  static async checkEmailValidity(req, reply) {
+
+    const verifyEmailDeliverability = async (email) => {
+    
+                      try {
+                        const apiKey = process.env.MAILBOXLAYER_API_KEY;
+                        const res = await fetch(`https://apilayer.net/api/check?access_key=${apiKey}&email=${email}&smtp=1&format=1`);
+    
+                        const contentType = res.headers.get("content-type") || "";
+                        if (!contentType.includes("application/json")) {
+                          const text = await res.text();
+                          console.error("Non-JSON response from MailboxLayer:", text.slice(0, 100));
+                          return null;
+                        }
+    
+                        const data = await res.json();
+                        return data;
+                      } 
+                      catch (error) {
+                      console.error("Error during email verification:", error.message);
+                      return null;
+                      }
+                  };
+    
+                    const emailValidation = await verifyEmailDeliverability(req.body.yourEmail);
+    
+                      /*if (!emailValidation || !emailValidation.smtp_check || !emailValidation.mx_found) {*/
+                      if (!emailValidation.format_valid) {
+                        return reply.send({
+                          status: false,
+                          errors: {
+                            message: "",
+                            yourName: "",
+                            yourEmail: "please enter a valid email",
+                          },
+                        });
+                      }
+                      else {
+                        return reply.send({status: true, errors: {message: "", yourName: "", yourEmail: ""} });
+                      }
+
+  }
+
+ 
 
   static async sendVcode(req, reply) {
 
@@ -160,9 +203,11 @@ static async signup(req, reply) {
     reply
     .setCookie('jwt', token, {
       withCredentials: true,
-      httpOnly: false,     // Ensures cookie is only accessible via HTTP(S), not JavaScript
-      maxAge: maxAge, // Set cookie expiration time in seconds
-      //secure: true,       // Ensures the cookie is only sent over HTTPS
+      httpOnly: false,            // Ensures cookie is only accessible via HTTP(S), not JavaScript
+      maxAge: maxAge,             // Set cookie expiration time in seconds
+      //secure: true,             //comment out in dev, activate in deployment (Ensures the cookie is only sent over HTTPS)
+      //domain: '.clanpraises.com',       //comment out in dev, activate in deployment
+      path: '/',
     })
     .send({ status: true, userID: user1.id, userName: user1.username, message: 'jwt cookie sent to client' });
     } 
@@ -194,9 +239,16 @@ static async signup(req, reply) {
           if (password == userExists.password) {
 
             const token = createToken(userExists.id);
-            console.log(token)
+            console.log(token) 
 
-            reply.setCookie('jwt', token, {withCredentials: true, httpOnly: false, sameSite: 'lax', maxAge: maxAge})
+            reply.setCookie('jwt', token, {
+              withCredentials: true, 
+              //secure: true,                     //comment out in dev, activate in deployment
+              httpOnly: false, 
+              //domain: '.clanpraises.com',               //comment out in dev, activate in deployment
+              sameSite: 'lax', 
+              path: '/', 
+              maxAge: maxAge})
             .send({ status: true, userName: userExists.username, userID: userExists.id, message: 'signed in successfully'});
           }
           reply.send({ status: false, errors: {email: "", password: "Incorrect password"}});

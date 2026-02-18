@@ -23,7 +23,7 @@ export default function FinishSignUp({userEmail_password}) {
       else{
         setErrors2({tribe:"",clan:""});
         try{                                                                    
-            const {data} = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/sendVcode`, {...values2, userEmail_password},{withCredentials: true});
+            const {data} = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/sendVcode`, {...values2, userEmail_password},{withCredentials: true});
             console.log(data);
             console.log(data.errors);
             console.log(data.status);

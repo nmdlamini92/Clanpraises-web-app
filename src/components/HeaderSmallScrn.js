@@ -8,13 +8,19 @@ import SignInComp from "./SignInComp";
 import Validations from "./Validations";
 import { getUsers } from "../services/posts";
 import { ToastContainer, toast } from 'react-toastify';
-import { FaRegUser, FaBars, FaPenSquare, FaFolderPlus, FaHome } from "react-icons/fa";
+import { FaRegUser, FaUser, FaBars, FaPenSquare, FaFolderPlus, FaHome } from "react-icons/fa";
 import { IconBtn } from "./IconBtn";
 import Image from "next/image";
 import Link from "next/link";
 
 
 export default function HeaderSmallScrn (){
+
+  const [hydrated, setHydrated] = useState(false);
+    
+      useEffect(() => {
+        setHydrated(true); // runs only after hydration
+      }, []);
 
   const homeMenueRef = useRef(null);
   const profileMenueRef = useRef(null);
@@ -26,9 +32,10 @@ export default function HeaderSmallScrn (){
   const [userID, setUserID] = useState();
 
 
-  const [fetchedUsers, setFetchedUsers] = useState();
+  //const [fetchedUsers, setFetchedUsers] = useState();
   const [cookies, setCookie, removeCookie] = useCookies([]);
 
+  /*
   useEffect(() => {
     
     getUsers()
@@ -40,6 +47,7 @@ export default function HeaderSmallScrn (){
       .finally(() => {
       })
   }, []);
+  */
 
   useEffect(() => {
     const verifyUser = async () => {
@@ -64,7 +72,7 @@ export default function HeaderSmallScrn (){
       } else {
         if(isUserSignedIn.isUserSignedIn===true){
         try {
-          const  data  = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/verifyuser`,
+          const  data  = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/verifyuser`,
             {cookies: cookies},
             { withCredentials: true }
           );
@@ -98,12 +106,13 @@ export default function HeaderSmallScrn (){
     verifyUser();
   }, [cookies, removeCookie, setIsUserSignedIn]);
 
-  
+  /*
   useEffect(() => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('AllUsersInDB', JSON.stringify({ AllUsersInDB: fetchedUsers }));
     }
   }, [fetchedUsers]);
+  */
 
 
             const [isSignUpCompVisible, setIsSignUpCompVisible] = useState(true);
@@ -144,12 +153,12 @@ export default function HeaderSmallScrn (){
                 <>
                   {show && (
                     <div className="modal-backdrop">
-                      <div className="modal">
-                    <button className="close-button" onClick={handleClose}>Close</button>
+                      <div className="bg-gray-100 w-[95%] sm:w-[60%] md:w-[45%] lg:w-[35%] max-h-[60%] overflow-y-auto p-4 pt-2 rounded-lg shadow-lg">
+                    <button className="p-1 mb-1 text-xs bg-red-800/60" onClick={handleClose}>Close</button>
                     {isSignUpCompVisible && <SignUpComp onDataChange={handleChildData} />}
                     {isSignInCompVisible && <SignInComp onDataChange={handleChildData} />}
                     </div>
-                    </div>
+                   </div> 
                   )}
                 </>
               )
@@ -181,7 +190,7 @@ export default function HeaderSmallScrn (){
                 <div className="modal-backdrop-clear">
                 <div className="modal animate-slide-in-top">
                 <p>Are you sure you want to log out?</p>
-                <div>
+                <div className="flex gap-2">
                   <button onClick={handleCloseSignOutModal}>No</button>
                   <button onClick={handleSignOut}>Yes</button>
                 </div>
@@ -242,10 +251,12 @@ export default function HeaderSmallScrn (){
       const [showAboutModal, setShowAboutModal] = useState(false);
 
       const handleOpenAboutModal = () => {
-        setShowAboutModal(true)
+        window.location.href = '/about';
+        //setShowAboutModal(true)
       }
 
       const handleCloseAboutModal = () => {
+        //window.location.href = '/about';
         setShowAboutModal(false)
       }
 
@@ -270,7 +281,8 @@ export default function HeaderSmallScrn (){
       const [showContactModal, setShowContactModal] = useState(false)
 
       const handleOpenContactModal = () => {
-        setShowContactModal(true)
+        window.location.href = '/contact';
+        //setShowContactModal(true)
       }
 
       const handleCloseContactModal = () => {
@@ -369,8 +381,8 @@ export default function HeaderSmallScrn (){
               <div className="bg-white shadow-lg rounded-md left-0 p-0 animate-slide-in-left z-[101]">
                 <ul className=""> {/*space-y-2*/}
                   <li className="p-2 hover:bg-gray-100 cursor-pointer border border-gray-400" onClick={handleHome}><Link href={`/`}>Home</Link></li>
-                  <li className="p-2 hover:bg-gray-100 cursor-pointer border border-gray-400" onClick={handleOpenAboutModal}>About</li>
-                  <li className="p-2 hover:bg-gray-100 cursor-pointer border border-gray-400" onClick={handleOpenContactModal}>Contact</li>
+                  <li className="p-2 hover:bg-gray-100 cursor-pointer border border-gray-400" onClick={handleOpenAboutModal}><Link href={`/about`}>About</Link></li>
+                  <li className="p-2 hover:bg-gray-100 cursor-pointer border border-gray-400" onClick={handleOpenContactModal}><Link href={`/contact`}>Contact</Link></li>
                 </ul>
               </div>
               {/* Close Button */}
@@ -388,24 +400,44 @@ export default function HeaderSmallScrn (){
         </div>
         <div className="absolute left-1/2 transform -translate-x-1/2 ">
         <Link href={`/`}>
-          <div className="cursor-pointer flex items-center leading-none">
-            <Image src="/feather.svg" alt="My Logo" width={55} height={65 } 
-                  className="w-[15px] h-[22px] sm:w-[20px] sm:h-[25px] "/>
-            <div className="flex items-center leading-none">
-              <h1 className="text-amber-900 leading-none font-hand text-[10px] sm:text-[14px]">Clan praises</h1>
+           <div className="flex items-center leading-none cursor-pointer">
+            <Image src="/feather.svg" alt="My Logo" width={30} height={40} 
+                    className="w-[14px] h-[18px] sm:w-[15px] sm:h-[20px] md:w-[25px] md:h-[35px] lg:w-[28px] lg:h-[40px]"/>
+                         <h1 className="text-amber-900 leading-none font-hand text-[10px] sm:text-[12px] md:text-[15px] lg:text-[17px]">Clan praises</h1>
+            {/*<h1 className="text-amber-900 leading-none font-hand text-[10px] sm:text-[12px] md:text-[15px] lg:text-[17px]">ILAN</h1>
+          <p className="text-[8px] text-amber-800/50 font-hand sm:text-[10px] md:text-[13px] lg:text-[15px]">Interactive Literature And Notes</p>*/}
+          </div> 
+          {/*<div className="cursor-pointer flex items-center leading-none">*/}
+            {/*<Image src="/feather.svg" alt="My Logo" width={55} height={65 } 
+                  className="w-[15px] h-[22px] sm:w-[20px] sm:h-[25px] "/>*/}
+            {/*<div className="flex items-center leading-none">
+              <h1 className="text-amber-900 leading-none font-hand text-[10px] sm:text-[14px]"></h1>
               {/*<p className="relative text-amber-900 leading-none font-hand text-[9px] sm:text-[11px] md:text-[12px] lg:text-[13px]">clan praises</p>*/}
-            </div>
-          </div>
+            {/*</div>
+          </div>*/}
         </Link>
         </div>
-        <div className="flex flex-col">
-        <IconBtn
-          Icon={props => <FaRegUser {...props} size={20} className="mb-0 p-0 text-amber-900"/>}
-          onClick={handleProfileClick}
-        > 
-        </IconBtn>
+
+        {( hydrated && (
+        <div className="flex flex-col justify-center items-center">
+          {(!isUserSignedIn && (
+            <IconBtn
+              Icon={props => <FaRegUser {...props} size={20} className="mb-0 p-0 text-amber-900"/>}
+              onClick={handleProfileClick}
+            > 
+            </IconBtn>
+          )
+          )}
+          {(isUserSignedIn && (
+            <IconBtn
+              Icon={props => <FaUser {...props} size={20} className="mb-0 p-0 text-amber-900"/>}
+              onClick={handleProfileClick}
+            > 
+            </IconBtn>
+          )
+          )}
         <div ref={profileMenueRef} className="relative p-0">
-          <p className="text-[10px]">{isUserSignedIn? userName : ''}</p>
+          <p className="text-[8px] sm:text-[10px] ">{isUserSignedIn? userName : ''}</p>
           {openProfileMenu && (
           <div>
           {/* Wrapper to group both menu and close button absolutely */}
@@ -432,7 +464,9 @@ export default function HeaderSmallScrn (){
           )}
         </div>
       </div>
-      </div>
+        )
+      )}
+     </div>
     </>
     )
 }

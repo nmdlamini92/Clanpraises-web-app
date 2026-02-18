@@ -10,6 +10,10 @@ import clanPraiseRoutes from "./Routes/All-Routes.js"
 import { v4 as uuidv4 } from "uuid"
 //import userAnalyticsPlugin from './plugins/userAnalytics.js';
 import fetch from "node-fetch"
+import AuthController from "./Controllers/Auth-Controller.js"
+import oauth from "./plugins/oauth.js"
+
+
 
 
 const prisma = new PrismaClient()
@@ -20,20 +24,34 @@ const app = fastify({trustProxy: true}) //trustProxy: true, // Enable this if yo
 
 app.decorate('prisma', prisma);
 
+app.register(cookie, { secret: process.env.COOKIE_SECRET })
+
 app.register(sensible)
 
 app.register(clanPraiseRoutes);
 
+await app.register(oauth);
+
+
 //await app.register(userAnalyticsPlugin);
 
-app.register(cookie, { secret: process.env.COOKIE_SECRET })
+
+
 
 app.register(cors, {
-  origin: ['http://localhost:3000', 'http://192.168.200.248', process.env.CLIENT_URL,'http://192.168.1.172:3000','https://13.244.89.134:3000', 'https://www.clanpraises.com', 'https://clanpraises.com', 
-    'http://localhost:3000', 'http://frontend:3000', 'http://192.168.225.46:3000', 'http://13.244.89.134:3000',],
-  method: ["GET", "POST"],
+  origin: [
+    'https://clanpraises.com',
+    'https://www.clanpraises.com',
+    'http://localhost:3000',
+    'http://192.168.1.172:3000',
+  ],
   credentials: true,
-})
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+});
+
+
+//await app.register(import("./Routes/authroutes.js"));
+
 
 app.listen({port: process.env.PORT_SERVER, host: process.env.HOST_SERVER},()=>{            //0.0.0.0 for prod                        //tells our app to be live on localhost:3001
   console.log("Server started")
@@ -78,7 +96,10 @@ oauth2Client.setCredentials({
 
 app.addHook("onRequest", (req, res, done) => {
   console.log('now inside onRequest ADDHOOK dala VISITOR_ID server');
+  console.log("METHOD:", req.method);
+  console.log("URL:", req.url);
   console.log(req.cookies);
+  console.log("FOKKKKKKKKKIIIIIIIIIIIIIIIIIIIIIII")
 
   let visitorId = req.cookies.visitorId
   console.log(visitorId);
@@ -88,8 +109,9 @@ app.addHook("onRequest", (req, res, done) => {
     visitorId = uuidv4();
     res.setCookie('visitorId', visitorId, {
       path: '/',
+      //domain: '.clanpraises.com',                    //comment out in dev, activate in deployment
       httpOnly: false,
-      //secure: true,
+      //secure: true,                          //comment out in dev, activate in deployment
       sameSite: 'lax',
       expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000) // 1 year expiration
     });
@@ -102,6 +124,7 @@ const COMMENT_SELECT_FIELDS = {
   message: true,
   rating: true,
   index: true,
+  page: true,
   parentId: true,
   createdAt: true,
   user: {
@@ -125,6 +148,7 @@ app.get("/headers/:id", async (req, res) => {
       .findUnique({
         where: { id: req.params.id },
         select: {
+          id: true,
           body: true,
           title: true,
           tribe: true,
@@ -203,7 +227,7 @@ app.get("/clanNames/:tribe", async (req, res) => {
 
   const tribeId =  await prisma.tribe.findUnique({ 
     where: {tribe: req.params.tribe},
-    select:{id: true, praises_Plural: true}
+    select:{id: true, praises_Singular: true, praises_Plural: true}
   })
   console.log(tribeId)
 
@@ -239,6 +263,7 @@ app.get("/posts", async (req, res) => {
           id: true,
           title: true,
           tribe: true,
+          tribe_: { select: { praises_Singular: true } },
           },
       })
     )
@@ -377,152 +402,10 @@ app.get("/mostPopularposts", async (req, res) => {
 });
 
 
-
-app.get("/:tribe/mostPopularTribePosts", async (req, res) => {
-  console.log("now inside get posts by tribe & clanName server");
-
-    console.log(req.params.tribe);
-
-    const tribeId =  await prisma.tribe.findUnique({ 
-      where: {tribe: req.params.tribe},
-      select:{id: true}
-    })
-    console.log(tribeId)
-    console.log(tribeId.id===null )
-
-    if (tribeId.id===null) {
-      return []
-    }
-
-    try {
-    for (const span of TIME_SPANS) {
-      const since = new Date();
-      since.setDate(since.getDate() - span);
-
-      const posts = await prisma.post.findMany({
-        where: {
-          tribeId: tribeId.id,
-          OR: [
-            { views: { some: { createdAt: { gte: since } } } },
-            /*{ reviews: { some: { createdAt: { gte: since } } } },
-            { comments: { some: { createdAt: { gte: since } } } },
-            {
-              definitions: {
-                some: {
-                  OR: [
-                    { createdAt: { gte: since } },
-                    { reviews: { some: { createdAt: { gte: since } } } },
-                    { comments: { some: { createdAt: { gte: since } } } },
-                    { likes: { some: { createdAt: { gte: since } } } },
-                    { disLikes: { some: { createdAt: { gte: since } } } },
-                  ],
-                },
-              },
-            },*/
-          ],
-        },
-        include: {
-          user: { select: { username: true } },
-          views: { where: { createdAt: { gte: since } }, select: { id: true } },
-           _count: {select: {views: true, definitions: true, reviews: true, comments: true}}, //likesCP: true,
-          /*reviews: { where: { definitionId: null},
-                      //orderBy: {createdAt: "desc",},
-                      select: {...COMMENT_SELECT_FIELDS },
-                  },
-          reviews: {
-            where: { createdAt: { gte: since } },
-            orderBy: { createdAt: "desc" },
-            select: COMMENT_SELECT_FIELDS,
-          },
-          comments: { where: { createdAt: { gte: since } }, select: { id: true } },
-          definitions: {
-            where: { createdAt: { gte: since } },
-            include: {
-              reviews: { where: { createdAt: { gte: since } }, select: { id: true } },
-              comments: { where: { createdAt: { gte: since } }, select: { id: true } },
-              likes: { where: { createdAt: { gte: since } }, select: { definitionId: true } },
-              disLikes: { where: { createdAt: { gte: since } }, select: { definitionId: true } },
-            },
-          },*/
-        },
-      });
-
-      if (posts.length === 0) continue;
-
-      const postIds = posts.map(obj => obj.id);
-
-      const postsNumbers = await prisma.post.findMany({
-        where: {
-          id: { in: postIds },
-        },
-        select: {
-          id: true,
-          _count: {
-            select: {
-              views: true,
-              definitions: true,
-            },
-          },
-          reviews: {
-            where: { definitionId: null },
-            select: {
-              ...COMMENT_SELECT_FIELDS,
-            },
-          },
-          comments: {
-            where: { definitionId: null },
-            select: {
-              ...COMMENT_SELECT_FIELDS,
-            },
-          },
-        },
-      });
-
-
-      const scoredPosts = posts.map(post => {
-        /*const defEngagement = post.definitions.reduce((sum, def) => {
-          return sum +
-            def.reviews.length +
-            def.comments.length +
-            def.likes.length +
-            def.disLikes.length;
-        }, 0);*/
-
-        const totalEngagement = post.views.length 
-          /*post.reviews.length +
-          post.comments.length +
-          defEngagement;*/
-
-        const numbers = postsNumbers.find(p => p.id === post.id);
-
-        return {
-          ...post,
-          engagementScore: totalEngagement,
-          numbers,
-        };
-      });
-
-      scoredPosts.sort((a, b) => b.engagementScore - a.engagementScore);
-
-      if (scoredPosts.length >= 6 || span === 1825) {
-        return res.send(scoredPosts);
-      }
-    }
-
-    return res.send({ message: "Not enough posts with engagement found in the last 3 months." });
-  } catch (err) {
-    console.log(err)
-    console.error("Error fetching most engaged posts:", err);
-    return res.status(500).send({ error: "Internal Server Error" });
-  }
-    
-})
-
-
 app.get("/posts/:tribe/:clanName", async (req, res) => {
   console.log("now inside get posts by tribe & clanName server");
 
-
+  console.log("SIFUNA MANYALANI LANA?")
 
     return await commitToDb(
        prisma.post.findMany({ 
@@ -533,11 +416,14 @@ app.get("/posts/:tribe/:clanName", async (req, res) => {
           id: true,
           title: true,
           tribe: true,
+          tribe_: {select: {praises_Singular: true}},
           body: true,
+          location: true,
+          related: true,
+          forbidden_foods: true,
           createdAt: true,
           userId: true,
-          user: {select: {username: true},
-          },
+          user: {select: {username: true}},
           _count: {select: {views: true, definitions: true}}, //likesCP: true,
           reviews: {
             where: { definitionId: null },
@@ -555,6 +441,7 @@ app.get("/posts/:tribe/:clanName", async (req, res) => {
       })
     )
     
+   
 })
 
 
@@ -562,7 +449,13 @@ app.get("/posts/:id", async (req, res) => {
   console.log("now inside get post(id) server");
 
   const jwtCookie = req.cookies.jwt
+      
+      console.log(req.body)
+      
+      console.log("GOLO LENJA")
       console.log(req.params);
+      console.log(req)
+      console.log("MSUNU WAGOLO")
       console.log(req.cookies);
       console.log(!jwtCookie);
 
@@ -574,8 +467,14 @@ app.get("/posts/:id", async (req, res) => {
               where: { id: req.params.id },
               select: {
                 body: true,
+                bodyEnglish: true,
+                bodySiswati: true,
                 title: true,
                 tribe: true,
+                tribe_: {select: {praises_Singular: true}},
+                location: true,
+                related: true,
+                forbidden_foods: true,
                 createdAt: true,
                 user: {select: {id: true, username: true, email: true, tribe: true, clan: true, createdAt: true}},
                 _count: {select: {views: true, reviews: true, comments: true}}, 
@@ -598,9 +497,55 @@ app.get("/posts/:id", async (req, res) => {
               },
             })
             .then(async post => {
+
+              console.log(post.title)
+              console.log("MALEBENJA")
+
+              const relatedTittles  = (post.related ?? "").replace(/X/g, "").split(/\s+/).filter(Boolean).map(word => word.toLowerCase());
+
+                  console.log(relatedTittles);
+
+                  const relatedPosts = await prisma.post.findMany({
+                    where: {
+                      title: {
+                        in: relatedTittles,
+                      },
+                    },
+                    select:{
+                      id: true,
+                      title: true,
+                      tribe: true,
+                      tribe_: {select: {praises_Singular: true}},
+                      body: true,
+                      bodyEnglish: true,
+                      bodySiswati: true,
+                      location: true,
+                      related: true,
+                      forbidden_foods: true,
+                      createdAt: true,
+                      userId: true,
+                      user: {select: {username: true},
+                      },
+                      _count: {select: {views: true, definitions: true}}, //likesCP: true,
+                      reviews: {
+                        where: { definitionId: null },
+                        select: {
+                          ...COMMENT_SELECT_FIELDS,
+                        },
+                      },
+                      comments: {
+                        where: { definitionId: null },
+                        select: {
+                          ...COMMENT_SELECT_FIELDS,
+                        },
+                      },
+                    },
+                  });
+                  console.log(relatedPosts);
             
               return {
                 ...post,
+                relatedPosts,
                 reviews: post.reviews.map(review => {
                   const { _count, ...reviewFields } = review
                   return {
@@ -637,7 +582,7 @@ app.get("/posts/:id", async (req, res) => {
           )
       }
       else{
-        console.log("now in else part");
+        console.log("now in Fvking else part");
       
       try{
         const decodedToken = await new Promise((resolve, reject) => {
@@ -660,8 +605,14 @@ app.get("/posts/:id", async (req, res) => {
             where: { id: req.params.id },
             select: {
               body: true,
+              bodyEnglish: true,
+              bodySiswati: true,
               title: true,
               tribe: true,
+              tribe_: {select: {praises_Singular: true}},
+              location: true,
+              related: true,
+              forbidden_foods: true,
               createdAt: true,
               user: {select: {id: true, username: true, email: true, tribe: true, clan: true, createdAt: true}},
               _count: {select: {views: true, comments: true}}, 
@@ -684,6 +635,48 @@ app.get("/posts/:id", async (req, res) => {
             },
           })
           .then(async post => {
+
+            const relatedTittles  = (post.related ?? "").replace(/X/g, "").split(/\s+/).filter(Boolean).map(word => word.toLowerCase());
+
+            console.log(relatedTittles);
+
+            const relatedPosts = await prisma.post.findMany({
+              where: {
+                title: {
+                  in: relatedTittles,
+                },
+              },
+              select:{
+                id: true,
+                title: true,
+                tribe: true,
+                tribe_: {select: {praises_Singular: true}},
+                body: true,
+                bodyEnglish: true,
+                bodySiswati: true,
+                location: true,
+                related: true,
+                forbidden_foods: true,
+                createdAt: true,
+                userId: true,
+                user: {select: {username: true},
+                },
+                _count: {select: {views: true, definitions: true}}, //likesCP: true,
+                reviews: {
+                  where: { definitionId: null },
+                  select: {
+                    ...COMMENT_SELECT_FIELDS,
+                  },
+                },
+                comments: {
+                  where: { definitionId: null },
+                  select: {
+                    ...COMMENT_SELECT_FIELDS,
+                  },
+                },
+              },
+            });
+            console.log(relatedPosts);
 
             const likesRev = await prisma.like_on_Review.findMany({
               where: {
@@ -726,6 +719,7 @@ app.get("/posts/:id", async (req, res) => {
         
             return {
               ...post,
+              relatedPosts,
               reviews: post.reviews.map(review => {
                 const { _count, ...reviewFields } = review
                 return {
@@ -770,8 +764,14 @@ app.get("/posts/:id", async (req, res) => {
               where: { id: req.params.id },
               select: {
                 body: true,
+                bodyEnglish: true,
+                bodySiswati: true,
                 title: true,
                 tribe: true,
+                tribe_: {select: {praises_Singular: true}},
+                location: true,
+                related: true,
+                forbidden_foods: true,
                 createdAt: true,
                 user: {select: {id: true, username: true, email: true,tribe: true, clan: true, createdAt: true}},
                 _count: {select: {views: true, comments: true}}, 
@@ -793,9 +793,52 @@ app.get("/posts/:id", async (req, res) => {
               },
             })
             .then(async post => {
+
+              const relatedTittles  = (post.related ?? "").replace(/X/g, "").split(/\s+/).filter(Boolean).map(word => word.toLowerCase());
+
+              console.log(relatedTittles);
+
+              const relatedPosts = await prisma.post.findMany({
+                where: {
+                  title: {
+                    in: relatedTittles,
+                  },
+                },
+                select:{
+                  id: true,
+                  title: true,
+                  tribe: true,
+                  tribe_: {select: {praises_Singular: true}},
+                  body: true,
+                  bodyEnglish: true,
+                  bodySiswati: true,
+                  location: true,
+                  related: true,
+                  forbidden_foods: true,
+                  createdAt: true,
+                  userId: true,
+                  user: {select: {username: true},
+                  },
+                  _count: {select: {views: true, definitions: true}}, //likesCP: true,
+                  reviews: {
+                    where: { definitionId: null },
+                    select: {
+                      ...COMMENT_SELECT_FIELDS,
+                    },
+                  },
+                  comments: {
+                    where: { definitionId: null },
+                    select: {
+                      ...COMMENT_SELECT_FIELDS,
+                    },
+                  },
+                },
+              });
+              console.log(relatedPosts);
             
               return {
                 ...post,
+                relatedPosts,
                 reviews: post.reviews.map(review => {
                   const { _count, ...reviewFields } = review
                   return {
@@ -836,7 +879,7 @@ app.get("/posts/:id", async (req, res) => {
     }
 })
 
-app.post("/posts/:id/viewpost", async (req, res) => {
+app.post(`/posts/:id/viewpost`, async (req, res) => {
   console.log("now inside viewpost server");
   console.log(req.body);
   console.log(req.cookies);
@@ -1301,7 +1344,7 @@ app.post("/validateCommentGuestInput", async (req, reply) => {
         
                   if (usernameExists) {
                     return reply.send({ status: false, errors: {message:"",  
-                          yourName:"this name is linked to another email, please choose another name" ,
+                          yourName:"this username is already taken, please choose another name" ,
                           yourEmail:"",
                           existingName: "" }});
                   }
@@ -1317,29 +1360,31 @@ app.post("/validateCommentGuestInput", async (req, reply) => {
 
                   const verifyEmailDeliverability = async (email) => {
 
-                  try {
-                    const apiKey = process.env.MAILBOXLAYER_API_KEY;
-                    const res = await fetch(`https://apilayer.net/api/check?access_key=${apiKey}&email=${email}&smtp=1&format=1`);
+                    try {
+                      const apiKey = process.env.MAILBOXLAYER_API_KEY;
+                      const res = await fetch(`https://apilayer.net/api/check?access_key=${apiKey}&email=${email}&smtp=1&format=1`);
 
-                    const contentType = res.headers.get("content-type") || "";
-                    if (!contentType.includes("application/json")) {
-                      const text = await res.text();
-                      console.error("Non-JSON response from MailboxLayer:", text.slice(0, 100));
-                      return null;
+                      const contentType = res.headers.get("content-type") || "";
+                      if (!contentType.includes("application/json")) {
+                        const text = await res.text();
+                        console.error("Non-JSON response from MailboxLayer:", text.slice(0, 100));
+                        return null;
+                      }
+
+                      const data = await res.json();
+                      return data;
+                    } 
+                    catch (error) {
+                    console.error("Error during email verification:", error.message);
+                    return null;
                     }
-
-                    const data = await res.json();
-                    return data;
-                  } 
-                  catch (error) {
-                  console.error("Error during email verification:", error.message);
-                  return null;
-                  }
-                };
+                  };
 
                 const emailValidation = await verifyEmailDeliverability(req.body.yourEmail);
 
-                  if (!emailValidation || !emailValidation.smtp_check || !emailValidation.mx_found) {
+                console.log(emailValidation)
+
+                  if (!emailValidation.format_valid) {
                     return reply.send({
                       status: false,
                       errors: {
@@ -1746,6 +1791,7 @@ app.post("/posts/:id/definitions", async (req, res) => {
             message: req.body.message,
             rating: req.body.rating,
             index: req.body.index,
+            page: req.body.page,
             userId: decodedToken.id,
             //parentId: req.body.parentId,
             postId: req.params.id,
@@ -1778,6 +1824,7 @@ app.post("/posts/:id/definitions", async (req, res) => {
             message: req.body.message,
             rating: req.body.rating,
             index: req.body.index,
+            page: req.body.page,
             userId: userID.id,
             //parentId: req.body.parentId,
             postId: req.params.id,
