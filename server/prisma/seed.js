@@ -17,8 +17,8 @@ async function seed() {
   const tribe = await prisma.tribe.create({
     data: {
       tribe: "zulu",
-      praises_Plural: "Izithakazelo",
-      praises_Singular: "Ithakazelo"
+      praises_Plural: "Izithakazelo ZamaZulu",
+      praises_Singular: "Izithakazelo"
     },
   })
 
@@ -26,14 +26,14 @@ async function seed() {
     data: {
       tribe: "sotho",
       praises_Plural: "Diboko",
-      praises_Singular: "Sereto"
+      praises_Singular: "Diboko"
     },
   })
   const tribe2 = await prisma.tribe.create({
     data: {
       tribe: "swati",
-      praises_Plural: "Tinanatelo",
-      praises_Singular: "Sinanatelo"
+      praises_Plural: "Tinanatelo TemaSwati",
+      praises_Singular: "Tinanatelo"
     },
   })
 
@@ -41,7 +41,7 @@ async function seed() {
     data: {
       tribe: "shona",
       praises_Plural: "Nhetembo dzemandzinza",
-      praises_Singular: "Nhetembo yedzinza"
+      praises_Singular: "Nhetembo dzemandzinza"
     },
   })
 
@@ -49,7 +49,7 @@ async function seed() {
     data: {
       tribe: "tsonga",
       praises_Plural: "hlomo",
-      praises_Singular: ""
+      praises_Singular: "hlomo"
     },
   })
 
@@ -57,7 +57,7 @@ async function seed() {
     data: {
       tribe: "other",
       praises_Plural: "clan praises",
-      praises_Singular: "clan praise"
+      praises_Singular: "clan praises"
     },
   })
 

@@ -193,7 +193,7 @@ export default function SendFeedback() {
     return (        //bg-amber-100
         <>
         <UserProfile_Modal></UserProfile_Modal>
-        <div className="flex flex-col border rounded-md border-gray-300">
+        <div className="flex flex-col border rounded-md border-gray-400">
         <p className="text-xs p-0.5 bg-white/10 text-stone-800">how can we improve this platform?</p> 
         <button className="bg-amber-200/50" onClick={handleOpenUserProfileModal}>Send Us Feedback</button>
         </div>

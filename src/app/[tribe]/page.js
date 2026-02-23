@@ -98,8 +98,9 @@ export const dynamicParams = true;
     const clanNames1 = await res.json();
 
     console.log(clanNames1)
+    //console.log((clanNames1.post).length)
 
-     if (clanNames1.length === 0) {
+     if ((clanNames1.post) === undefined) {
         redirect("/");
      }
 
@@ -180,17 +181,16 @@ export const dynamicParams = true;
               <div className="flex flex-col mt-8 items-center flex-grow"> {/**bg-orange-200/50 */ /*bg-amber-600/10*/}
                 <AddNsearchBar/>
                   {/*{(clanNames1.post).length !== 0?<h1 className="mt-10">{capitalizeFirstLetter(tribe)}-ClanPraises ({clanNamesPosts.length})</h1> : ""}*/}
-                  {clanNames1.post.length !== 0 && (
-                    tribe === 'tinanatelo' ? (
+                  {clanNames1.tribeId.praises_Plural !== null && clanNames1.tribeId.praises_Plural !== 'clanpraises' ? 
+                   
                       <h5 className="mt-6 text-[24px] sm:text-[27px] md:text-[32px] lg:text-[35px] font-bold stroke-black text-amber-500/40">  
-                        {capitalizeFirstLetter(tribe)}
+                        {capitalizeFirstLetter(clanNames1.tribeId.praises_Plural)}
                       </h5>
-                    ) : (
-                      <p className="mt-6 text-[24px] sm:text-[27px] md:text-[32px] lg:text-[35px] font-bold stroke-black text-amber-600/10">
-                        {capitalizeFirstLetter(tribe)}
-                      </p>
-                    )
-                  )}
+                      :
+                      <h5 className="mt-6 text-[24px] sm:text-[27px] md:text-[32px] lg:text-[35px] font-bold stroke-black text-amber-500/40">  
+                        {capitalizeFirstLetter(tribe)} clan-praises
+                      </h5>
+                  }
 
                   {/*<div className="flex justify-center mt-12">
                     {(clanNames1.post).length === 0? <h1>0 results for {capitalizeFirstLetter(tribe)} clan</h1>: <h1 className="text-stone-600 text-[16px] md:text-[20px] lg:pr-60 lg:mr-8 underline font-serif">

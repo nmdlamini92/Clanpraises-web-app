@@ -12,8 +12,8 @@ export default function FooterMobile() {
                 <div className="flex justify-center items-center gap-8 mb-4">
                     <SendFeedback/>
                     <Link href={"https://www.facebook.com/people/Clan-praises/61587423537078/"}>
-                    <div className="bg-white/60 rounded border border-gray-300 p-0.5">
-                    <FaFacebook className="text-gray-500/80" size={17}/>
+                    <div className="bg-white/30 rounded border border-gray-300 p-0.5">
+                    <FaFacebook className="text-gray-500/70" size={17}/>
                     </div>
                     </Link>
                 </div>

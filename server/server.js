@@ -200,6 +200,7 @@ app.get("/tribes", async (req, res) => {
        prisma.tribe.findMany({ select:{
           id: true,
           tribe: true,
+          praises_Singular: true,
           praises_Plural: true,
           _count: {select: {clanpraises: true}}
        }

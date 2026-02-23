@@ -194,9 +194,9 @@ export default function SendFeedback() {
     return (        //bg-amber-100
         <>
         <UserProfile_Modal></UserProfile_Modal>
-        <div className="flex border rounded-md border-gray-300"> 
-        <div className="flex justify-center items-center bg-white/50 gap-0.5 px-0.5">
-            <FaComment className="text-gray-500/80" size={11}/>
+        <div className="flex rounded-md"> 
+        <div className="flex justify-center items-center gap-0.5 px-0.5 border-b border-gray-200 cursor-pointer">
+            <FaComment className="text-gray-500/80 cursor-pointer" size={11}/>
             <button className="bg-transparent text-xs text-gray-700 p-0 normal-case" 
             onClick={handleOpenUserProfileModal}> Send Feedback
             </button>

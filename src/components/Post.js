@@ -1064,12 +1064,14 @@ export function Post() {
                 <div className="flex flex-col gap-2 bg-white/10 pt-3 pb-3 rounded-sm"> 
                   <div>
                     <span className="username">
+                      { post.location !== null && post.location !== "" && 
                       <IconBtn
                             Icon={props => <FaMapMarkerAlt {...props}  className="text-stone-500/60 text-[10px] sm:text-[14px]"/>}
                             style={{ marginLeft: 6 }}
                           >
                             <p className="text-stone-500/60 text-[9px] normal-case"><strong>{post.location}</strong></p>
-                        </IconBtn>
+                      </IconBtn>
+                      }
                     </span>
                   </div>
                   <div className="flex items-center justify-center">  
@@ -1188,9 +1190,9 @@ export function Post() {
         <>
             <div>
               <div className="flex justify-between">
-              <h1 className="mt-8 text-sm text-gray-600 mb-4 font-medium ml-1">Clan history</h1>
+              <h1 className="mt-8 text-sm text-gray-600 mb-4 font-medium ml-1">Clan history, customs, information</h1>
               <div className="flex justify-center gap-1 mr-0.5 mb-0.5">
-                <p className="text-sm italic mt-14 text-gray-500 font-thin">lang:</p>
+                <p className="text-sm italic mt-14 text-gray-500 font-thin">language:</p>
                 <select
                   id="dropdown"
                   //value={selectedOption}
@@ -1203,7 +1205,7 @@ export function Post() {
                 </select>
               </div>
               </div>
-              {historyTextlanguage.split(/(?=^.*?page\s+\d+.*\n\s*draft of .*? by .*? PATRICKS, Museum, )/m)   //Mdvumowencwala PATRICKS, Museum, Lobamba
+              {historyTextlanguage.split(/\s*################################\s*/)   //split(/(?=^.*?page\s+\d+.*\n\s*draft of .*? by .*? PATRICKS, Museum, )/m)     Mdvumowencwala PATRICKS, Museum, Lobamba
                         .map((page, index) => (
                 <div key={index}>
                   <div className="whitespace-pre-wrap font-mono text-sm text-left max-w-2xl mx-auto bg-white/10 p-1 mb-8">

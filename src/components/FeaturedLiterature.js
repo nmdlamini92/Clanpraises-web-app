@@ -30,11 +30,11 @@ export default function FeaturedLiterature({ TribesList }) {
             >
                 <Link href={`/swati`}>
                 <p className="text-[15px] underline text-center font-serif">
-                <strong>Tinanatelo</strong> ({TribesList.find(obj => obj.tribe === "tinanatelo")?._count.clanpraises} clans)
+                <strong>Swati - Tinanatelo</strong> ({TribesList.find(obj => obj.tribe === "swati")?._count.clanpraises} clans)
                 </p>
                 </Link>
                 <div className="relative w-[280px] sm:w-[300px] h-[400px] sm:h-[430px]">
-                    <Link href={`/tinanatelo`}>
+                    <Link href={`/swati`}>
                     <Image
                     src="/TinanateloCoverBrown2.png"
                     alt="Tinanatelo Cover"

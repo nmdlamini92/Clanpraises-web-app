@@ -81,7 +81,7 @@ export default function Card ({ title, tribe, location, tribeSingular, imageUrl,
          onTouchCancel={() => setIsTouched(false)}
          onClick={() => setIsTouched(true)}>
      <div className="flex  mb-1"> {/*bg-amber-100 border border-[#ccc]*/}
-                {( tribe === "tinanatelo" &&
+                { location !== null && location !== "" && 
                    <div className="flex justify-start items-start">
                    <IconBtn 
                     Icon={props => <FaMapMarkerAlt {...props} //size={15} 
@@ -90,12 +90,8 @@ export default function Card ({ title, tribe, location, tribeSingular, imageUrl,
                     <p className="text-[7px] sm:text-[8px] text-stone-500/60 normal-case leading-none">{location}</p>
                     </IconBtn>
                    </div>
-                )}
-                {( tribe === "clan-history" &&
-                  <div className="flex justify-center items-center">
-                   <p className="text-[9px] text-stone-500/60 font-medium ml-1 underline">{location}</p>
-                  </div>
-                )}
+                }
+          
                    {/*<span className="text-gray-500/50 text-[9px] sm:text-[10px] mt-2 mr-2" >
                     <strong>{dateFormatter.format(Date.parse(createdAt))}</strong>
                    </span>*/}
@@ -137,14 +133,15 @@ export default function Card ({ title, tribe, location, tribeSingular, imageUrl,
         <div className='w-[180px] h-[92px] sm:w-[240px] sm:h-[123px] md:w-[240px] md:h-[140px] lg:w-[270px] lg:h-[170px] ml-2'>
       <div className='' >
       {/*<p className="my-2 text-[12px] sm:text-[14px]">{description}</p>*/}
-      {( tribe === "tinanatelo" && (
+      {/*{( tribe === "tinanatelo" && (
       <FormattedPoemOnCard text={description}/>
       )
       )}
       {( tribe === "clan-history" && (
        <FormattedParagraphOnCard text={description}/>
       )
-      )}
+      )}*/}
+      <FormattedPoemOnCard text={description}/>
       </div>
       </div>
       <div className="flex justify-around mt-1.5">

@@ -55,6 +55,10 @@ export const dynamic = 'force-dynamic';
 
     console.log('NEXT_PUBLIC_API_URL (page):', process.env.API_URL);
 
+    const TribeList_nonEmpty = TribesList.filter(item => item._count.clanpraises > 0);
+
+    console.log(TribeList_nonEmpty)
+
     /*const NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL;
     if (!NEXT_PUBLIC_API_URL) {
       throw new Error('NEXT_PUBLIC_API_URL is not defined in HomePage');
@@ -93,7 +97,7 @@ export const dynamic = 'force-dynamic';
 
     //const [isTouched, setIsTouched] = useState(false);
 
-    const allowedTribes = ["tinanatelo", "clan-history"];
+    const allowedTribes = ["swati"];
 
     return (
     <>
@@ -115,9 +119,25 @@ export const dynamic = 'force-dynamic';
             Featured clan praises
           </h1>
         </div>
-
         {/* Featured Sections */}
+        
+        {/* when clanpraises database is empty */}
+        {(TribeList_nonEmpty.length === 0 && (
+          <p>no clan praises found, be the first to add a clanpraise!</p>
+        ))}
+        {/* if swati clanpraises exist in database */}
+        {(TribeList_nonEmpty.filter(item => item.tribe === "swati").length > 0 && (
         <FeaturedLiterature TribesList={TribesList.filter(obj => allowedTribes.includes(obj.tribe))} />
+        ))}
+        {/* List of tribes and their clanpraises */}
+        <div className="flex justify-center flex-wrap mt-4 gap-1 sm:gap-3 md:gap-4 max-w-2xl mx-auto p-1"> 
+              {TribeList_nonEmpty.filter(obj => obj.tribe !== "swati").map((tribe, index) => (
+              <Link key={index} href={`/${tribe.tribe}`} 
+              className={`font-serif text-md md:text-lg mr-4 active:underline hover:underline active:opacity-60 ${colors[index % colors.length]}`}
+              >
+              •{capitalizeFirstLetter(tribe.tribe)} - {capitalizeFirstLetter(tribe.praises_Singular)} ({tribe._count.clanpraises} clans)</Link>
+              ))}  
+          </div>
         
         {/* Feedback */}
         {/*<div className="mt-6 flex justify-center">

@@ -88,6 +88,7 @@ const SearchBarWithSuggestions = ({setButtonBorderBold, setButtonBorderNormal}) 
 
     if (query) {              // Only show suggestions if there is input
       console.log(query);
+      console.log(ArrayList)
 
       const uniquePosts = removeSimilarObjects(fetchedPosts, 'title', 'tribe');
       const SuggFormat = uniquePosts.map(item => `${item.title} (${item.tribe})`.toLowerCase());
@@ -167,10 +168,10 @@ const SearchBarWithSuggestions = ({setButtonBorderBold, setButtonBorderNormal}) 
     const uiqueArrLowerCase1 = uniqueArr.map(obj => ({...obj, title: obj.title.toLowerCase(), tribe: obj.tribe.toLowerCase()}));
     console.log(uiqueArrLowerCase1);
 
-    const DropDown1 = ArrayList.map(item => `${item.title} (${item.tribe_.praises_Singular})`.toLowerCase());
+    const DropDown1 = ArrayList.map(item => `${item.title} (${item.tribe})`.toLowerCase());
 
     ArrayList.forEach(post => {
-        post.suggestion = `${post.title} (${post.tribe_.praises_Singular})`.toLowerCase();
+        post.suggestion = `${post.title} (${post.tribe})`.toLowerCase();
     });
     console.log(ArrayList);
     setArrayListWithSugg(ArrayList);

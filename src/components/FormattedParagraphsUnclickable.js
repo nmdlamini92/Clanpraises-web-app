@@ -47,8 +47,7 @@ export default function FormattedParagraphsUnclickable({ text, pageIndex, PostFu
   );
 }
 
-function Line({
-  text,
+function Line({text, 
   //pageText,
   //pageIndex,
   //lineIndex,
@@ -56,14 +55,17 @@ function Line({
   //pagesTextArray,
 }) {
 
-  //console.log(numOfDefinitions)
-  //console.log(PostFullText.split(/(?=^.*?page\s+\d+.*\n\s*draft of .*? by R\. Mdvumowencwala PATRICKS, Museum, Lobamba)/m)[pageIndex])
-  //console.log(pageIndex)
-  //console.log(text)
+  const isInformationLine = /^information:/i.test(text.trim());
 
   return (
     <p
-      className={`px-0.5 py-0 my-0 rounded-sm cursor-pointer transition-all duration-200 w-fit text-[12px] sm:text-[14px] md:text-[14px] lg:text-[15px]`}
+      //className={`px-0.5 py-0 my-0 rounded-sm cursor-pointer transition-all duration-200 w-fit text-[12px] sm:text-[14px] md:text-[14px] lg:text-[15px]`}
+      className={`
+        px-0.5 py-0 my-0 rounded-sm cursor-pointer transition-all duration-200 w-fit
+        ${isInformationLine
+          ? "text-[6px] sm:text-[6.5px] md:text-[7px] lg:text-[8px] italic whitespace-pre-wrap"
+          : "text-[12px] sm:text-[14px] md:text-[14px] lg:text-[15px]"}
+      `}
       style={{
         display: "inline-block",
         whiteSpace: "pre-wrap", // ✅ preserves multi-line formatting

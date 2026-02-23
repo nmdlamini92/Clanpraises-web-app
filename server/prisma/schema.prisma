@@ -45,8 +45,8 @@ model User1 {
 model Tribe {
   id              String          @id @default(uuid())
   tribe           String          @unique
-  praises_Plural   String         @default("clanpraises")      
-  praises_Singular String?
+  praises_Plural   String?             
+  praises_Singular String?        @default("clanpraises") 
   clanpraises      Post[]         
 }
 

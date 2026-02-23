@@ -251,7 +251,7 @@ export default function AddClanPraiseForm() {
                 <div ref={tribeRef} className="flex-1 mt-2 relative">
                   <div className="flex flex-col">
                   {<p className="error-msg text-xs">{errors.tribe}</p>}
-                  <input className="w-full border rounded border-amber-500" name="tribe" placeholder="genre"        //value={values.tribe || ""}  
+                  <input className="w-full border rounded border-amber-500" name="tribe" placeholder="tribe"        //value={values.tribe || ""}  
                     onChange={handleInputChange_Tribe}
                     onFocus={handleFocus_Tribe}
                     value={searchTerm_Tribe}
@@ -278,14 +278,14 @@ export default function AddClanPraiseForm() {
                 </div>
                 </div>
                 <div className="flex flex-col">
-                  <textarea className="ClanPraiseInput border rounded border-amber-500" name="clanPraise" placeholder="Literature..." value={values.clanPraise || ""}  
+                  <textarea className="ClanPraiseInput border rounded border-amber-500" name="clanPraise" placeholder="Clanpraise..." value={values.clanPraise || ""}  
                     onChange={(e) => setvalues({ ...values, [e.target.name]: e.target.value })}
                   />
                   {errors.clanPraise && (<span className="error-msg text-xs">{errors.clanPraise}</span>)}
-                  <textarea className="ClanPraiseInput mt-1 border rounded border-amber-500" name="englishVersion" placeholder="englishVersion..." value={values2.englishVersion}  
+                  <textarea className="ClanPraiseInput mt-1 border rounded border-amber-500" name="englishVersion" placeholder="History/Info (english)..." value={values2.englishVersion}  
                     onChange={(e) => setvalues2({ ...values2, [e.target.name]: e.target.value })}
                   />
-                  <textarea className="ClanPraiseInput mt-1 border rounded border-amber-500" name="siswatiVersion" placeholder="SiswatiVersion..." value={values2.siswatiVersion}  
+                  <textarea className="ClanPraiseInput mt-1 border rounded border-amber-500" name="siswatiVersion" placeholder="History/Info (siswati)..." value={values2.siswatiVersion}  
                     onChange={(e) => setvalues2({ ...values2, [e.target.name]: e.target.value })}
                   />
                 </div>
