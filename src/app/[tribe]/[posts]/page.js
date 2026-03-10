@@ -42,7 +42,7 @@ export const dynamicParams = true;
     else {
 
       return {
-          title: `${posts} (${tribe})`,
+          title: `${posts} clan praises`,
           keywords: ['clan-praise', 'clanpraise'],
           //description: 'nkhosi Dlamini, wena wekunene, wena weluhlanga',
           themecolor: '#000000',

@@ -10,15 +10,29 @@ export default function FormattedParagraphsUnclickable({ text, pageIndex, PostFu
     .map((line) => line.trim())
     .filter((line) => line.length > 0);
 
- 
+return (
+  <div className="flex flex-col items-start justify-center p-4 bg-transparent w-fit h-fit whitespace-pre-wrap font-mono text-sm text-left max-w-2xl mx-auto">
+    {formattedLines.slice(1).map((line, index) => (
+      <div key={index} className="mb-2">
+        <Line
+          text={line}
+          pageText={text}
+          pageIndex={pageIndex}
+          PostFullText={PostFullText}
+        />
+      </div>
+    ))}
+  </div>
+);
 
+ 
+/*
   return (
     <div className="flex flex-col items-start justify-center p-4 bg-transparent w-fit h-fit whitespace-pre-wrap font-mono text-sm text-left max-w-2xl mx-auto">
-    {/*<div className="flex flex-col items-start justify-center p-4 bg-transparent w-fit h-fit whitespace-pre-wrap min-w-[200px] max-w-[500px]">*/}
       {formattedLines.map((line, index) => (
         <div key={index} className="mb-2">
           {index === 0 ? (
-            // First paragraph → not clickable
+            // First paragraph 
             <p
               className="text-[6px] sm:text-[6.5px] md:text-[7px] lg:text-[8px] italic"
               style={{
@@ -45,6 +59,9 @@ export default function FormattedParagraphsUnclickable({ text, pageIndex, PostFu
       ))}
     </div>
   );
+  */
+
+
 }
 
 function Line({text, 

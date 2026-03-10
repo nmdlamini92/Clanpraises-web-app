@@ -1136,7 +1136,7 @@ export function Post() {
                 <span>
                   <p className="text-[8px] ml-1 pt-2 italic">
                     {(post.user.username === "mave" || post.user.username === "nmd") && (
-                      <>Tibongo Netinanatelo TemaSwati - R. Mdvumowencwala Patrick</>
+                      <>adapted from Tibongo Netinanatelo TemaSwati - R. Mdvumowencwala Patrick</>
                     )}
                     {(!(post.user.username === "mave") && !(post.user.username === "nmd")) && (
                       <div className="flex justify-center items-align items-center gap-1">
@@ -1206,16 +1206,22 @@ export function Post() {
               </div>
               </div>
               {historyTextlanguage.split(/\s*################################\s*/)   //split(/(?=^.*?page\s+\d+.*\n\s*draft of .*? by .*? PATRICKS, Museum, )/m)     Mdvumowencwala PATRICKS, Museum, Lobamba
-                        .map((page, index) => (
+                        .map((page, index, pages) => (
                 <div key={index}>
-                  <div className="whitespace-pre-wrap font-mono text-sm text-left max-w-2xl mx-auto bg-white/10 p-1 mb-8">
+                  <div className="mb-8">
+                  <div className="whitespace-pre-wrap font-mono text-sm text-left max-w-2xl mx-auto bg-white/10 p-1">
                     <FormattedParagraphsUnclickable text={page} pageIndex={index} PostFullText={historyTextlanguage}/>
+                  </div>
+                    {(post.bodySiswati !== "" && post.bodySiswati !== null && index === pages.length - 1) && (
+                      <p className="text-[8px] ml-1 italic mt-1">Adapted and translated from the archival notes of R. Mdvumowencwala Patrick.</p>
+                    )}
                   </div>
                 </div>
               ))}
             </div>
+
             </>
-              )
+              ) 
             )}
       </div>  
       

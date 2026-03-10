@@ -110,6 +110,18 @@ export const dynamicParams = true;
     //const clanNamesPostsPop = clanNamesPosts.slice(0, 5);
     //console.log(clanNamesPostsPop)
 
+    function retainDuplicates(arr, key) {
+      const counts = arr.reduce((acc, obj) => {
+        acc[obj[key]] = (acc[obj[key]] || 0) + 1;
+        return acc;
+      }, {});
+
+      return arr.filter(obj => counts[obj[key]] > 1);
+    }
+
+    const duplicates = retainDuplicates(clanNames1.post, "title");
+    console.log(duplicates)
+    
 
     function removeDuplicates(array, property) {
       const seen = new Set();
