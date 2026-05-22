@@ -126,12 +126,13 @@ export const dynamic = 'force-dynamic';
           <p>no clan praises found, be the first to add a clanpraise!</p>
         ))}
         {/* if swati clanpraises exist in database */}
-        {(TribeList_nonEmpty.filter(item => item.tribe === "swati").length > 0 && (
+        {/*{(TribeList_nonEmpty.filter(item => item.tribe === "swati").length > 0 && (
         <FeaturedLiterature TribesList={TribesList.filter(obj => allowedTribes.includes(obj.tribe))} />
-        ))}
+        ))}*/}
+
         {/* List of tribes and their clanpraises */}
-        <div className="flex justify-center flex-wrap mt-4 gap-1 sm:gap-3 md:gap-4 max-w-2xl mx-auto p-1"> 
-              {TribeList_nonEmpty.filter(obj => obj.tribe !== "swati").map((tribe, index) => (
+        <div className="flex justify-center flex-wrap mt-4 gap-3 sm:gap-3 md:gap-4 max-w-2xl mx-auto p-1"> 
+              {TribeList_nonEmpty.map((tribe, index) => (
               <Link key={index} href={`/${tribe.tribe}`} 
               className={`font-serif text-md md:text-lg mr-4 active:underline hover:underline active:opacity-60 ${colors[index % colors.length]}`}
               >

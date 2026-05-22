@@ -4,7 +4,8 @@ import {IconBtn} from "./IconBtn"
 import { FaPenSquare} from "react-icons/fa";
 import { useState, useEffect } from "react";
 import AddClanPraiseFormGuest from "./AddClanPraiseFormGuest"
-import AddClanPraiseForm from "./AddClanPraiseForm";
+import AddClanPraiseFormAdmin from "./AddClanPraiseFormAdmin";
+import AddClanPraiseFormUser from "./AddClanPraiseFormUser";
 import SignInComp from "./SignInComp";
 import SignUpComp from "./SignUpComp";
 import { ToastContainer, toast } from 'react-toastify';
@@ -25,11 +26,16 @@ export default function AddClanPraise ({buttonBorderState}) {
       );
 
     const [isUserSignedIn, setIsUserSignedIn] = useState({isUserSignedIn: null});
+    const [username, setUsername] = useState({VipUserName: null});
 
     useEffect(() => {
         // This code runs only in the browser
         const signInStatus = JSON.parse(localStorage.getItem('isUserSignedIn'));
         setIsUserSignedIn(signInStatus);
+
+        const userName = JSON.parse(localStorage.getItem('VipUserName'));
+        setUsername(userName);
+
       }, []);
 
     const [show_AddClanPraise_Modal, setShow_AddClanPraise_Modal] = useState(false);
@@ -44,16 +50,16 @@ export default function AddClanPraise ({buttonBorderState}) {
       }
     
       const handleOpen_ClanPraise_Modal = () => {
-        //const isUserSignedIn = JSON.parse(localStorage.getItem('isUserSignedIn'));
+        const isUserSignedIn = JSON.parse(localStorage.getItem('isUserSignedIn'));
 
-        setShow_AddClanPraise_Modal(true)
-        /*if (isUserSignedIn.isUserSignedIn===false){
+        //setShow_AddClanPraise_Modal(true)
+        if (isUserSignedIn.isUserSignedIn===false){
            // console.log("not signed ")
             handleOpenLogInModal()
         }
         else{
         setShow_AddClanPraise_Modal(true)
-        }*/
+        }
       }
     
     const AddClanPraise_Modal = ({ show, onClose }) => {
@@ -67,12 +73,11 @@ export default function AddClanPraise ({buttonBorderState}) {
                 <div className="p-5 pt-2 rounded-lg max-w-sm w-full shadow-md bg-stone-200">
                   <div className="bg-stone-200">
                   <button className="p-1 mb-1 text-xs bg-red-700/70" onClick={onClose}>Close</button>
-                  {(isUserSignedIn.isUserSignedIn===null || isUserSignedIn.isUserSignedIn===false || 
-                  isUserSignedIn.isUserSignedIn===undefined) && (
-                  <AddClanPraiseFormGuest />
+                  {((isUserSignedIn.isUserSignedIn===true) && (username.VipUserName !== "r_mdvumo_patricks" && username.VipUserName !== "admin@clanpraises")) && (
+                  <AddClanPraiseFormUser />
                   )}
-                  {(isUserSignedIn.isUserSignedIn===true) && (
-                  <AddClanPraiseForm />
+                  {((isUserSignedIn.isUserSignedIn===true) && (username.VipUserName === "r_mdvumo_patricks" || username.VipUserName === "admin@clanpraises")) && (
+                  <AddClanPraiseFormAdmin />
                   )}
                   </div>
                 </div>
@@ -140,7 +145,7 @@ export default function AddClanPraise ({buttonBorderState}) {
             {show && (
               <div className="modal-backdrop">
                 <div className="modal">
-              <button className="close-button" onClick={handleClose}>Close</button>
+              <button className="p-1 mb-1 text-xs bg-red-800/60" onClick={handleClose}>Close</button>
               {isSignUpCompVisible && <SignUpComp onDataChange={handleChildData} />}
               {isSignInCompVisible && <SignInComp onDataChange={handleChildData} />}
               </div>
@@ -162,7 +167,7 @@ export default function AddClanPraise ({buttonBorderState}) {
         onClick={handleOpen_ClanPraise_Modal}
                     //backgroundColor: '#fff7ed'                                                  #ca8a04                   
         style={{backgroundColor: 'rgb(254 252 232 / 0.9)', border: buttonBorderState ? '2px solid #fbbf24' : '1.5px solid #fbbf24', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)'}}>
-        <p className='text-amber-900'>Add Literature</p>
+        <p className='text-amber-900 mr-0.5'>Add Clan</p>
         </IconBtn>
         </div>
         </div>

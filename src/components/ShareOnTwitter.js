@@ -1,5 +1,6 @@
 import { FaTwitter } from "react-icons/fa";
 import { SiX } from "react-icons/si";
+import Image from "next/image";
 
 const TwitterShareButton = ({ text, url }) => {
   const shareOnTwitter = () => {
@@ -14,14 +15,11 @@ const TwitterShareButton = ({ text, url }) => {
   };
 
   return (
-    <button
-      onClick={shareOnTwitter}
-      className="flex items-center gap-1 px-2 py-1 bg-stone-800 text-white rounded-sm hover:bg-sky-600 transition"
-      aria-label="Share on Twitter"
-    >
-      {/*<FaTwitter size={20} />*/}
-      <SiX size={20} />
-    </button>
+    <Image src="/share-on-x.svg" alt="My Logo" width={60} height={30}
+            onClick={shareOnTwitter}
+            className="cursor-pointer transition duration-200 opacity-75 hover:brightness-75
+                       w-[42px] h-[26px] sm:w-[52px] sm:h-[26px] md:w-[55px] md:h-[27px] lg:w-[60px] lg:h-[30px]"
+          />
   );
 };
 

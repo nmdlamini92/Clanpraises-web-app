@@ -1,4 +1,5 @@
 import { FaWhatsapp } from "react-icons/fa";
+import Image from "next/image";
 
 const WhatsAppShareButton = ({ text, url }) => {
   const shareOnWhatsApp = () => {
@@ -21,13 +22,11 @@ const WhatsAppShareButton = ({ text, url }) => {
   };
 
   return (
-    <button
-      onClick={shareOnWhatsApp}
-      className="flex items-center gap-1 px-2 py-1 bg-green-500 text-white rounded-sm hover:bg-green-600 transition"
-      aria-label="Share on WhatsApp"
-    >
-      <FaWhatsapp size={20} />
-    </button>
+    <Image src="/share-on-whatsapp.svg" alt="My Logo" width={60} height={30}
+                onClick={shareOnWhatsApp}
+                className="cursor-pointer transition duration-200 opacity-75 hover:brightness-75
+                 w-[42px] h-[26px] sm:w-[52px] sm:h-[26px] md:w-[56px] md:h-[28px] lg:w-[60px] lg:h-[30px]"
+              />
   );
 };
 

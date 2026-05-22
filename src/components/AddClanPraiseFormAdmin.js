@@ -13,7 +13,7 @@ import { useAsync} from "../hooks/useAsync";
 const apiUrl = process.env.NEXT_PUBLIC_API_URL
 
 
-export default function AddClanPraiseForm() {
+export default function AddClanPraiseFormAdmin() {
 
   const clanNameRef = useRef(null);
   const tribeRef = useRef(null);
@@ -223,7 +223,7 @@ export default function AddClanPraiseForm() {
                 <div ref={clanNameRef} className="flex-1 mt-2 relative">
                   <div className="flex flex-col">
                   {<p className="error-msg text-xs">{errors.clanName}</p>}
-                  <input className="w-full border rounded border-amber-500" name="clanName" placeholder="Title"  //value={values.clanName || ""}  
+                  <input className="w-full border rounded border-amber-500" name="clanName" placeholder="clan"  //value={values.clanName || ""}  
                     onChange={handleInputChange_ClanName}
                     onFocus={handleFocus_ClanName}
                     value={searchTerm_ClanName}

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function FormattedParagraphsUnclickable({ text, pageIndex, PostFullText }) {
+export default function FormattedParagraphsUnclickablePNotes({ text, pageIndex, PostFullText }) {
 
   //console.log(definitions)
   //console.log(pageIndex)
@@ -11,9 +11,8 @@ export default function FormattedParagraphsUnclickable({ text, pageIndex, PostFu
     .filter((line) => line.length > 0);
 
     return (
-
       <div className="flex flex-col items-start justify-center p-4 bg-transparent w-fit h-fit whitespace-pre-wrap font-mono text-sm text-left max-w-2xl mx-auto">
-          {formattedLines.map((line, index) => (
+          {formattedLines.slice(1).map((line, index) => (
             
             <div key={index} className="mb-2">
               <Line
@@ -25,7 +24,7 @@ export default function FormattedParagraphsUnclickable({ text, pageIndex, PostFu
             </div>
           ))}
       </div>
-    );
+    )
 
  
 /*

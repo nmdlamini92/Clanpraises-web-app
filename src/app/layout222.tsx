@@ -32,7 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="google-adsense-account" content="ca-pub-9270162293112331" />
 
         {/* Adsterra Popunder script */}
-        {/*<script
+        <script
           dangerouslySetInnerHTML={{
             __html: `
               let popShown = false;
@@ -45,17 +45,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 s.setAttribute('data-cfasync', 'false');
                 document.body.appendChild(s);
               }
-
+                
               document.addEventListener('click', showPopunder, { once: true });
             `,
           }}
-        />*/}
+        />
 
-        {/* ✅ CSS for mobile vs desktop banners */} 
+        {/* ✅ CSS for mobile vs desktop banners */}
         <style>{`
+          .mobileShow { display: none; }
+          .mobileHide { display: block; }
+
+          @media only screen and (max-width: 480px) {
+            .mobileShow { display: block; }
+            .mobileHide { display: none; }
+          }
 
             .topBanner {
-              
+              width: 100%;
               text-align: center;
               display: flex;              
               justify-content: center;    
@@ -66,12 +73,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }
 
           .bottomBanner {
-              
+              width: 100%;
               text-align: center;
               display: flex;              
               justify-content: center;    
               align-items: center;
-              bottom: 0;
+              top: 0;
               z-index: 9999;
               background-color: rgba(214, 211, 209, 0.5);
           }
@@ -89,13 +96,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
 
       <body>
-        <>
         {/* TOP BANNER */}
         <div className="topBanner">
         {/* Mobile */}
-        <div className="md:hidden" id="adsterra-mobile-top">
+        <div className="mobileShow" id="adsterra-mobile-top"></div>
           <Script id="mobile-banner-top" strategy="afterInteractive">
             {`
+              if (!window.adsterraMobileTopLoaded) {
+                window.adsterraMobileTopLoaded = true;
 
                 var atOptions = {
                   key: 'ae9e7079a496fce88c4006f3946e3079',
@@ -107,18 +115,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
                 var s = document.createElement('script');
                 s.src = 'https://www.highperformanceformat.com/ae9e7079a496fce88c4006f3946e3079/invoke.js';
-                document.getElementById('adsterra-mobile-top')?.appendChild(s);
                 
+                setTimeout(function () {
+                  var container = document.getElementById('adsterra-mobile-top');
+                  if (container) {
+                    container.appendChild(s);
+                  }
+                }, 100);
+
+              }
             `}
           </Script>
-          </div>
-          
 
         {/* Desktop */}
-        <div className="hidden md:block" id="adsterra-desktop-top">
+        <div className="mobileHide" id="adsterra-desktop-top"></div>
           <Script id="desktop-banner-top" strategy="afterInteractive">
             {`
-              
+              if (!window.adsterraDesktopTopLoaded) {
+                window.adsterraDesktopTopLoaded = true;
 
                 var atOptions = {
                   key: '07b67ee0c5ed62b6038cd054fa5633a8',
@@ -127,26 +141,26 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   width: 728,
                   params: {}
                 };
-
                 var s = document.createElement('script');
                 s.src = 'https://www.highperformanceformat.com/07b67ee0c5ed62b6038cd054fa5633a8/invoke.js';
                 document.getElementById('adsterra-desktop-top')?.appendChild(s);
-              
+              }
             `}
           </Script>
-          </div>
       </div>
 
         {/* Rest of your app */}
         <Analytics />
-        <>{children}</>
+        <div id="root">{children}</div>
 
         {/*BOTTOM BANNER*/}
         <div className="bottomBanner">
         {/* Mobile */}
-        <div className="md:hidden" id="adsterra-mobile-bottom">
+        <div className="mobileShow" id="adsterra-mobile-bottom"></div>
           <Script id="mobile-banner-bottom" strategy="lazyOnload">
             {`
+              if (!window.adsterraMobileBottomLoaded) {
+                window.adsterraMobileBottomLoaded = true;
 
                 var atOptions = {
                   key: 'ae9e7079a496fce88c4006f3946e3079',
@@ -155,19 +169,27 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   width: 320,
                   params: {}
                 };
-
                 var s = document.createElement('script');
                 s.src = 'https://www.highperformanceformat.com/ae9e7079a496fce88c4006f3946e3079/invoke.js';
-                 document.getElementById('adsterra-mobile-bottom')?.appendChild(s);
-            
+                 
+                setTimeout(function () {
+                  var container = document.getElementById('adsterra-mobile-bottom');
+                  if (container) {
+                    container.appendChild(s);
+                  }
+                }, 100);
+
+             }
             `}
           </Script>
-          </div>
         
+
         {/* Desktop */}
-        <div className="hidden md:block" id="adsterra-desktop-bottom">
+        <div className="mobileHide" id="adsterra-desktop-bottom"></div>
           <Script id="desktop-banner-bottom" strategy="lazyOnload">
             {`
+              if (!window.adsterraDesktopBottomLoaded) {
+                window.adsterraDesktopBottomLoaded = true;
 
                 var atOptions = {
                   key: '07b67ee0c5ed62b6038cd054fa5633a8',
@@ -176,14 +198,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   width: 728,
                   params: {}
                 };
-
                 var s = document.createElement('script');
                 s.src = 'https://www.highperformanceformat.com/07b67ee0c5ed62b6038cd054fa5633a8/invoke.js';
                 document.getElementById('adsterra-desktop-bottom')?.appendChild(s);
-              
+              }
             `}
           </Script>
-          </div>
         
       </div>
 
@@ -193,9 +213,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           src="https://pl28975027.profitablecpmratenetwork.com/7d/72/ca/7d72cac07f0e550c2c3a7b9c1ea16604.js"
           strategy="afterInteractive"
         />
-        </>
       </body>
     </html>
   );
 }      
-     

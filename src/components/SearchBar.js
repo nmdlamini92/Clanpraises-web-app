@@ -329,7 +329,7 @@ const SearchBarWithSuggestions = ({setButtonBorderBold, setButtonBorderNormal}) 
       {hydrated && (
       <input
         type="text"
-        placeholder="search Clan name..."
+        placeholder="search Clan"
         value={searchTerm}
         onChange={handleInputChange}
         onFocus={handleFocus}
@@ -350,7 +350,7 @@ const SearchBarWithSuggestions = ({setButtonBorderBold, setButtonBorderNormal}) 
               selectedTribe: suggestion.tribe,//rightClickedSuggestion[index].tribe,
               AllClanPraisesInDB: ArrayList}}> 
               
-            <li className="dropdown-item bg-orange-50"
+            <li className="dropdown-item bg-orange-50 font-bold text-amber-950"
               key={index}
               onClick={() => handleSuggestionClick(suggestion)}
               onContextMenu={(e) => handleRightClick(e, suggestion)} 

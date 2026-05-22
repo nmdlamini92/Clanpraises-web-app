@@ -18,24 +18,18 @@ import SignInComp from "./SignInComp"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'
 import FormattedPoem from "./FormattedPoem";
-import FormattedParagraphs from "./FormattedParagraphs";
-import StarRating from "./FiveStarRating"
 import FacebookShareButton from "./ShareOnFacebook"
-import ShareButton from "./Sharebutton"
-import ShareClanPraise from "./ShareClanPraise"
 import Validations from "./Validations"
 import StarRatingInterActive from "./FiveStarRatingInterActive"
 import { createComment, deleteComment, createCommentOnDef} from "../services/Comments"
 import { CommentList } from "./CommentList"
-import { CommentForm } from "./CommentForm"
-import NotificationToggle from "./EmailNotificationsButton"
 import Card from "./CardClanPraise_HomePage"
 import Link from "next/link"
 import FormattedParagraphsUnclickable from "./FormattedParagraphsUnclickable"
+import FormattedParagraphsUnclickablePNotes from "./FormattedParagraphsUnclickablePNotes"
 import WhatsAppShareButton from "./ShareOnWhatsApp"
 import TwitterShareButton from "./ShareOnTwitter"
-import { useParams } from "next/navigation"
-import { useRouter } from "next/navigation";
+import Script from 'next/script';
 
 
 
@@ -1054,8 +1048,8 @@ export function Post() {
               <>
               <div>
                 <h1 className="mt-8 text-sm text-gray-600 font-medium ml-1">Clan praise</h1>
-                <div className="flex justify-end gap-1 mr-0.5">
-                  <FaShareAlt size={18} className="text-gray-500/30 mt-1"/>
+                <div className="flex justify-end items-center gap-1 mr-0.5">
+                  <FaShareAlt size={14} className="text-gray-500/30 mt-1"/>
                   <FacebookShareButton text={post.body} url={`https://clanpraises.com/${post.tribe.trim()}/${post.title.trim()}/${post.id}`}></FacebookShareButton>
                   <WhatsAppShareButton text={post.body} url={`https://clanpraises.com/${post.tribe.trim()}/${post.title.trim()}/${post.id}`}></WhatsAppShareButton>
                   <TwitterShareButton text={post.body} url={`https://clanpraises.com/${post.tribe.trim()}/${post.title.trim()}/${post.id}`}></TwitterShareButton>
@@ -1134,13 +1128,13 @@ export function Post() {
               </div>
                 <div className="flex justify-between bg-white/10">
                 <span>
-                  <p className="text-[8px] ml-1 pt-2 italic">
-                    {(post.user.username === "mave" || post.user.username === "nmd") && (
+                  <div className="text-[8px] ml-1 pt-2 italic">
+                    {(post.user.username === "r_mdvumo_patricks") && (
                       <>adapted from Tibongo Netinanatelo TemaSwati - R. Mdvumowencwala Patrick</>
                     )}
-                    {(!(post.user.username === "mave") && !(post.user.username === "nmd")) && (
+                    {(post.user.username !== "r_mdvumo_patricks") && (
                       <div className="flex justify-center items-align items-center gap-1">
-                      <p>Source: </p>
+                      Source:
                       <IconBtn 
                          Icon={props => <FaUser {...props} //size={12} 
                          className="text-[8px] sm:text-xs text-amber-900"/>} 
@@ -1151,17 +1145,17 @@ export function Post() {
                       </div>
               
                     )}
-                  </p>
+                  </div>
                 </span>
                 <span>
-                  {!((post.user.id === currentUser.id) || ((guestEmail) && guestEmail.guestEmail === post.user.email)) && (
+                  {((post.user.id !== currentUser.id) && (post.user.username !== "r_mdvumo_patricks")) && (
                   <>
-                  {/*<IconBtn
-                      Icon={props => <FaFlag {...props} size={15} className="text-white/50"/>}
+                  <IconBtn
+                      Icon={props => <FaFlag {...props} size={15} className="text-stone-400"/>}
                       onClick={handleOpenReportModal}
                     >
                       <p className="text-red-700 text-[10px]"></p>
-                    </IconBtn>*/}
+                    </IconBtn>
                     </>
                       )}
                       {(guestEmail) && (
@@ -1180,41 +1174,110 @@ export function Post() {
           </span>
               </div>
               </div>
-              <div className=" flex flex-col items-center h-2 bg-white/10 border-b border-[#9a9393] rounded-lg shadow-md ">           
+              <div className=" flex flex-col items-center h-2 mb-2 bg-white/10 border-b border-[#9a9393] rounded-lg shadow-md ">           
             </div>
               {/*<h1 className="mt-8 text-sm text-gray-600 mb-4 font-medium ml-1">Related Posts</h1>*/}
               </>
-             
-             
+    
+
       {( (post.bodyEnglish !== "" && post.bodyEnglish !== null ) && (
         <>
             <div>
               <div className="flex justify-between">
               <h1 className="mt-8 text-sm text-gray-600 mb-4 font-medium ml-1">Clan history, customs, information</h1>
+              
               <div className="flex justify-center gap-1 mr-0.5 mb-0.5">
-                <p className="text-sm italic mt-14 text-gray-500 font-thin">language:</p>
-                <select
-                  id="dropdown"
-                  //value={selectedOption}
-                  onChange={handleChangeLanguage}
-                  className="border border-amber-500 text-xs mt-14 w-fit h-fit py-0.5 px-1"
-                //style={{ marginLeft: "1px", padding: "1px" }}
-                >
-                  <option className="text-xs"value="English">English</option>
-                  <option className="text-xs" value="Swati">Swati</option>
-                </select>
+                {( post.bodySiswati !== "" &&  post.bodySiswati !== null) && (
+                  <>
+                  <p className="text-sm italic mt-14 text-gray-500 font-thin">language:</p>
+                  <select
+                    id="dropdown"
+                    //value={selectedOption}
+                    onChange={handleChangeLanguage}
+                    className="border border-amber-500 text-xs mt-14 w-fit h-fit py-0.5 px-1"
+                  //style={{ marginLeft: "1px", padding: "1px" }}
+                  >
+                    <option className="text-xs"value="English">English</option>
+                    <option className="text-xs" value="Swati">Swati</option>
+                  </select>
+                  </>
+                )}
               </div>
+
               </div>
               {historyTextlanguage.split(/\s*################################\s*/)   //split(/(?=^.*?page\s+\d+.*\n\s*draft of .*? by .*? PATRICKS, Museum, )/m)     Mdvumowencwala PATRICKS, Museum, Lobamba
                         .map((page, index, pages) => (
                 <div key={index}>
-                  <div className="mb-8">
+                  <div className="mb-2">
                   <div className="whitespace-pre-wrap font-mono text-sm text-left max-w-2xl mx-auto bg-white/10 p-1">
+                    {((post.bodySiswati !== "" && post.bodySiswati !== null) && (
+                    <FormattedParagraphsUnclickablePNotes text={page} pageIndex={index} PostFullText={historyTextlanguage}/>
+                    ))}
+                    {((post.bodySiswati === "" || post.bodySiswati === null) && (
                     <FormattedParagraphsUnclickable text={page} pageIndex={index} PostFullText={historyTextlanguage}/>
+                    ))}
+                    {(post.user.username !== "r_mdvumo_patricks") && (
+                      <div className="flex gap-1">
+                        <div className="text-[8px] italic font-medium">Source:</div>
+                        <IconBtn 
+                          Icon={props => <FaUser {...props} //size={12} 
+                          className="text-[8px] sm:text-xs text-amber-900"/>} 
+                          style={{ marginBottom: 0}}
+                          >
+                          <p className="text-amber-900 text-[8px] sm:text-xs lowercase"><strong>{post.user.username}</strong></p>
+                        </IconBtn>
+                      </div>
+                    )}
                   </div>
                     {(post.bodySiswati !== "" && post.bodySiswati !== null && index === pages.length - 1) && (
                       <p className="text-[8px] ml-1 italic mt-1">Adapted and translated from the archival notes of R. Mdvumowencwala Patrick.</p>
                     )}
+                    
+                    {/*ADSTERRA DISPLAY BANNER*/}
+                            <div className="withinContentBanner mt-4 mb-4">
+                            {/* Mobile */}
+                            <div className="md:hidden" id="adsterra-mobile-incontent"></div>
+                              <Script id="mobile-banner-inontent" strategy="lazyOnload">
+                                {`
+                                  if (!window.adsterraMobileIncontentLoaded) {
+                                    window.adsterraMobileIncontentLoaded = true;
+                    
+                                    var atOptions = {
+                                      key: 'ae9e7079a496fce88c4006f3946e3079',
+                                      format: 'iframe',
+                                      height: 50,
+                                      width: 320,
+                                      params: {}
+                                    };
+                                    var s = document.createElement('script');
+                                    s.src = 'https://www.highperformanceformat.com/ae9e7079a496fce88c4006f3946e3079/invoke.js';
+                                    document.getElementById('adsterra-mobile-incontent')?.appendChild(s);
+                                  }
+                                `}
+                              </Script>
+                    
+                            {/* Desktop */}
+                            <div className="hidden md:block" id="adsterra-desktop-incontent"></div>
+                              <Script id="desktop-banner-incontent" strategy="lazyOnload">
+                                {`
+                                  if (!window.adsterraDesktopIncontentLoaded) {
+                                    window.adsterraDesktopIncontentLoaded = true;
+                    
+                                    var atOptions = {
+                                      key: '07b67ee0c5ed62b6038cd054fa5633a8',
+                                      format: 'iframe',
+                                      height: 90,
+                                      width: 728,
+                                      params: {}
+                                    };
+                                    var s = document.createElement('script');
+                                    s.src = 'https://www.highperformanceformat.com/07b67ee0c5ed62b6038cd054fa5633a8/invoke.js';
+                                    document.getElementById('adsterra-desktop-incontent')?.appendChild(s);
+                                  }
+                                `}
+                              </Script>
+                          </div>
+
                   </div>
                 </div>
               ))}
