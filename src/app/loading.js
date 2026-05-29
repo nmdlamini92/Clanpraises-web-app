@@ -1,58 +1,80 @@
 export default function Loading() {
   return (
     <>
-      {/* Header Skeleton */}
-      <div className="hidden md:block">
-        <div className="h-16 w-full bg-gray-200 animate-pulse" />
-      </div>
-      <div className="md:hidden">
-        <div className="h-14 w-full bg-gray-200 animate-pulse" />
-      </div>
+      <div className="flex flex-col min-h-screen">
 
-      {/* Main Content */}
-      <div className="flex flex-col items-center min-h-screen">
-        <div className="flex flex-col justify-center gap-4 p-2 mt-8 max-w-2xl w-full">
+        {/* Header */}
+        <div className="hidden md:block">
+          <div className="h-16 w-full bg-gray-200 animate-pulse" />
+        </div>
+        <div className="md:hidden">
+          <div className="h-14 w-full bg-gray-200 animate-pulse" />
+        </div>
 
-          {/* Add & Search Bar Skeleton */}
-          <div className="h-12 w-full rounded-md bg-gray-200 animate-pulse" />
+        {/* Main Content */}
+        <div className="flex flex-col mt-8 items-center flex-grow">
 
-          {/* Featured Literature Heading */}
-          <div className="mt-8 mb-4">
-            <div className="h-4 w-40 bg-gray-200 animate-pulse" />
+          {/* Search Bar */}
+          <div className="w-full max-w-2xl px-2">
+            <div className="h-12 w-full rounded-md bg-gray-200 animate-pulse" />
           </div>
 
-          {/* Featured Literature Cards */}
-          <div className="flex flex-col md:flex-row justify-center items-center gap-6">
-
-            {/* Book Card Skeleton */}
-            <div className="flex flex-col items-center gap-3 bg-white/30 p-2 rounded-md w-full md:w-auto">
-              {/* Title */}
-              <div className="h-4 w-48 bg-gray-200 animate-pulse" />
-
-              {/* Cover Image */}
-              <div className="w-[280px] sm:w-[300px] h-[400px] sm:h-[430px] rounded-md bg-gray-300 animate-pulse border-2 border-amber-300/30" />
-            </div>
-
-            {/* Optional second card skeleton (if you re-enable later) */}
-            {/* 
-            <div className="flex flex-col items-center gap-3 bg-white/30 p-2 rounded-md w-full md:w-auto">
-              <div className="h-4 w-56 bg-gray-200 animate-pulse" />
-              <div className="w-[280px] sm:w-[300px] h-[400px] sm:h-[430px] rounded-md bg-gray-300 animate-pulse border-2 border-amber-300/30" />
-            </div>
-            */}
+          {/* Tribe Title */}
+          <div className="mt-6">
+            <div className="h-8 sm:h-9 md:h-10 lg:h-11 w-56 sm:w-64 md:w-72 lg:w-80 bg-gray-300 animate-pulse rounded-md" />
           </div>
 
-          {/* Feedback Button Skeleton */}
-          <div className="mt-6 flex justify-center">
+          {/* Clan List Skeleton */}
+          <div className="flex flex-col mt-8 items-center flex-grow">
+          <div className="flex-col justify-center items-center w-full">
+            <div className="flex justify-center flex-wrap mt-4 lg:mt-5 lg:max-w-2xl md:max-w-2xl max-auto p-1">
+
+              {/* Generate column skeletons */}
+              {Array.from({ length: 6 }).map((_, colIndex) => (
+                <div
+                  key={colIndex}
+                  className="flex flex-col items-center min-w-[135px] p-1.5 gap-2"
+                >
+                  {Array.from({ length: 14 }).map((_, rowIndex) => (
+                    <div
+                      key={rowIndex}
+                      className="h-4 md:h-5 w-24 md:w-28 bg-gray-200 animate-pulse rounded"
+                    />
+                  ))}
+                </div>
+              ))}
+
+            </div>
+            </div>
+
+            {/* Feedback – large screens */}
+            <div className="hidden lg:block">
+              <div className="flex flex-col items-center mt-6">
+                <div className="h-10 w-40 rounded-md bg-gray-200 animate-pulse" />
+              </div>
+            </div>
+          </div>
+
+          {/* Feedback – small screens */}
+          <div className="sm:hidden mt-4">
+            <div className="h-10 w-40 rounded-md bg-gray-200 animate-pulse mx-auto" />
+          </div>
+
+          {/* Feedback – medium screens */}
+          <div className="hidden sm:flex lg:hidden gap-5 mt-6 md:mt-8">
             <div className="h-10 w-40 rounded-md bg-gray-200 animate-pulse" />
           </div>
-        </div>
-      </div>
 
-      {/* Footer Skeleton */}
-      <div className="mt-8 md:mt-12">
-        <div className="h-24 w-full bg-gray-200 animate-pulse" />
+        </div>
+
+        {/* Footer */}
+        <div className="mt-8 md:mt-12 lg:mt-8">
+          <div className="h-24 w-full bg-gray-200 animate-pulse" />
+        </div>
+
       </div>
     </>
   );
 }
+
+

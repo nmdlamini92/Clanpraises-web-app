@@ -29,10 +29,12 @@ export default function AboutPage() {
     <main className="flex flex-col p-6 max-w-2xl mt-8">
       <h1 className="text-2xl font-bold mb-4">About Us</h1>
       <p className="sm">
-        clanpraises.com is commonizing the knowledge of clan praises and their meaning/context. <br></br><br></br>
+        
+        
+        Clan praises, customs, history and more. <br></br><br></br>
         Share your insights/notes on featured clan praises, or add a clan praise to be featured. <br></br><br></br>
-        We also feature clan history, clan customs and more. <br></br><br></br>
-        {/*Our passion is story telling and context preservation.<br></br><br></br>*/}
+        {/*Our passion is story telling and context preservation. <br></br><br></br>*/}
+        
       </p>
     </main>
     </div>

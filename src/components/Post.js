@@ -569,6 +569,11 @@ export function Post() {
         }
           
         const handleReviewDef = (defData) => {
+
+          if(isUserSignedIn.isUserSignedIn === false) {
+            handleOpenLogInModal()
+          }
+          else {
             console.log(defData);
             //setDefinitionReviews(defData.defReviews);
             setDefinitionId(defData.defId);
@@ -576,6 +581,8 @@ export function Post() {
             setCurrentDefRating(defData.defRating)
             setCurrentNumOfDefReviews(defData.numbOfDefReviews)
           }
+
+        }
 
         const handleOpenDefCommentsModal = (defData) => {
           console.log(defData)
