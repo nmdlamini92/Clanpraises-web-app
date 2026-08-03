@@ -32,7 +32,7 @@ export default function AboutPage() {
         
         
         Clan praises, customs, history and more. <br></br><br></br>
-        Share your insights/notes on featured clan praises, or add a clan praise to be featured. <br></br><br></br>
+        Find or share insights/notes on featured clan praises, or add a clan praise to be featured. <br></br><br></br>
         {/*Our passion is story telling and context preservation. <br></br><br></br>*/}
         
       </p>

@@ -59,7 +59,6 @@ export function Post() {
     console.log(rootComments) 
     console.log(rootDefinitions);
     console.log(rootReviews);
-    console.log(`192.168.1.172:3000/${post.tribe}/${post.title}/${post.id}`);
     console.log(post.user.id);
 
     const VipUserID = JSON.parse(localStorage.getItem('VipUserId'));
@@ -1036,6 +1035,10 @@ export function Post() {
       }
 
     }
+
+    console.log("Running mobile banner");
+    console.log(document.getElementById("adsterra-mobile-incontent"));
+    console.log(window.innerWidth);
     
   return (
     <>
@@ -1059,8 +1062,7 @@ export function Post() {
                   <FaShareAlt size={14} className="text-gray-500/30 mt-1"/>
                   <FacebookShareButton text={post.body} url={`https://clanpraises.com/${post.tribe.trim()}/${post.title.trim()}/${post.id}`}></FacebookShareButton>
                   <WhatsAppShareButton text={post.body} url={`https://clanpraises.com/${post.tribe.trim()}/${post.title.trim()}/${post.id}`}></WhatsAppShareButton>
-                  <TwitterShareButton text={post.body} url={`https://clanpraises.com/${post.tribe.trim()}/${post.title.trim()}/${post.id}`}></TwitterShareButton>
-                  {/*<ShareButton text={post.title} url={`https://192.168.1.172:3000/tinanatelo/${post.title.trim()}/${post.id}`}> </ShareButton>*/}
+                  <TwitterShareButton text={post.body} url={`https://clanpraises.com/${post.tribe.trim()}/${post.title.trim()}/${post.id}`}></TwitterShareButton>                
                 </div>
                 <div className="flex flex-col gap-2 bg-white/10 pt-3 pb-3 rounded-sm"> 
                   <div>
@@ -1136,9 +1138,6 @@ export function Post() {
                 <div className="flex justify-between bg-white/10">
                 <span>
                   <div className="text-[8px] ml-1 pt-2 italic">
-                    {(post.user.username === "r_mdvumo_patricks") && (
-                      <>adapted from Tibongo Netinanatelo TemaSwati - R. Mdvumowencwala Patrick</>
-                    )}
                     {(post.user.username !== "r_mdvumo_patricks") && (
                       <div className="flex justify-center items-align items-center gap-1">
                       Source:
@@ -1181,11 +1180,44 @@ export function Post() {
           </span>
               </div>
               </div>
-              <div className=" flex flex-col items-center h-2 mb-2 bg-white/10 border-b border-[#9a9393] rounded-lg shadow-md ">           
+              <div className=" flex flex-col items-center h-2 bg-white/10 border-b border-[#9a9393] rounded-lg shadow-md ">           
+            </div>
+
+            <div className="text-[8px] ml-1 italic mt-0.5">
+             {(post.user.username === "r_mdvumo_patricks") && (
+                      <>adapted from Tibongo Netinanatelo TemaSwati - R. Mdvumowencwala Patrick</>
+                    )}
             </div>
               {/*<h1 className="mt-8 text-sm text-gray-600 mb-4 font-medium ml-1">Related Posts</h1>*/}
               </>
-    
+
+              {/*ADSTERRA DISPLAY BANNER*/}
+                  {((post.bodyEnglish !== "" && post.bodyEnglish !== null) || (post.relatedPosts.filter(obj => obj['id'] !== post.id).length > 0)) && (
+                      
+                            
+                            <>
+                            <div className="flex justify-center mt-4" id="adsterra-desktop-incontent"></div>
+                              <Script id="desktop-banner-incontent" strategy="lazyOnload">
+                                {`
+                                  if (!window.adsterraDesktopIncontentLoaded) {
+                                    window.adsterraDesktopIncontentLoaded = true;
+                    
+                                    var atOptions = {
+                                      key: '07b67ee0c5ed62b6038cd054fa5633a8',
+                                      format: 'iframe',
+                                      height: 90,
+                                      width: 728,
+                                      params: {}
+                                    };
+                                    var s = document.createElement('script');
+                                    s.src = 'https://considerableinsanityaside.com/07b67ee0c5ed62b6038cd054fa5633a8/invoke.js';
+                                    document.getElementById('adsterra-desktop-incontent')?.appendChild(s);
+                                  }
+                                `}
+                              </Script>
+                              </>
+                              
+                  )}
 
       {( (post.bodyEnglish !== "" && post.bodyEnglish !== null ) && (
         <>
@@ -1240,50 +1272,10 @@ export function Post() {
                       <p className="text-[8px] ml-1 italic mt-1">Adapted and translated from the archival notes of R. Mdvumowencwala Patrick.</p>
                     )}
                     
-                    {/*ADSTERRA DISPLAY BANNER*/}
-                            <div className="withinContentBanner mt-4 mb-4">
-                            {/* Mobile */}
-                            <div className="md:hidden" id="adsterra-mobile-incontent"></div>
-                              <Script id="mobile-banner-inontent" strategy="lazyOnload">
-                                {`
-                                  if (!window.adsterraMobileIncontentLoaded) {
-                                    window.adsterraMobileIncontentLoaded = true;
-                    
-                                    var atOptions = {
-                                      key: 'ae9e7079a496fce88c4006f3946e3079',
-                                      format: 'iframe',
-                                      height: 50,
-                                      width: 320,
-                                      params: {}
-                                    };
-                                    var s = document.createElement('script');
-                                    s.src = 'https://www.highperformanceformat.com/ae9e7079a496fce88c4006f3946e3079/invoke.js';
-                                    document.getElementById('adsterra-mobile-incontent')?.appendChild(s);
-                                  }
-                                `}
-                              </Script>
-                    
-                            {/* Desktop */}
-                            <div className="hidden md:block" id="adsterra-desktop-incontent"></div>
-                              <Script id="desktop-banner-incontent" strategy="lazyOnload">
-                                {`
-                                  if (!window.adsterraDesktopIncontentLoaded) {
-                                    window.adsterraDesktopIncontentLoaded = true;
-                    
-                                    var atOptions = {
-                                      key: '07b67ee0c5ed62b6038cd054fa5633a8',
-                                      format: 'iframe',
-                                      height: 90,
-                                      width: 728,
-                                      params: {}
-                                    };
-                                    var s = document.createElement('script');
-                                    s.src = 'https://www.highperformanceformat.com/07b67ee0c5ed62b6038cd054fa5633a8/invoke.js';
-                                    document.getElementById('adsterra-desktop-incontent')?.appendChild(s);
-                                  }
-                                `}
-                              </Script>
-                          </div>
+                    {/*ADSTERRA NATIVE BANNER 1*/}
+                          
+                      <script async="async" data-cfasync="false" src="https://considerableinsanityaside.com/f5264805580a0f88f7005898ff27bdfd/invoke.js"></script>
+                      <div id="container-f5264805580a0f88f7005898ff27bdfd"></div>
 
                   </div>
                 </div>
@@ -1295,7 +1287,18 @@ export function Post() {
             )}
       </div>  
       
-           
+      {/*ADSTERRA NATIVE BANNER 2*/}
+
+       
+            {(post.bodySiswati.includes("############################")) && (
+              <>
+              <script async="async" data-cfasync="false" src="https://considerableinsanityaside.com/aee155f50d5d17d8385dcaa2f25aa29b/invoke.js"></script>
+              <div id="container-aee155f50d5d17d8385dcaa2f25aa29b"></div>
+              </>
+            )}
+        
+
+
       {(post.relatedPosts.filter(obj => obj['id'] !== post.id).length > 0  &&
         <p className="mt-10 text-sm text-gray-600 mb-1 font-medium ">Related clans</p>
       )}

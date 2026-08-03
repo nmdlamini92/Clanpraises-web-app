@@ -110,7 +110,7 @@ app.addHook("onRequest", (req, res, done) => {
     res.setCookie('visitorId', visitorId, {
       path: '/',
       //domain: '.clanpraises.com',                    //comment out in dev, activate in deployment
-      httpOnly: false,
+      httpOnly: true,
       //secure: true,                          //comment out in dev, activate in deployment
       sameSite: 'lax',
       expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000) // 1 year expiration

@@ -203,7 +203,7 @@ static async signup(req, reply) {
     reply
     .setCookie('jwt', token, {
       withCredentials: true,
-      httpOnly: false,            // Ensures cookie is only accessible via HTTP(S), not JavaScript
+      httpOnly: true,            // Ensures cookie is only accessible via HTTP(S), not JavaScript
       maxAge: maxAge,             // Set cookie expiration time in seconds
       //secure: true,             //comment out in dev, activate in deployment (Ensures the cookie is only sent over HTTPS)
       //domain: '.clanpraises.com',       //comment out in dev, activate in deployment
@@ -217,7 +217,7 @@ static async signup(req, reply) {
       console.log(error.meta.target[0]);
 
       //const errors = handleErrors(error);
-      return reply.send({status: false, error11: "oops! (this is awkward) It looks like site is currentyly under maintainance, plsease try again later"});
+      return res.send({status: false, error11: "oops! (this is awkward) It looks like site is currentyly under maintainance, plsease try again later"});
       //reply.status(500).send({ error: 'An error occurred while saving user details'});
     }
   }
@@ -244,7 +244,7 @@ static async signup(req, reply) {
             reply.setCookie('jwt', token, {
               withCredentials: true, 
               //secure: true,                     //comment out in dev, activate in deployment
-              httpOnly: false, 
+              httpOnly: true, 
               //domain: '.clanpraises.com',               //comment out in dev, activate in deployment
               sameSite: 'lax', 
               path: '/', 

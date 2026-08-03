@@ -21,7 +21,7 @@ import Image from "next/image";
 export const dynamic = 'force-dynamic';
 
 
-  export async function generateMetadata({}) {  //process.env.NEXT_PUBLIC_API_URL 'localhost:3001'
+  export async function generateMetadata({}) {  
 
     const TribesList = await fetch(`${process.env.API_URL}/tribes`).then((res) => res.json())
 
@@ -53,7 +53,7 @@ export const dynamic = 'force-dynamic';
 
     const TribesList = await fetch(`${process.env.API_URL}/tribes`).then((res) => res.json())
 
-    console.log('NEXT_PUBLIC_API_URL (page):', process.env.API_URL);
+   
 
     const TribeList_nonEmpty = TribesList.filter(item => item._count.clanpraises > 0);
 
@@ -146,7 +146,7 @@ export const dynamic = 'force-dynamic';
         </div>*/}
       </div>
       </div>
-
+      
       {/* Footer */}
         <div className="hidden md:block mt-8 md:mt-12">
           <Footer />

@@ -2,6 +2,7 @@ import './styles.css';
 import React from 'react';
 import Script from 'next/script';
 import Analytics from './analytics';
+import AdsterraApp from '../components/AdsterraMob';
 
 export const metadata = {
   title: 'Clan praises',
@@ -29,29 +30,28 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           `}
         </Script>
 
+
         <meta name="google-adsense-account" content="ca-pub-9270162293112331" />
 
-        {/* Adsterra Popunder script */}
-        {/*<script
-          dangerouslySetInnerHTML={{
-            __html: `
-              let popShown = false;
-              function showPopunder() {
-                if (popShown) return;
-                popShown = true;
+        <meta name='admaven-placement' content="BqTrEpjUF" />
 
-                var s = document.createElement('script');
-                s.src = "https://pl28974908.profitablecpmratenetwork.com/57/9d/fa/579dfad2ba37747966d9ac94ec1f47dc.js";
-                s.setAttribute('data-cfasync', 'false');
-                document.body.appendChild(s);
-              }
+         {/**Hiltop adds */}
+        <meta name="85a185e8c46d9b4c48d1dce546bc6e8885367332" content="85a185e8c46d9b4c48d1dce546bc6e8885367332" />
 
-              document.addEventListener('click', showPopunder, { once: true });
-            `,
-          }}
-        />*/}
+        {/**Hiltop adds */}
+        <meta name="referrer" content="no-referrer-when-downgrade" />
 
-        {/* ✅ CSS for mobile vs desktop banners */} 
+        {/**Admaven pop up adds */}
+        {/*<Script data-cfasync="false" src="//dcbbwymp1bhlf.cloudfront.net/?wbbcd=1399035"/>*/}
+
+        {/**Admaven in-page push */}
+        <Script data-cfasync="false" src="//dcbbwymp1bhlf.cloudfront.net/?wbbcd=1399166"/>
+
+        {/**Admaven push notifications */}
+        {/*<Script data-cfasync="false" src="/sw.js"/>*/}
+
+
+        {/* ✅ CSS for Addsterra mobile vs desktop banners */} 
         <style>{`
 
             .topBanner {
@@ -86,36 +86,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }
           
         `}</style>
+
       </head>
 
       <body>
         <>
         {/* TOP BANNER */}
-        <div className="topBanner">
-        {/* Mobile */}
-        <div className="md:hidden" id="adsterra-mobile-top">
-          <Script id="mobile-banner-top" strategy="afterInteractive">
-            {`
-
-                var atOptions = {
-                  key: 'ae9e7079a496fce88c4006f3946e3079',
-                  format: 'iframe',
-                  height: 50,
-                  width: 320,
-                  params: {}
-                };
-
-                var s = document.createElement('script');
-                s.src = 'https://www.highperformanceformat.com/ae9e7079a496fce88c4006f3946e3079/invoke.js';
-                document.getElementById('adsterra-mobile-top')?.appendChild(s);
-                
-            `}
-          </Script>
-          </div>
-          
-
-        {/* Desktop */}
-        <div className="hidden md:block" id="adsterra-desktop-top">
+        <div className="flex justify-center bg-white/20" id="adsterra-desktop-top">
           <Script id="desktop-banner-top" strategy="afterInteractive">
             {`
               
@@ -135,37 +112,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             `}
           </Script>
           </div>
-      </div>
+        
+        
 
         {/* Rest of your app */}
         <Analytics />
         <>{children}</>
 
         {/*BOTTOM BANNER*/}
-        <div className="bottomBanner">
-        {/* Mobile */}
-        <div className="md:hidden" id="adsterra-mobile-bottom">
-          <Script id="mobile-banner-bottom" strategy="lazyOnload">
-            {`
-
-                var atOptions = {
-                  key: 'ae9e7079a496fce88c4006f3946e3079',
-                  format: 'iframe',
-                  height: 50,
-                  width: 320,
-                  params: {}
-                };
-
-                var s = document.createElement('script');
-                s.src = 'https://www.highperformanceformat.com/ae9e7079a496fce88c4006f3946e3079/invoke.js';
-                 document.getElementById('adsterra-mobile-bottom')?.appendChild(s);
-            
-            `}
-          </Script>
-          </div>
-        
-        {/* Desktop */}
-        <div className="hidden md:block" id="adsterra-desktop-bottom">
+        <div className="flex justify-center bg-stone-300/50" id="adsterra-desktop-bottom">
           <Script id="desktop-banner-bottom" strategy="lazyOnload">
             {`
 
@@ -184,15 +139,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             `}
           </Script>
           </div>
-        
-      </div>
-
-        {/* Adsterra Social Bar script */}
-        <Script
-          data-cfasync="false"
-          src="https://pl28975027.profitablecpmratenetwork.com/7d/72/ca/7d72cac07f0e550c2c3a7b9c1ea16604.js"
-          strategy="afterInteractive"
-        />
         </>
       </body>
     </html>

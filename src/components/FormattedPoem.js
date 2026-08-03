@@ -68,7 +68,7 @@ function Line({ text, lineIndex, numOfDefinitions, isActive, onHover, onLeave, o
   return (
     <p
       className={`px-0.5 py-0 my-0 rounded-sm cursor-pointer transition-all duration-200 w-fit text-[14px] sm:text-[15px] md:text-[16px] lg:text-[17px] ${
-        isActive ? "bg-amber-100" : numOfDefinitions>0? "bg-gray-300/30" : ""      //bg-amber-200 : bg-slate-50
+        isActive ? "bg-amber-100" : numOfDefinitions>0? "bg-transparent" : ""      //bg-gray-300/30
       }`}
       style={{
         display: "inline-block",  // Shrink to fit content, even when wrapped

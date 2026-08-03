@@ -76,7 +76,8 @@ model Post {
 
 model User {
   id   String @id @default(uuid())
-  name String
+  username String
+  email String
 }
 
 model Review {

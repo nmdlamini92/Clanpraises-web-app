@@ -12,7 +12,8 @@ export default class checkSignInStatus {
 
         console.log(req.body)
         console.log(req.cookies);
-        const token = req.body.cookies.jwt;
+        const token1 = req.cookies.jwt
+        const token = token1.split(",")[0];
         console.log(token);
       
         if (!token) {

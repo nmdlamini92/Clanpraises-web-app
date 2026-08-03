@@ -83,7 +83,7 @@ export async function googleCallback(req, reply) {
     reply
       .setCookie("jwt", jwtToken, {
          withCredentials: true,
-            httpOnly: false,            // Ensures cookie is only accessible via HTTP(S), not JavaScript
+            httpOnly: true,            // Ensures cookie is only accessible via HTTP(S), not JavaScript
             maxAge: maxAge,             // Set cookie expiration time in seconds
             //secure: true,             //comment out in dev, activate in deployment (Ensures the cookie is only sent over HTTPS)
             //domain: '.clanpraises.com',       //comment out in dev, activate in deployment
@@ -148,7 +148,7 @@ export async function googleCallback(req, reply) {
       reply
         .setCookie("jwt", jwt, {
            withCredentials: true,
-            httpOnly: false,            // Ensures cookie is only accessible via HTTP(S), not JavaScript
+            httpOnly: true,            // Ensures cookie is only accessible via HTTP(S), not JavaScript
             maxAge: maxAge,             // Set cookie expiration time in seconds
             //secure: true,             //comment out in dev, activate in deployment (Ensures the cookie is only sent over HTTPS)
             //domain: '.ilan.my',       //comment out in dev, activate in deployment
