@@ -11,7 +11,7 @@ import FooterMobile from "../../../../components/FooterMobile";
 import AddNsearchBar from "../../../../components/AddClanNsearchBar";
 
 
-export default function ClanPraiseClient() {
+export default function ClanPraiseClient({ nonce }) {
   return (
       <>
       <div className="flex flex-col min-h-screen">
@@ -26,7 +26,7 @@ export default function ClanPraiseClient() {
           <AddNsearchBar/>
           <div className="mt-8">
             <PostProvider>
-            <Post/>
+            <Post nonce={nonce}/>
             </PostProvider>
           </div>
         </div>

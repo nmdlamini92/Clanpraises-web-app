@@ -2,6 +2,7 @@ import ClanPraiseClient from "./client-clanpraise";
 import SendFeedback from "../../../../components/SendFeedback";
 import { redirect, notFound } from "next/navigation";
 import { getAllPosts } from "../../../../lib/posts";
+import { headers } from "next/headers";
 
 
 export const revalidate = 60;
@@ -64,6 +65,8 @@ export const dynamicParams = true;
 
   export default async function ClanPraisePage({params}) {
 
+    const nonce = (await headers()).get("x-nonce");
+
     const { id, tribe, posts } = await params;
 
     //const clanpraise = await fetch(`${process.env.API_URL}/headers/${id}`).then((res) => res.json())
@@ -88,7 +91,7 @@ export const dynamicParams = true;
 
       return (
           <div>
-          <ClanPraiseClient />
+          <ClanPraiseClient nonce={nonce}/>
           </div>
       )
     }

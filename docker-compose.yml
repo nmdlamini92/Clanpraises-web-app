@@ -36,8 +36,8 @@ services:
     container_name: bantu-db
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ligusha101
-      POSTGRES_DB: swaclans
+      POSTGRES_PASSWORD: mavulakuvaliwe
+      POSTGRES_DB: postgres
     ports:
       - "5432:5432"
     volumes:

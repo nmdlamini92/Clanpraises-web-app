@@ -1062,7 +1062,7 @@ export function Post() {
                   <FaShareAlt size={14} className="text-gray-500/30 mt-1"/>
                   <FacebookShareButton text={post.body} url={`https://clanpraises.com/${post.tribe.trim()}/${post.title.trim()}/${post.id}`}></FacebookShareButton>
                   <WhatsAppShareButton text={post.body} url={`https://clanpraises.com/${post.tribe.trim()}/${post.title.trim()}/${post.id}`}></WhatsAppShareButton>
-                  <TwitterShareButton text={post.body} url={`https://clanpraises.com/${post.tribe.trim()}/${post.title.trim()}/${post.id}`}></TwitterShareButton>                
+                  <TwitterShareButton text={post.body} url={`https://clanpraises.com/${post.tribe.trim()}/${post.title.trim()}/${post.id}`}></TwitterShareButton>
                 </div>
                 <div className="flex flex-col gap-2 bg-white/10 pt-3 pb-3 rounded-sm"> 
                   <div>

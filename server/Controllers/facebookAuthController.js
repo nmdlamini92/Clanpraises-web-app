@@ -68,8 +68,8 @@ export async function facebookCallback(req, reply) {
            withCredentials: true,
             httpOnly: true,            // Ensures cookie is only accessible via HTTP(S), not JavaScript
             maxAge: maxAge,             // Set cookie expiration time in seconds
-            //secure: true,             //comment out in dev, activate in deployment (Ensures the cookie is only sent over HTTPS)
-            //domain: '.clanpraises.com',       //comment out in dev, activate in deployment
+            secure: true,             //comment out in dev, activate in deployment (Ensures the cookie is only sent over HTTPS)
+            domain: '.clanpraises.com',       //comment out in dev, activate in deployment
             path: '/',
         })
         //.send({ status: true, userID: user.id, userName: user.name, message: 'Sign-up with FACEBOOK successful' });

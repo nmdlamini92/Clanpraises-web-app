@@ -43,7 +43,6 @@ app.register(cors, {
     'https://clanpraises.com',
     'https://www.clanpraises.com',
     'http://localhost:3000',
-    'http://192.168.1.172:3000',
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -109,11 +108,11 @@ app.addHook("onRequest", (req, res, done) => {
     visitorId = uuidv4();
     res.setCookie('visitorId', visitorId, {
       path: '/',
-      //domain: '.clanpraises.com',                    //comment out in dev, activate in deployment
+      domain: '.clanpraises.com',                                                //comment out in dev, activate in deployment
       httpOnly: true,
-      //secure: true,                          //comment out in dev, activate in deployment
+      secure: true,                                                               //comment out in dev, activate in deployment
       sameSite: 'lax',
-      expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000) // 1 year expiration
+      expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)                   // 1 year expiration
     });
   }
   done()

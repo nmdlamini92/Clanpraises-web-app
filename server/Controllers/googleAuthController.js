@@ -85,8 +85,8 @@ export async function googleCallback(req, reply) {
          withCredentials: true,
             httpOnly: true,            // Ensures cookie is only accessible via HTTP(S), not JavaScript
             maxAge: maxAge,             // Set cookie expiration time in seconds
-            //secure: true,             //comment out in dev, activate in deployment (Ensures the cookie is only sent over HTTPS)
-            //domain: '.clanpraises.com',       //comment out in dev, activate in deployment
+            secure: true,             //comment out in dev, activate in deployment (Ensures the cookie is only sent over HTTPS)
+            domain: '.clanpraises.com',       //comment out in dev, activate in deployment
             path: '/',
       })
       .redirect(`${process.env.FRONTEND_URL}/auth/success?user=${{userId: user.id, username: user.username }}`);
@@ -148,7 +148,7 @@ export async function googleCallback(req, reply) {
       reply
         .setCookie("jwt", jwt, {
            withCredentials: true,
-            httpOnly: true,            // Ensures cookie is only accessible via HTTP(S), not JavaScript
+            httpOnly: false,            // Ensures cookie is only accessible via HTTP(S), not JavaScript
             maxAge: maxAge,             // Set cookie expiration time in seconds
             //secure: true,             //comment out in dev, activate in deployment (Ensures the cookie is only sent over HTTPS)
             //domain: '.ilan.my',       //comment out in dev, activate in deployment

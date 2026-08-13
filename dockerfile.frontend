@@ -10,7 +10,12 @@ COPY ./src ./src
 COPY ./public ./public
 COPY .env .env
 
-RUN npm install
+# Increase network timeout & retries to avoid ECONNRESET
+RUN npm config set fetch-retry-maxtimeout 120000 \
+    && npm config set fetch-retries 5 \
+    && npm ci
+
+#RUN npm install
 RUN npm run build || (echo "Build failed" && exit 1)
 RUN ls -al /app && ls -al /app/build
 

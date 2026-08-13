@@ -15,7 +15,19 @@ const nextConfig = {
     ];
   },
 
-  
+  /*
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://host.docker.internal:3001/:path*', // Docker internal backend URL
+        //destination: 'http://backend:3001/:path*',
+
+        
+      },
+    ];
+  },
+  */
 
 };
 

@@ -48,7 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Script data-cfasync="false" src="//dcbbwymp1bhlf.cloudfront.net/?wbbcd=1399166"/>
 
         {/**Admaven push notifications */}
-        {/*<Script data-cfasync="false" src="/sw.js"/>*/}
+        <Script data-cfasync="false" src="/sw.js"/>
 
 
         {/* ✅ CSS for Addsterra mobile vs desktop banners */} 
@@ -106,7 +106,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 };
 
                 var s = document.createElement('script');
-                s.src = 'https://www.highperformanceformat.com/07b67ee0c5ed62b6038cd054fa5633a8/invoke.js';
+                s.src = 'https://considerableinsanityaside.com/07b67ee0c5ed62b6038cd054fa5633a8/invoke.js';
                 document.getElementById('adsterra-desktop-top')?.appendChild(s);
               
             `}
@@ -133,7 +133,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 };
 
                 var s = document.createElement('script');
-                s.src = 'https://www.highperformanceformat.com/07b67ee0c5ed62b6038cd054fa5633a8/invoke.js';
+                s.src = 'https://considerableinsanityaside.com/07b67ee0c5ed62b6038cd054fa5633a8/invoke.js';
                 document.getElementById('adsterra-desktop-bottom')?.appendChild(s);
               
             `}
