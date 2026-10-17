@@ -34,27 +34,27 @@ export default async function sitemap() {
     const similarClans = getUniqueObjectsWithDuplicates(clanpraises, 'title')
 
     const clanpraises_ByID_Routes = clanpraises.map((post) => ({
-    url: `https://clanpraises.com/${post.tribe}/${post.title}/${post.id}`,
+    url: `http://localhost:3000/${post.tribe}/${post.title}/${post.id}`,
     //lastModified: new Date(post.createdAt),
     }))
 
     const clanpraises_ByClan_Routes = similarClans.map((post) => ({
-    url: `https://clanpraises.com/${post.tribe}/${post.title}`,
+    url: `http://localhost:3000/${post.tribe}/${post.title}`,
     //lastModified: new Date(post.createdAt),
     }))
 
     const tribe_ClanList_Routes = similarTribes.map((post) => ({
-      url: `https://clanpraises.com/${post.tribe}`,
+      url: `http://localhost:3000/${post.tribe}`,
       //lastModified: new Date(post.createdAt),
     }))
 
   return [
     {
-      url: 'https://clanpraises.com',
+      url: 'http://localhost:3000',
       //lastModified: new Date(),
     },
     {
-      url: 'https://clanpraises.com/about',
+      url: 'http://localhost:3000/about',
       //lastModified: new Date(),
     },
     ...clanpraises_ByID_Routes,
