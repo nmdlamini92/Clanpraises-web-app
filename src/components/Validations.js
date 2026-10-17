@@ -117,9 +117,9 @@ export default class Validations {
         const clanPraise = values.clanPraise;
         console.log(clanName);
 
-        if (clanName ==="") {                    
-            if (tribe ==="") {                     
-                if (clanPraise ===""){
+        if (clanName.trim() ==="") {                    
+            if (tribe.trim() ==="") {                     
+                if (clanPraise.trim() ===""){
                   return ({clanName: "*required", tribe: "*required", clanPraise: "*required"});
                 }
                 else{
@@ -127,19 +127,19 @@ export default class Validations {
                } 
             }
             else{
-              if(!(clanPraise ==="")) {
+              if(!(clanPraise.trim() ==="")) {
                 return ({clanName: "*required"});
                 //return reply.send({status: false, errors: {username: "username is required", password: "password is required"}});
               } 
-              else if (clanPraise ==="")
+              else if (clanPraise.trim() ==="")
                 {
                 return ({clanName: "*required", clanPraise: "*required"});
               } 
             }
           }
           else{
-            if (tribe ==="") {
-              if(clanPraise ===""){
+            if (tribe.trim() ==="") {
+              if(clanPraise.trim() ===""){
                 return ({tribe: "*required", clanPraise: "*required"});
               }
               else{
@@ -147,7 +147,7 @@ export default class Validations {
               }
             }
            else{
-            if (clanPraise ==="")
+            if (clanPraise.trim() ==="")
             return ({clanPraise: "*required"});
             }
         }

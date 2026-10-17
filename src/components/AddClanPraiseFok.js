@@ -52,7 +52,7 @@ export default function AddClanPraiseForm() {
     console.log(values);
 
     const tribeId = tribesArray.find(
-      (tribe) => tribe.tribe.toLowerCase() === values.tribe.toLowerCase()
+      (tribe) => tribe.tribe.toLowerCase().trim() === values.tribe.toLowerCase().trim()
     )?.id ?? null;
 
     const validationError = Validations.addClanPraiseValidations(values);

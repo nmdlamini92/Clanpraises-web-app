@@ -169,7 +169,7 @@ export default function AddClanPraiseFormAdmin() {
         console.log(tribesArray)
 
         const tribeId = tribesArray.find(
-          tribe => tribe.tribe.toLowerCase() === values.tribe.toLowerCase()
+          tribe => tribe.tribe.toLowerCase().trim() === values.tribe.toLowerCase().trim()
         )?.id ?? null;
         
         console.log(tribeId)

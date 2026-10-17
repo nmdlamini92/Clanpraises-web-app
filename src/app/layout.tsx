@@ -36,10 +36,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name='admaven-placement' content="BqTrEpjUF" />
 
          {/**Hiltop adds */}
-        <meta name="85a185e8c46d9b4c48d1dce546bc6e8885367332" content="85a185e8c46d9b4c48d1dce546bc6e8885367332" />
+        {/*<meta name="85a185e8c46d9b4c48d1dce546bc6e8885367332" content="85a185e8c46d9b4c48d1dce546bc6e8885367332" />*/}
 
         {/**Hiltop adds */}
-        <meta name="referrer" content="no-referrer-when-downgrade" />
+        {/*<meta name="referrer" content="no-referrer-when-downgrade" />
 
         {/**Admaven pop up adds */}
         {/*<Script data-cfasync="false" src="//dcbbwymp1bhlf.cloudfront.net/?wbbcd=1399035"/>*/}
@@ -92,7 +92,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <>
         {/* TOP BANNER */}
-        <div className="flex justify-center bg-white/20" id="adsterra-desktop-top">
+        {/*<div className="flex justify-center bg-white/20" id="adsterra-desktop-top">
           <Script id="desktop-banner-top" strategy="afterInteractive">
             {`
               
@@ -111,7 +111,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               
             `}
           </Script>
-          </div>
+          </div>*/}
         
         
 

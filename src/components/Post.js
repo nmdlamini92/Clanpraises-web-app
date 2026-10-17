@@ -1022,8 +1022,13 @@ export function Post() {
     //const pagesArray = post.bodyEnglish.split(/(?=^.*?page\s+\d+.*\n\s*draft of .*? by .*? PATRICKS, Museum, )/m)
     //console.log(pagesArray)
 
-    const [historyTextlanguage, setHistoryTextLanguage] = useState(post.bodyEnglish)
+    const [historyTextlanguage, setHistoryTextLanguage] = useState(post.bodyEnglish);
 
+    //if (post.bodyEnglish !== null && post.bodyEnglish !== undefined && post.bodyEnglish !== "") {
+    //setHistoryTextLanguage(post.bodyEnglish)
+    //}
+    
+    
     
     const handleChangeLanguage = (event) => {  
 
@@ -1289,13 +1294,16 @@ export function Post() {
       
       {/*ADSTERRA NATIVE BANNER 2*/}
 
-       
-            {(post.bodySiswati.includes("############################")) && (
+       {/*{(post.bodySiswati !== null && (
+        <>*/}
+            {(historyTextlanguage?.includes("############################")) && (
               <>
               <script async="async" data-cfasync="false" src="https://considerableinsanityaside.com/aee155f50d5d17d8385dcaa2f25aa29b/invoke.js"></script>
               <div id="container-aee155f50d5d17d8385dcaa2f25aa29b"></div>
               </>
             )}
+        {/*</>
+        ))}*/}
         
 
 

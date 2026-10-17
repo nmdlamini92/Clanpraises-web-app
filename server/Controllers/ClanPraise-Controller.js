@@ -35,15 +35,15 @@ export default class ClanPraiseController {
           if (req.body.tribeId === null){
 
             const newTribe = await prisma.tribe.create({
-            data: {tribe: req.body.tribe},
+            data: {tribe: req.body.tribe.trim()},
             select: {id: true}
           });
           console.log(newTribe);
 
          const comment = await prisma.post.create({
             data: {
-              title: req.body.clanName,
-              tribe: req.body.tribe,
+              title: req.body.clanName.trim(),
+              tribe: req.body.tribe.trim(),
               tribe_: { connect: {id: newTribe.id} },
               body: req.body.clanPraise,
               bodyEnglish: req.body.englishVersion,
@@ -66,8 +66,8 @@ export default class ClanPraiseController {
 
           const comment = await prisma.post.create({
             data: {
-              title: req.body.clanName,
-              tribe: req.body.tribe,
+              title: req.body.clanName.trim(),
+              tribe: req.body.tribe.trim(),
               tribe_: { connect: {id: req.body.tribeId} },
               body: req.body.clanPraise,
               bodyEnglish: req.body.englishVersion,
@@ -132,15 +132,15 @@ export default class ClanPraiseController {
                 if (req.body.tribeId === null){
 
                   const newTribe = await prisma.tribe.create({
-                    data: {tribe: req.body.tribe},
+                    data: {tribe: req.body.tribe.trim()},
                     select: {id: true}
                     });
                     console.log(newTribe);
 
                   const comment = await prisma.post.create({
                       data: {
-                        title: req.body.clanName,
-                        tribe: req.body.tribe,
+                        title: req.body.clanName.trim(),
+                        tribe: req.body.tribe.trim(),
                         tribe_: { connect: {id: newTribe.id} },
                         body: req.body.clanPraise,
                         user: {
@@ -157,8 +157,8 @@ export default class ClanPraiseController {
 
                     const comment = await prisma.post.create({
                       data: {
-                        title: req.body.clanName,
-                        tribe: req.body.tribe,
+                        title: req.body.clanName.trim(),
+                        tribe: req.body.tribe.trim(),
                         tribe_: { connect: {id: req.body.tribeId} },
                         body: req.body.clanPraise,
                         user: {
@@ -222,15 +222,15 @@ export default class ClanPraiseController {
         if (req.body.tribeId === null){
 
             const newTribe = await prisma.tribe.create({
-            data: {tribe: req.body.tribe},
+            data: {tribe: req.body.tribe.trim()},
             select: {id: true}
           });
           console.log(newTribe);
 
          const comment = await prisma.post.create({
             data: {
-              title: req.body.clanName,
-              tribe: req.body.tribe,
+              title: req.body.clanName.trim(),
+              tribe: req.body.tribe.trim(),
               tribe_: { connect: {id: newTribe.id} },
               body: req.body.clanPraise,
               user: {
@@ -248,8 +248,8 @@ export default class ClanPraiseController {
 
           const comment = await prisma.post.create({
             data: {
-              title: req.body.clanName,
-              tribe: req.body.tribe,
+              title: req.body.clanName.trim(),
+              tribe: req.body.tribe.trim(),
               tribe_: { connect: {id: req.body.tribeId} },
               body: req.body.clanPraise,
               user: {

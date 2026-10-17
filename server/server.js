@@ -43,6 +43,7 @@ app.register(cors, {
     'https://clanpraises.com',
     'https://www.clanpraises.com',
     'http://localhost:3000',
+    'http://192.168.1.172:3000'
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
