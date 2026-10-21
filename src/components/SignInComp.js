@@ -98,8 +98,9 @@ export default function SignInComp ({onDataChange}) {
           <hr className="flex-grow border-gray-400" />
         </div>
 
-        <div className="flex justify-center items-center gap-0.5">
-        
+        <div className="flex items-center italic text-[12px] text-gray-400 mt-2 mb-1">manually sign in</div>
+
+        {/*<div className="flex justify-center items-center gap-0.5">
         {( !isSignInFormVisible && (
         <p className="flex justify-center cursor-pointer items-center text-sm
          text-gray-500 bg-slate-50 border border-amber-400 px-1 rounded-sm hover:stone-400 hover:bg-stone-300"
@@ -109,10 +110,10 @@ export default function SignInComp ({onDataChange}) {
         </p>
         )
         )}
-        </div>
+        </div>*/}
         
 
-        {(isSignInFormVisible && (
+        {(true && (
         <div className="">
         <form onSubmit={(e) => handleSubmit(e, values2)}>
         <div className="boarder border-black">

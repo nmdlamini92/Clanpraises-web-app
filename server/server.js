@@ -192,6 +192,20 @@ app.post("/getUserId", async (req, res) => {
   }
 )
 
+app.post("/logout", async (request, reply) => {
+  console.log("now inside LOGOUT server");
+
+  reply.clearCookie("jwt", {
+    path: "/",
+    //domain: "192.168.1.172",
+    //secure: true,
+    httpOnly: true,
+    sameSite: "lax",
+  });
+
+  return reply.send({ status: true, message: "Logged out successfully" });
+});
+
 
 app.get("/tribes", async (req, res) => {
   console.log("now inside GET TRIBES server");

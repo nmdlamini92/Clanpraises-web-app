@@ -97,7 +97,7 @@ export default function SignUpComp({ onDataChange }) {
       return(                                               
         <div>
           <div className="flex gap-1 ">
-            <p className="text-lime-800 text-sm">Enter verification code sent to </p> <strong><p className="text-sm text-stone-500">{signUpData.email}</p></strong>
+            <p className="text-lime-800 text-sm">Enter verification code sent to: </p> <strong><p className="text-sm text-stone-500">{signUpData.email}</p></strong>
           </div>
         <input className="border rounded border-amber-500 mr-1" type='text' name='codeEntered'
              placeholder='code' onChange={(e)=>              //{...enteredVcode,[e.target.name]:e.target.value})} 
@@ -289,6 +289,7 @@ export default function SignUpComp({ onDataChange }) {
                   console.log(signUpData); 
                   setIsSignUpFormVisible(false);
                   setIsEnterVeriCodeCompVisible(true);
+                  console.log(sentVcode); 
                 }
             }
             catch(errors){
@@ -361,6 +362,8 @@ export default function SignUpComp({ onDataChange }) {
           <hr className="flex-grow border-gray-400" />
         </div>
 
+        <div className="flex items-center italic text-[12px] text-gray-400 mt-2 mb-2">manually sign up</div>
+
         {/*<div className="flex justify-center items-center gap-0.5">
         {( !isSignUpFormVisible && (
         <p className="flex justify-center cursor-pointer items-center text-sm 
@@ -376,6 +379,7 @@ export default function SignUpComp({ onDataChange }) {
 
         {isEnterVeriCodeCompVisible && <EnterVerifCode/>}
         {/*{isSignUpFormVisible && <SignUpForm/>}*/}
+        <SignUpForm/>
         {isUserBioFormVisible && <UserBioForm/>}
       </div>
       {(hydrated && (

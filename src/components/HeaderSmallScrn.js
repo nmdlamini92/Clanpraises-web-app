@@ -175,10 +175,19 @@ export default function HeaderSmallScrn (){
       
       const SignOut_Modal = ({ show, handleClose, children, }) => {
       
-              const [cookies, removeCookie] = useCookies([]);
+              //const [cookies, removeCookie] = useCookies([]);
       
               const handleSignOut = async (e) => {
-                removeCookie("jwt");
+                //removeCookie("jwt");
+                try {
+                
+                    const  data  = await axios.post(`${apiUrl}/logout`,  
+                      {},{withCredentials: true,})
+                
+                } catch (error) {
+                    console.error("Error during logout:", error);
+                }
+                
                 localStorage.setItem('isUserSignedIn', JSON.stringify({isUserSignedIn: false}));
                 localStorage.setItem('VipUserId', JSON.stringify({VipUserId: null}));
                 window.location.reload();

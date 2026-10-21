@@ -179,7 +179,6 @@ export default class Validations {
     static signUpValidations(values1) {
 
         
-
         const { username, email, password1, password2} = values1;
         const errors = {};
 
@@ -187,12 +186,14 @@ export default class Validations {
             errors.username = "*required";
         }
 
-        if (!email || email.trim() === "") {
+        {/*if (!email || email.trim() === "") {
             errors.email = "*required";
-        }
+        }*/}
 
         if (!password1 || password1.trim() === "") {
             errors.password1 = "*required";
+        } else if (password1.length > 0  && password1.length < 8) {
+        errors.password1 = "Password must be at least 8 characters";
         }
 
         if (!password2 || password2.trim() === "") {

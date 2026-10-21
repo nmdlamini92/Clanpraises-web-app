@@ -4,6 +4,7 @@ import dotenv from "dotenv"
 import { google } from "googleapis"
 import { PrismaClient } from '@prisma/client'
 import jwt from "jsonwebtoken";
+import { Resend } from 'resend';
 
 
 dotenv.config()
@@ -19,7 +20,7 @@ const createToken = (id) => {                               //creates signed web
 
 const prisma = new PrismaClient()
 
-const OAuth2 = google.auth.OAuth2;
+{/*const OAuth2 = google.auth.OAuth2;
 
 const oauth2Client = new OAuth2(
   process.env.GMAIL_CLIENT_ID,
@@ -29,7 +30,7 @@ const oauth2Client = new OAuth2(
 
 oauth2Client.setCredentials({
   refresh_token: process.env.GMAIL_REFRESH_TOKEN,
-});
+});*/}
 
 export default class AuthController {
 
@@ -114,7 +115,7 @@ export default class AuthController {
     const password = req.body.password1;
 
   
-    const OAuth2 = google.auth.OAuth2;
+    {/*const OAuth2 = google.auth.OAuth2;
 
     const oauth2Client = new OAuth2(
       process.env.GMAIL_CLIENT_ID,
@@ -124,7 +125,7 @@ export default class AuthController {
 
     oauth2Client.setCredentials({
       refresh_token: process.env.GMAIL_REFRESH_TOKEN,
-    });
+    });*/}
 
       try {
         const emailExists = await prisma.user1.findUnique({
@@ -135,47 +136,32 @@ export default class AuthController {
           return reply.send({ status: false, errors: {email: "email is already registered", password1: "", password2: ""} });
         }
 
-        const usernameExists = await prisma.user1.findUnique({
-          where: { username: username},  
-        });
+        const resend = new Resend(process.env.RESEND_API_KEY);
 
-        if (usernameExists) {
-          return reply.send({ status: false, errors: {username: "username already exists", email: "", password: ""} });
-        }
-
-
-        const accessToken = await oauth2Client.getAccessToken();
-        console.log('AccessToken:', accessToken?.token);
-
-        const transporter = nodemailer.createTransport({
-          service: 'gmail',
-          auth: {
-            type: 'OAuth2',
-            user: process.env.GMAIL_USER,
-            clientId: process.env.GMAIL_CLIENT_ID,
-            clientSecret: process.env.GMAIL_CLIENT_SECRET,
-            refreshToken: process.env.GMAIL_REFRESH_TOKEN,
-            accessToken: accessToken.token,
-          },
-        });
-
-        // Generate random verification code
         const verificationCode = Math.floor(100000 + Math.random() * 900000);
 
-        const mailOptions = {
-          from: process.env.GMAIL_USER,
-          to: email,
-          subject: 'Your Verification Code',
-          text: `Your verification code is: ${verificationCode}`,
-        };
-    
-        // Send email
-        await transporter.sendMail(mailOptions);
+        (async function () {
+
+          const { data, error } = await resend.emails.send({
+            //from: 'onboarding@resend.dev',
+            from: 'noreply@clanpraises.com',
+            to: email,
+            subject: 'Verification Code',
+            //text: `Your verification code is: ${verificationCode}`,
+            html: `<p>Your clanpraises signup verification code is: <strong>${verificationCode}</strong></p>`,
+          });
+
+          if (error) {
+            return console.error(error);
+          }
+
+          console.log(data);
+        })();
     
         reply.send({ status: true, message: 'Verification code sent', code: verificationCode, userDet: req.body });
       } catch (error) {
         console.log(error);
-        reply.send({ status: false, errors: {email: "please enter a valid email", password1: "", password2: ""} });
+        reply.send({ status: false, errors: {email: error, password1: "", password2: ""} });
       }
 
   }
