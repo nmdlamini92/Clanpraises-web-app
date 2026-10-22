@@ -30,6 +30,7 @@ import FormattedParagraphsUnclickablePNotes from "./FormattedParagraphsUnclickab
 import WhatsAppShareButton from "./ShareOnWhatsApp"
 import TwitterShareButton from "./ShareOnTwitter"
 import Script from 'next/script';
+import NotificationToggle from "./EmailNotificationsButton"
 
 
 
@@ -1095,6 +1096,7 @@ export function Post() {
                           >
                             <p className="text-gray-500/60 text-[10px]">{post._count.views}</p>
                         </IconBtn>
+
                          <div className="flex gap-20 relative">
                           <IconBtn
                             Icon={(props) => (
@@ -1127,14 +1129,7 @@ export function Post() {
                             </div>
                           )}
                         </div>
-                          {/*<IconBtn
-                                    Icon={props => <FaScroll {...props} size={15} className="text-bg-amber-700 cursor-pointer"/>} //className="text-gray-600"
-                                    onClick={handleClickOnFaScroll}
-                                    style={{ marginLeft: 6, color: "rgba(180, 83, 9, 0.5)" }}
-                                >
-                                  <p className="text-gray-500 loweercase underline text-[10px]">{rootDefinitions.length} notes</p>
-                          </IconBtn>*/}
-                          {/*< NotificationToggle initialOn={true} clanName={post.title} onChange={handleToggle} />*/}
+                          < NotificationToggle initialOn={true} clanName={post.title} postId={post.id} followsPost={post.followsPost} onChange={handleToggle} openLoginModal={handleOpenLogInModal} closeLoginModal={handleCloseLogInModal}/>
                   </div>
                 </div>
               <div className="flex items-center justify-center bg-white/10 h-fit"> {/*boader border-red-500 */}

@@ -463,18 +463,20 @@ app.get("/posts/:tribe/:clanName", async (req, res) => {
 app.get("/posts/:id", async (req, res) => {
   console.log("now inside get post(id) server");
 
-  const jwtCookie = req.cookies.jwt
+  const jwtCookie = req.cookies.jwt;
       
       console.log(req.body)
       
       console.log("GOLO LENJA")
-      console.log(req.params);
-      console.log(req)
+      //console.log(req.params);
+      //console.log(req)
       console.log("MSUNU WAGOLO")
-      console.log(req.cookies);
+      //console.log(req.cookies);
       console.log(!jwtCookie);
 
       if (!jwtCookie){
+         console.log("now inside get post(id) server - USER NOT SIGNED IN");
+
 
         return await commitToDb(
           prisma.post
@@ -597,11 +599,11 @@ app.get("/posts/:id", async (req, res) => {
           )
       }
       else{
-        console.log("now in Fvking else part");
+        console.log("now in Fvking else part - SIGNED IN USER");
       
       try{
         const decodedToken = await new Promise((resolve, reject) => {
-          jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
+          jwt.verify(jwtCookie.split(",")[0], process.env.COOKIE_SECRET, (err, decoded) => {
             if (err) {
               reject(err);
               //console.log(decodedToken);
@@ -612,7 +614,7 @@ app.get("/posts/:id", async (req, res) => {
             }
           });
         });
-     
+        console.log(decodedToken);
         //const data = {userId: decodedToken.id, postId: req.params.id}
 
       return await commitToDb(
@@ -731,10 +733,22 @@ app.get("/posts/:id", async (req, res) => {
                 commentId: { in: post.comments.map(comment => comment.id) },
               },
             }) 
+
+            console.log(req.params.id);
+
+            const followsPost = await prisma.follwings_on_Post.findMany({
+              where: {
+                userId: decodedToken.id,
+                postId: req.params.id
+              },
+            }) 
+
+            console.log(followsPost);
         
             return {
               ...post,
               relatedPosts,
+              followsPost: followsPost.length > 0 ? true : false,
               reviews: post.reviews.map(review => {
                 const { _count, ...reviewFields } = review
                 return {
@@ -992,6 +1006,59 @@ app.post(`/posts/:id/viewpost`, async (req, res) => {
       console.log(error);
       return res.send({status: false, message: error});
     }
+})
+
+app.post("/followpost", async (req, res) => {
+  console.log("now inside FOLLOW POST server")
+
+  console.log(req.body)
+  //console.log(req.params)
+  console.log(req.cookies)
+  console.log(req.cookies.jwt)
+  const jwtCookie = req.cookies.jwt.split(",")[0]; 
+
+
+  try{
+    if (jwtCookie) {
+
+      const decodedToken = await new Promise((resolve, reject) => {
+        jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(decoded);
+          }
+        });
+      });
+      console.log(decodedToken)
+
+       const data = {
+        postId: req.body.postId,
+        userId: decodedToken.id,
+      }
+
+      const following = await prisma.follwings_on_Post.findUnique({
+      where: { userId_postId: data },
+      })
+
+      if (following == null) {
+        return await commitToDb(prisma.follwings_on_Post.create({ data: data })).then(() => {
+          return res.send({status: true, message: "following added"});
+        })
+      } else {
+        return await commitToDb(
+          prisma.follwings_on_Post.delete({ where: { userId_postId: data } })
+        ).then(() => {
+          return res.send({status: true, message: "following removed"});
+        })
+      }
+    }
+  }
+  catch(error){
+    console.log(error)
+  }
+
+
 })
 
 

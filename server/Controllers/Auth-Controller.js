@@ -191,8 +191,8 @@ static async signup(req, reply) {
       withCredentials: true,
       httpOnly: true,                              // Ensures cookie is only accessible via HTTP(S), not JavaScript
       maxAge: maxAge,                               // Set cookie expiration time in seconds
-      secure: true,                                 //comment out in dev, activate in deployment (Ensures the cookie is only sent over HTTPS)
-      domain: '.clanpraises.com',                   //comment out in dev, activate in deployment
+      //secure: true,                                 //comment out in dev, activate in deployment (Ensures the cookie is only sent over HTTPS)
+      //domain: '.clanpraises.com',                   //comment out in dev, activate in deployment
       path: '/',
     })
     .send({ status: true, userID: user1.id, userName: user1.username, message: 'jwt cookie sent to client' });
@@ -229,9 +229,9 @@ static async signup(req, reply) {
 
             reply.setCookie('jwt', token, {
               withCredentials: true, 
-              secure: true,                     //comment out in dev, activate in deployment
+              //secure: true,                     //comment out in dev, activate in deployment
               httpOnly: true, 
-              domain: '.clanpraises.com',               //comment out in dev, activate in deployment
+              //domain: '.clanpraises.com',               //comment out in dev, activate in deployment
               sameSite: 'lax', 
               path: '/', 
               maxAge: maxAge})

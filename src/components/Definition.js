@@ -193,15 +193,16 @@ export function Definition({id, message, user, reviews, createdAt, _count, likeC
             </div>
             </span>
             <span>
-              <div className="flex-col leading-none mr-4">
-              <p className="underline text-[8px] text-gray-600 cursor-pointer leading-none"
-                 onClick={handleReviewDef}>
-              ({(rootReviews.filter(review => review.definitionId === id).length)} Reviews)
-              </p>
+              <div className="flex justify-center items-center leading-none mr-4 gap-0.5">
               <button className="bg-yellow-400/70 text-white text-[9px] border-[1.3px] border-solid border-[rgba(202,138,4,0.5)] p-1 uppercase cursor-pointer rounded-md leading-none"
               //style={{ color: "rgba(202, 138, 4, 0.5)" }}
-              onClick={handleReviewDef}>REVIEW</button>
+              onClick={handleReviewDef}>REVIEWS</button>
+               <p className="underline text-sm text-gray-400 cursor-pointer leading-none"
+                 onClick={handleReviewDef}>
+              ({(rootReviews.filter(review => review.definitionId === id).length)})
+              </p>
               </div>
+             
             </span>
               {/*<span>
                 <div className=" flex items-center">
