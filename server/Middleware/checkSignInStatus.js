@@ -12,8 +12,7 @@ export default class checkSignInStatus {
 
         console.log(req.body)
         console.log(req.cookies);
-        const token1 = req.cookies.jwt
-        const token = token1.split(",")[0];
+        const token = req.cookies.jwt
         console.log(token);
       
         if (!token) {
@@ -22,7 +21,7 @@ export default class checkSignInStatus {
       
         try {
           const decodedToken = await new Promise((resolve, reject) => {
-            jwt.verify(token, process.env.COOKIE_SECRET, (err, decoded) => {
+            jwt.verify(token.split(",")[0], process.env.COOKIE_SECRET, (err, decoded) => {
               if (err) {
                 console.error('ErrorERR:', err);
                 //if (err.name === 'TokenExpiredError') {

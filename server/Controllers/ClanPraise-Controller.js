@@ -4,6 +4,7 @@ import ClanPraiseModel from "../Models/ClanPraise-Model.js";
 import jwt from "jsonwebtoken"
 import { PrismaClient } from "@prisma/client";
 import fetch from "node-fetch"
+import { Resend } from "resend";
 
 const prisma = new PrismaClient()
 
@@ -20,10 +21,12 @@ export default class ClanPraiseController {
         console.log(req.body.tribeId);
 
         const token = req.cookies.jwt;
+      
+        const resend = new Resend(process.env.RESEND_API_KEY);
 
         try {
           const decodedToken = await new Promise((resolve, reject) => {
-            jwt.verify(token, process.env.COOKIE_SECRET, (err, decoded) => {
+            jwt.verify(token.split(",")[0], process.env.COOKIE_SECRET, (err, decoded) => {
               if (err) {
                 reject(err);
               } else {
@@ -57,9 +60,55 @@ export default class ClanPraiseController {
             },
           });
           console.log(comment); 
-
-
           reply.send({status: true, clanPraisePost: comment});
+
+          if (comment){
+          //Start background process to send notification to admin
+          console.log('STARTED BG PROCESS TO NOTIFY ADMIN OF ADDED CLANPRAISE')
+            setTimeout(async () => {
+
+          const postStillExists = await prisma.post.findUnique({ 
+                  where: { id: comment.id },
+                  select: { user: { select: { id: true, username: true } }}
+          })
+
+          console.log(postStillExists)
+          console.log(!postStillExists)
+
+          if (postStillExists) {
+
+              try {
+
+                const { data, error } = await resend.emails.send({
+                  from: 'clanpraises@clanpraises.com',
+                  to: 'nmdlamini92@gmail.com',
+                  subject: `A ${comment.title} Clanpraise was added to ${comment.tribe} clanpraise`,
+                  html: `
+                    <p>
+                      <strong>${postStillExists.user.username}</strong> added a <strong>${comment.title}</strong> clanpraise.
+                      <a href="https://clanpraises.com/${comment.tribe}/${comment.title}/${comment.id}">
+                        <strong>>>Click here to view clanpraise<<</strong>
+                      </a>
+                    </p>
+                  `,
+                });
+
+                if (error) {
+                  console.error(`Failed to send ADDED CLANPRAISE NOTIFICATION`, error);
+                }
+
+                console.log(`successfully sent ADDED CLANPRAISE NOTIFICATION`, data);
+                reply.send({ status: true, message: 'successfully sent ADDED CLANPRAISE NOTIFICATION'});
+              } catch (err) {
+                console.error(`Failed to send ADDED CLANPRAISE NOTIFICATION`, err);
+                reply.send({ status: false, message: 'Failed to send ADDED CLANPRAISE NOTIFICATION'});
+              }
+          }
+          else{
+            console.log('ABORTED SENDING ADDED-CLANPRAISE NOTIFICATION BCZ CLANPRAISE NO MORE EXISTS (GOT DELETED) ')
+          }
+          }, 30_000);
+        }
 
         }
         else {
@@ -82,6 +131,56 @@ export default class ClanPraiseController {
           });
           console.log(comment);
           reply.send({status: true, clanPraisePost: comment});
+
+
+          if (comment){ 
+          //Start background process to send notification to admin 
+          console.log('STARTED BG PROCESS TO NOTIFY ADMIN OF ADDED CLANPRAISE')            
+            setTimeout(async () => {
+
+          const postStillExists = await prisma.post.findUnique({ 
+                  where: { id: comment.id },
+                  select: { user: { select: { id: true, username: true } }}
+          })
+
+          console.log(postStillExists)
+          console.log(!postStillExists)
+
+          if (postStillExists) {
+
+              try {
+
+                const { data, error } = await resend.emails.send({
+                  from: 'clanpraises@clanpraises.com',
+                  to: 'nmdlamini92@gmail.com',
+                  subject: `A new Clanpraise was added to the website`,
+                  html: `
+                    <p>
+                      <strong>${postStillExists.user.username}</strong> added a <strong>${comment.title} (${comment.tribe})</strong> clanpraise.
+                      <a href="https://clanpraises.com/${comment.tribe}/${comment.title}/${comment.id}">
+                        <strong>>>Click here to view clanpraise<<</strong>
+                      </a>
+                    </p>
+                  `,
+                });
+
+                if (error) {
+                  console.error(`Failed to send ADDED CLANPRAISE NOTIFICATION`, error);
+                }
+
+                console.log(`successfully sent ADDED CLANPRAISE NOTIFICATION`, data);
+                reply.send({ status: true, message: 'successfully sent ADDED CLANPRAISE NOTIFICATION'});
+              } catch (err) {
+                console.error(`Failed to send ADDED CLANPRAISE NOTIFICATION`, err);
+                reply.send({ status: false, message: 'Failed to send ADDED CLANPRAISE NOTIFICATION'});
+              }
+          }
+          else{
+            console.log('ABORTED SENDING ADDED-CLANPRAISE NOTIFICATION BCZ CLANPRAISE NO MORE EXISTS (GOT DELETED) ')
+          }
+          }, 30_000);
+        }
+
         }
         
         } catch (error) {

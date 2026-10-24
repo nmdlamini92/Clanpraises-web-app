@@ -12,7 +12,7 @@ import { v4 as uuidv4 } from "uuid"
 import fetch from "node-fetch"
 import AuthController from "./Controllers/Auth-Controller.js"
 import oauth from "./plugins/oauth.js"
-
+import { Resend } from 'resend';
 
 
 
@@ -179,7 +179,7 @@ app.post("/getUserId", async (req, res) => {
     const jwtCookie = req.cookies.jwt
   
           const decodedToken = await new Promise((resolve, reject) => {
-            jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
+            jwt.verify(jwtCookie.split(",")[0], process.env.COOKIE_SECRET, (err, decoded) => {
               if (err) {
                 reject(err);
               } else {
@@ -924,7 +924,7 @@ app.post(`/posts/:id/viewpost`, async (req, res) => {
     try{
       if (token){
         const decodedToken = await new Promise((resolve, reject) => {
-          jwt.verify(token, process.env.COOKIE_SECRET, (err, decoded) => {
+          jwt.verify(token.split(",")[0], process.env.COOKIE_SECRET, (err, decoded) => {
             if (err) {
               reject(err);
             } else {
@@ -1015,14 +1015,14 @@ app.post("/followpost", async (req, res) => {
   //console.log(req.params)
   console.log(req.cookies)
   console.log(req.cookies.jwt)
-  const jwtCookie = req.cookies.jwt.split(",")[0]; 
+  const jwtCookie = req.cookies.jwt
 
 
   try{
     if (jwtCookie) {
 
       const decodedToken = await new Promise((resolve, reject) => {
-        jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
+        jwt.verify(jwtCookie.split(",")[0], process.env.COOKIE_SECRET, (err, decoded) => {
           if (err) {
             reject(err);
           } else {
@@ -1202,7 +1202,7 @@ app.post("/posts/:id/reviews", async (req, res) => {
   console.log(jwtCookie);
 
   const decodedToken = await new Promise((resolve, reject) => {
-    jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
+    jwt.verify(jwtCookie.split(",")[0], process.env.COOKIE_SECRET, (err, decoded) => {
       if (err) {
         reject(err);
       } else {
@@ -1270,7 +1270,7 @@ app.delete("/posts/:postId/reviews/:reviewId", async (req, res) => {
   const jwtCookie = req.cookies.jwt
 
   const decodedToken = await new Promise((resolve, reject) => {
-    jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
+    jwt.verify(jwtCookie.split(",")[0], process.env.COOKIE_SECRET, (err, decoded) => {
       if (err) {
         reject(err);
       } else {
@@ -1310,7 +1310,7 @@ app.post("/posts/:postId/reviews/:reviewId/toggleLike", async (req, res) => {
   const jwtCookie = req.cookies.jwt 
   
   const decodedToken = await new Promise((resolve, reject) => {
-    jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
+    jwt.verify(jwtCookie.split(",")[0], process.env.COOKIE_SECRET, (err, decoded) => {
       if (err) {
         reject(err);
       } else {
@@ -1351,7 +1351,7 @@ app.post("/posts/:postId/reviews/:reviewId/toggleDisLike", async (req, res) => {
   const jwtCookie = req.cookies.jwt 
   
   const decodedToken = await new Promise((resolve, reject) => {
-    jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
+    jwt.verify(jwtCookie.split(",")[0], process.env.COOKIE_SECRET, (err, decoded) => {
       if (err) {
         reject(err);
       } else {
@@ -1523,7 +1523,7 @@ app.post("/posts/:id/comments", async (req, reply) => {
     console.log(jwtCookie);
 
     const decodedToken = await new Promise((resolve, reject) => {
-      jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
+      jwt.verify(jwtCookie.split(",")[0], process.env.COOKIE_SECRET, (err, decoded) => {
         if (err) {
           reject(err);
         } else {
@@ -1630,7 +1630,7 @@ app.delete("/posts/:postId/comments/:commentId", async (req, res) => {
   const jwtCookie = req.cookies.jwt 
 
   const decodedToken = await new Promise((resolve, reject) => {
-    jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
+    jwt.verify(jwtCookie.split(",")[0], process.env.COOKIE_SECRET, (err, decoded) => {
       if (err) {
         reject(err);
       } else {
@@ -1668,7 +1668,7 @@ app.post("/posts/:postId/comments/:commentId/toggleLike", async (req, res) => {
   const jwtCookie = req.cookies.jwt 
 
   const decodedToken = await new Promise((resolve, reject) => {
-    jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
+    jwt.verify(jwtCookie.split(",")[0], process.env.COOKIE_SECRET, (err, decoded) => {
       if (err) {
         reject(err);
       } else {
@@ -1707,7 +1707,7 @@ app.post("/posts/:postId/comments/:commentId/toggleDisLike", async (req, res) =>
   const jwtCookie = req.cookies.jwt 
 
   const decodedToken = await new Promise((resolve, reject) => {
-    jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
+    jwt.verify(jwtCookie.split(",")[0], process.env.COOKIE_SECRET, (err, decoded) => {
       if (err) {
         reject(err);
       } else {
@@ -1815,7 +1815,7 @@ app.post("/getLineDefinitions", async (req, res) => {
         )
         
         const decodedToken = await new Promise((resolve, reject) => {
-          jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
+          jwt.verify(jwtCookie.split(",")[0], process.env.COOKIE_SECRET, (err, decoded) => {
             if (err) {
               reject(err);
             } else {
@@ -1858,7 +1858,7 @@ app.post("/posts/:id/definitions", async (req, res) => {
     console.log(jwtCookie);
 
     const decodedToken = await new Promise((resolve, reject) => {
-      jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
+      jwt.verify(jwtCookie.split(",")[0], process.env.COOKIE_SECRET, (err, decoded) => {
         if (err) {
           reject(err);
         } else {
@@ -1934,6 +1934,98 @@ app.post("/posts/:id/definitions", async (req, res) => {
 })
 
 
+app.post("/startDefinitionNotificationBGprocess", async (req, res) => {
+
+  console.log("now inside START DEFINITION NOTIFICATION BG PROCESS server")
+
+  console.log(req.body.definitionId)
+  console.log(req.body.postId)
+
+  const clanname = req.body.clanname
+  const tribe = req.body.tribe
+
+  const resend = new Resend(process.env.RESEND_API_KEY);
+
+// Wait 30 seconds before starting to send notifications
+setTimeout(async () => {
+
+  const definitionStillExists = await prisma.definition.findUnique({ 
+          where: { id: req.body.definitionId },
+          select: { user: { select: { id: true, username: true } }}
+  })
+
+  console.log(definitionStillExists)
+  console.log(!definitionStillExists)
+
+  if (definitionStillExists) {
+
+    const userIDsOfFollowers = await prisma.follwings_on_Post.findMany({ 
+          where: { postId: req.body.postId },
+          select: { userId: true }
+    });
+    console.log(userIDsOfFollowers);
+
+    const emailsToBeNotified = await prisma.user1.findMany({ 
+          where: { id: { in: userIDsOfFollowers.map(f => f.userId) } },
+          select: { email: true }
+    });
+    console.log(emailsToBeNotified);
+
+    const recipients = emailsToBeNotified.map(u => u.email);
+    console.log(recipients);
+
+    /*if (recipients.includes('nkosinathi4sho@gmail.com') === false) {
+      recipients.push('nkosinathi4so@gmail.com');
+    }*/
+
+    if (recipients.includes('nmdlamini92@gmail.com') === false) {
+      recipients.push('nmdlamini92@gmail.com');
+    }
+
+    function capitalizeFirstLetter(str) {
+      if (!str) return '';
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    for (const email of recipients) {
+
+      try {
+
+        const { data, error } = await resend.emails.send({
+          from: 'clanpraises@clanpraises.com',
+          to: email,
+          subject: `A new Note was added to ${capitalizeFirstLetter(clanname)} clanpraise`,
+          html: `
+            <p>
+              <strong>${capitalizeFirstLetter(definitionStillExists.user.username)}</strong> added a new note to the <strong>${capitalizeFirstLetter(clanname)}</strong> clanpraise.
+              <a href="https://clanpraises.com/${tribe}/${clanname}/${'f15e1d23-e03e-45b5-a076-76ada0767083'}">
+                <strong>>>Click here to view the note<<</strong>
+              </a>
+            </p>
+          `,
+        });
+
+        if (error) {
+          console.error(`Failed to send email notifications`, error);
+          continue;
+        }
+
+        console.log(`Notifications sent to users following post`, data);
+        res.send({ status: true, message: 'successfully sent notifications to users'});
+      } catch (err) {
+        console.error(`Error sending notifications to users following post`, err);
+        res.send({ status: false, message: 'failed to send notifications sent to users'});
+      }
+    }
+  }
+  else{
+    console.log('ABORTED SENDING NOTIFICATIONS BCZ DEFINITION NO MORE EXISTS (GOT DELETED) ')
+  }
+  }, 30_000);
+
+  })
+
+
 app.post("/reviewDefinition", async (req, res) => {
 
   console.log("now inside REVIEW DEFINITION server")
@@ -1949,7 +2041,7 @@ app.post("/reviewDefinition", async (req, res) => {
     console.log(jwtCookie);
 
     const decodedToken = await new Promise((resolve, reject) => {
-      jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
+      jwt.verify(jwtCookie.split(",")[0], process.env.COOKIE_SECRET, (err, decoded) => {
         if (err) {
           reject(err);
         } else {
@@ -2062,7 +2154,7 @@ app.post("/commentOnDefinition", async (req, res) => {
   console.log(jwtCookie);
 
   const decodedToken = await new Promise((resolve, reject) => {
-    jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
+    jwt.verify(jwtCookie.split(",")[0], process.env.COOKIE_SECRET, (err, decoded) => {
       if (err) {
         reject(err);
       } else {
@@ -2126,7 +2218,7 @@ app.delete("/posts/:postId/definitions/:definitionId", async (req, res) => {
   const jwtCookie = req.cookies.jwt
 
   const decodedToken = await new Promise((resolve, reject) => {
-    jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
+    jwt.verify(jwtCookie.split(",")[0], process.env.COOKIE_SECRET, (err, decoded) => {
       if (err) {
         reject(err);
       } else {
@@ -2175,7 +2267,7 @@ app.post("/posts/:postId/definitions/:definitionId/toggleLike", async (req, res)
   const jwtCookie = req.cookies.jwt 
 
   const decodedToken = await new Promise((resolve, reject) => {
-    jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
+    jwt.verify(jwtCookie.split(",")[0], process.env.COOKIE_SECRET, (err, decoded) => {
       if (err) {
         reject(err);
       } else {
@@ -2217,7 +2309,7 @@ app.post("/posts/:postId/definitions/:definitionId/toggleDisLike", async (req, r
   const jwtCookie = req.cookies.jwt;
 
   const decodedToken = await new Promise((resolve, reject) => {
-    jwt.verify(jwtCookie, process.env.COOKIE_SECRET, (err, decoded) => {
+    jwt.verify(jwtCookie.split(",")[0], process.env.COOKIE_SECRET, (err, decoded) => {
       if (err) {
         reject(err);
       } else {

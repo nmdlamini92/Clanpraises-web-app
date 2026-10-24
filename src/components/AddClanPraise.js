@@ -3,7 +3,6 @@
 import {IconBtn} from "./IconBtn"
 import { FaPenSquare} from "react-icons/fa";
 import { useState, useEffect } from "react";
-import AddClanPraiseFormGuest from "./AddClanPraiseFormGuest"
 import AddClanPraiseFormAdmin from "./AddClanPraiseFormAdmin";
 import AddClanPraiseFormUser from "./AddClanPraiseFormUser";
 import SignInComp from "./SignInComp";
