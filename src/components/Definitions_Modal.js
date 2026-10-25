@@ -148,6 +148,13 @@ export default function Definitions_Modal ({ show, post, line_nd_index, definiti
           
         }
 
+        const handleCloseDefinitions_Modalfunc1 = () => {
+          handleCloseDefinitions_Modal();
+          setValuesNote({message: "", yourName: "", yourEmail: ""});
+          setErrorsNote({message: "", yourName: "", yourEmail: ""});
+
+        }
+
         //console.log(line_nd_index.line.trim().split(/\s+/).filter(Boolean).length)
 
         return(
@@ -156,7 +163,7 @@ export default function Definitions_Modal ({ show, post, line_nd_index, definiti
           <div className="fixed inset-0 z-[999] bg-black bg-opacity-50 flex items-center justify-center ">
           <div className="relative w-[95%] sm:w-[60%] md:w-[45%] lg:w-[35%] max-h-[60%] overflow-y-auto p-4 pt-2 rounded-lg shadow-lg" 
                 style={{ backgroundColor: "rgba(205, 187, 167)" }}>
-          <button onClick={handleCloseDefinitions_Modal} className="p-1 mb-2"
+          <button onClick={handleCloseDefinitions_Modalfunc1} className="p-1 mb-2"
             style={{ backgroundColor: "rgba(214, 131, 108)" }}>Close</button>
           <p className="font-bold mt-2 mb-3 whitespace-pre-wrap text-amber-900 bg-yellow-50 w-fit"
              style={{ fontSize: post.tribe === "history"? "11px" : "14px" }}>

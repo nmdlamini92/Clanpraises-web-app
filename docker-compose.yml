@@ -12,8 +12,8 @@ services:
       - ./server/.env
     networks:
       - bantu-network
-    depends_on:
-      - db
+    extra_hosts:
+    - "host.docker.internal:host-gateway"
     restart: unless-stopped
 
   frontend:
@@ -31,24 +31,8 @@ services:
       - backend
     restart: unless-stopped
 
-  db:
-    image: postgres:17
-    container_name: bantu-db
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: mavulakuvaliwe
-      POSTGRES_DB: postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - bantu-db-data:/var/lib/postgresql/data
-    networks:
-      - bantu-network
-    restart: unless-stopped
-
 networks:
   bantu-network:
     driver: bridge
 
-volumes:
-  bantu-db-data:
+

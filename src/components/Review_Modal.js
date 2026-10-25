@@ -108,6 +108,16 @@
                   }, 1000); 
                 }
               } 
+
+              const handleCloseReviewDefModalfunc1 = () => {
+                handleCloseReviewDefModal();
+                setValuesReview({rating: null, message: "", yourName: "", yourEmail: ""});
+                setErrorsReview({errorRating: "", errorMessage: "", errorName: "", errorEmail: "", message: ""});
+                setDefReview("");
+                setRating(null);
+                setErrorDefReview("");
+                setErrorReview('');
+              };
       
               return(
                 <>
@@ -115,7 +125,7 @@
                 <div className="modal-backdrop ">
                 <div className=" bg-stone-300 w-[90%] md:w-[40%] lg:w-[30%] max-h-[50%] overflow-y-auto p-2 pr-4 pl-4 rounded-lg shadow-md">
                  
-                  <button onClick={handleCloseReviewDefModal} className="mb-2 p-1 "
+                  <button onClick={handleCloseReviewDefModalfunc1} className="mb-2 p-1 "
                   style={{ backgroundColor: "rgba(214, 131, 108)" }}> close
                   </button>
                   
