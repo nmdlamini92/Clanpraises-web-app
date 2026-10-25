@@ -686,7 +686,7 @@ export function Post() {
     //const pagesArray = post.bodyEnglish.split(/(?=^.*?page\s+\d+.*\n\s*draft of .*? by .*? PATRICKS, Museum, )/m)
     //console.log(pagesArray)
 
-    const [historyTextlanguage, setHistoryTextLanguage] = useState(post.bodyEnglish);
+    const [historyTextlanguage, setHistoryTextLanguage] = useState(post.bodySiswati);
 
     //if (post.bodyEnglish !== null && post.bodyEnglish !== undefined && post.bodyEnglish !== "") {
     //setHistoryTextLanguage(post.bodyEnglish)
@@ -697,10 +697,10 @@ export function Post() {
     const handleChangeLanguage = (event) => {  
 
       if (event.target.value === "Swati") {
-        setHistoryTextLanguage(post.bodySiswati)
+        setHistoryTextLanguage(post.bodyEnglish)
       }
       if (event.target.value === "English") {
-        setHistoryTextLanguage(post.bodyEnglish)
+        setHistoryTextLanguage(post.bodySiswati)
       }
 
     }
@@ -790,7 +790,7 @@ export function Post() {
                                 ${visible ? "opacity-100" : "opacity-0"}
                               `}
                             >
-                             click on any line to view or add notes
+                             Select text to view/add notes
                             </div>
                           )}
                         </div>
@@ -857,7 +857,7 @@ export function Post() {
               </>
 
               {/*ADSTERRA DISPLAY BANNER*/}
-                  {((post.bodyEnglish !== "" && post.bodyEnglish !== null) || (post.relatedPosts.filter(obj => obj['id'] !== post.id).length > 0)) && (
+                 {/* {((post.bodyEnglish !== "" && post.bodyEnglish !== null) || (post.relatedPosts.filter(obj => obj['id'] !== post.id).length > 0)) && (
                       
                             
                             <>
@@ -882,7 +882,7 @@ export function Post() {
                               </Script>
                               </>
                               
-                  )}
+                  )}*/}
 
       {( (post.bodyEnglish !== "" && post.bodyEnglish !== null ) && (
         <>
@@ -901,8 +901,8 @@ export function Post() {
                     className="border border-amber-500 text-xs mt-14 w-fit h-fit py-0.5 px-1"
                   //style={{ marginLeft: "1px", padding: "1px" }}
                   >
-                    <option className="text-xs"value="English">English</option>
-                    <option className="text-xs" value="Swati">Swati</option>
+                    <option className="text-xs"value="English">Swati</option>
+                    <option className="text-xs" value="Swati">English</option>
                   </select>
                   </>
                 )}
@@ -939,8 +939,8 @@ export function Post() {
                     
                     {/*ADSTERRA NATIVE BANNER 1*/}
                           
-                      <script async="async" data-cfasync="false" src="https://considerableinsanityaside.com/f5264805580a0f88f7005898ff27bdfd/invoke.js"></script>
-                      <div id="container-f5264805580a0f88f7005898ff27bdfd"></div>
+                      {/*<script async="async" data-cfasync="false" src="https://considerableinsanityaside.com/f5264805580a0f88f7005898ff27bdfd/invoke.js"></script>
+                      <div id="container-f5264805580a0f88f7005898ff27bdfd"></div>/*/}
 
                   </div>
                 </div>
@@ -956,12 +956,12 @@ export function Post() {
 
        {/*{(post.bodySiswati !== null && (
         <>*/}
-            {(historyTextlanguage?.includes("############################")) && (
+            {/*{(historyTextlanguage?.includes("############################")) && (
               <>
               <script async="async" data-cfasync="false" src="https://considerableinsanityaside.com/aee155f50d5d17d8385dcaa2f25aa29b/invoke.js"></script>
               <div id="container-aee155f50d5d17d8385dcaa2f25aa29b"></div>
               </>
-            )}
+            )}*/}
         {/*</>
         ))}*/}
         

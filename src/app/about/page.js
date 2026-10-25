@@ -27,12 +27,12 @@ export default function AboutPage() {
 
     <div className="flex flex-col justify-center items-center">
     <main className="flex flex-col p-6 max-w-2xl mt-8">
-      <h1 className="text-2xl font-bold mb-4">About Us</h1>
+      <h1 className="text-2xl font-bold mb-4">About site</h1>
       <p className="sm">
         
         
         Clan praises, customs, history and more. <br></br><br></br>
-        Find or share insights/notes on featured clan praises, or add a clan praise to be featured. <br></br><br></br>
+        {/*Find or share insights/notes on featured clan praises, or add a clan praise to be featured. <br></br><br></br>*/}
         {/*Our passion is story telling and context preservation. <br></br><br></br>*/}
         
       </p>

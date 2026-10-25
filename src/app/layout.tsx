@@ -33,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <meta name="google-adsense-account" content="ca-pub-9270162293112331" />
 
-        <meta name='admaven-placement' content="BqTrEpjUF" />
+        {/*<meta name='admaven-placement' content="BqTrEpjUF" />*/}
 
          {/**Hiltop adds */}
         {/*<meta name="85a185e8c46d9b4c48d1dce546bc6e8885367332" content="85a185e8c46d9b4c48d1dce546bc6e8885367332" />*/}
@@ -45,10 +45,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/*<Script data-cfasync="false" src="//dcbbwymp1bhlf.cloudfront.net/?wbbcd=1399035"/>*/}
 
         {/**Admaven in-page push */}
-        <Script data-cfasync="false" src="//dcbbwymp1bhlf.cloudfront.net/?wbbcd=1399166"/>
+        {/*<Script data-cfasync="false" src="//dcbbwymp1bhlf.cloudfront.net/?wbbcd=1399166"/>*/}
 
         {/**Admaven push notifications */}
-        <Script data-cfasync="false" src="/sw.js"/>
+        {/*<Script data-cfasync="false" src="/sw.js"/>*/}
 
 
         {/* ✅ CSS for Addsterra mobile vs desktop banners */} 
@@ -120,7 +120,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <>{children}</>
 
         {/*BOTTOM BANNER*/}
-        <div className="flex justify-center bg-stone-300/50" id="adsterra-desktop-bottom">
+        {/*<div className="flex justify-center bg-stone-300/50" id="adsterra-desktop-bottom">
           <Script id="desktop-banner-bottom" strategy="lazyOnload">
             {`
 
@@ -138,7 +138,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               
             `}
           </Script>
-          </div>
+          </div>*/}
         </>
       </body>
     </html>

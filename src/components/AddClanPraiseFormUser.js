@@ -167,6 +167,7 @@ export default function AddClanPraiseFormUser() {
         console.log(values);
 
         console.log(tribesArray)
+        console.log(values.tribe.toLowerCase().trim())
 
         const tribeId = tribesArray.find(
           tribe => tribe.tribe.toLowerCase().trim() === values.tribe.toLowerCase().trim()
