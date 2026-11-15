@@ -1123,6 +1123,8 @@ app.post("/reports", async (req, res) => {
 
 app.post("/feedback", async (req, res) => {
   console.log("now inside SEND FEEDBACK controller");
+
+  const resend = new Resend(process.env.RESEND_API_KEY);
   
   console.log(req.body);
   //console.log(req.cookies)
@@ -1132,9 +1134,29 @@ app.post("/feedback", async (req, res) => {
       return await commitToDb (prisma.feedback.create({
         data: {
           message: req.body.message,
+          email: req.body.yourEmail,
         },
       })
       .then(feedback => {
+
+        (async function () {
+
+          const { data, error } = await resend.emails.send({
+            //from: 'onboarding@resend.dev',
+            from: 'clanpraises@clanpraises.com',
+            to: 'nmdlamini92@gmail.com',
+            subject: `New Feedback by ${req.body.yourEmail}`,
+            //text: `Your verification code is: ${verificationCode}`,
+            html: `<p>${req.body.yourEmail} has sent feedback:</p><p>${req.body.message}</p>`,
+          });
+
+          if (error) {
+            return console.error(error);
+          }
+
+          console.log(data);
+        })();
+
         res.send({isFeedbackSent: true})
         //return {
          //reportLogged: "report successfully logged"

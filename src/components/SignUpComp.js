@@ -97,7 +97,7 @@ export default function SignUpComp({ onDataChange }) {
       return(                                               
         <div>
           <div className="flex gap-1 ">
-            <p className="text-lime-800 text-sm">Enter verification code sent to: </p> <strong><p className="text-sm text-stone-500">{signUpData.email}</p></strong>
+            <p className="text-lime-800 text-sm">Enter code sent to: </p> <strong><p className="text-sm text-stone-500">{signUpData.email}</p></strong>
           </div>
         <input className="border rounded border-amber-500 mr-1" type='text' name='codeEntered'
              placeholder='code' onChange={(e)=>              //{...enteredVcode,[e.target.name]:e.target.value})} 

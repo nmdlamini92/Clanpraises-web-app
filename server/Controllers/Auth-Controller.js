@@ -171,6 +171,8 @@ static async signup(req, reply) {
     console.log('now inside SIGN-UP controller');
     console.log(req.body);
 
+    const resend = new Resend(process.env.RESEND_API_KEY);
+
   try {
     const user1 = await prisma.user1.create({
       data: {
@@ -182,6 +184,24 @@ static async signup(req, reply) {
       },
       //select: { id: true },
     });
+
+    (async function () {
+
+          const { data, error } = await resend.emails.send({
+            //from: 'onboarding@resend.dev',
+            from: 'clanpraises@clanpraises.com',
+            to: 'nmdlamini92@gmail.com',
+            subject: `New user signed up: ${req.body.email}`,
+            //text: `Your verification code is: ${verificationCode}`,
+            html: `<p>${req.body.email} has signed up on ClanPraises.</p>`,
+          });
+
+          if (error) {
+            return console.error(error);
+          }
+
+          console.log(data);
+        })();
     
     const token = createToken(user1.id);
     console.log(user1.id);
