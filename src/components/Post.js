@@ -857,7 +857,7 @@ export function Post() {
               </>
 
               {/*ADSTERRA DISPLAY BANNER*/}
-                 {/* {((post.bodyEnglish !== "" && post.bodyEnglish !== null) || (post.relatedPosts.filter(obj => obj['id'] !== post.id).length > 0)) && (
+                 {((post.bodyEnglish !== "" && post.bodyEnglish !== null) || (post.relatedPosts.filter(obj => obj['id'] !== post.id).length > 0)) && (
                       
                             
                             <>
@@ -882,7 +882,7 @@ export function Post() {
                               </Script>
                               </>
                               
-                  )}*/}
+                  )}
 
       {( (post.bodyEnglish !== "" && post.bodyEnglish !== null ) && (
         <>
@@ -939,8 +939,8 @@ export function Post() {
                     
                     {/*ADSTERRA NATIVE BANNER 1*/}
                           
-                      {/*<script async="async" data-cfasync="false" src="https://considerableinsanityaside.com/f5264805580a0f88f7005898ff27bdfd/invoke.js"></script>
-                      <div id="container-f5264805580a0f88f7005898ff27bdfd"></div>/*/}
+                      <script async="async" data-cfasync="false" src="https://considerableinsanityaside.com/f5264805580a0f88f7005898ff27bdfd/invoke.js"></script>
+                      <div id="container-f5264805580a0f88f7005898ff27bdfd"></div>
 
                   </div>
                 </div>
@@ -954,16 +954,16 @@ export function Post() {
       
       {/*ADSTERRA NATIVE BANNER 2*/}
 
-       {/*{(post.bodySiswati !== null && (
-        <>*/}
-            {/*{(historyTextlanguage?.includes("############################")) && (
+       {(post.bodySiswati !== null && (
+        <>
+            {(historyTextlanguage?.includes("############################")) && (
               <>
               <script async="async" data-cfasync="false" src="https://considerableinsanityaside.com/aee155f50d5d17d8385dcaa2f25aa29b/invoke.js"></script>
               <div id="container-aee155f50d5d17d8385dcaa2f25aa29b"></div>
               </>
-            )}*/}
-        {/*</>
-        ))}*/}
+            )}
+        </>
+        ))}
         
 
 

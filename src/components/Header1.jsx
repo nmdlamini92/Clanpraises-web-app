@@ -179,7 +179,7 @@ export default function Header1 (){
 
           } catch (error) {
           console.error("Error during logout:", error);
-        }
+          }
 
           localStorage.setItem('isUserSignedIn', JSON.stringify({isUserSignedIn: false}));
           localStorage.setItem('VipUserId', JSON.stringify({VipUserId: null}));

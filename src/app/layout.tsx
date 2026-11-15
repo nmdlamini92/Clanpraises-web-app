@@ -120,7 +120,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <>{children}</>
 
         {/*BOTTOM BANNER*/}
-        {/*<div className="flex justify-center bg-stone-300/50" id="adsterra-desktop-bottom">
+        <div className="flex justify-center bg-stone-300/50" id="adsterra-desktop-bottom">
           <Script id="desktop-banner-bottom" strategy="lazyOnload">
             {`
 
@@ -138,7 +138,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               
             `}
           </Script>
-          </div>*/}
+          </div>
         </>
       </body>
     </html>

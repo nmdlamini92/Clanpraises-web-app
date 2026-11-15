@@ -30,7 +30,7 @@ export default function NotificationToggle({initialOn = false, clanName, onChang
         };
 
 
-      const FollowPost_Modal = ({ show, handleClose, children, }) => {
+      {/*const FollowPost_Modal = ({ show, handleClose, children, }) => {
 
         const [values, setvalues] = useState({ email: "" });
         const [errors, setErrors] = useState({ email: "" });
@@ -100,9 +100,8 @@ export default function NotificationToggle({initialOn = false, clanName, onChang
           )}
           </>
         )
-       
-
-      }
+    
+      }*/}
 
       const [on, setOn] = useState(followsPost);
 

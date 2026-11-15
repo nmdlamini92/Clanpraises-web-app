@@ -150,6 +150,7 @@ app.get("/headers/:id", async (req, res) => {
         select: {
           id: true,
           body: true,
+          bodyEnglish: true,
           title: true,
           tribe: true,
         }
@@ -1943,6 +1944,7 @@ app.post("/startDefinitionNotificationBGprocess", async (req, res) => {
 
   const clanname = req.body.clanname
   const tribe = req.body.tribe
+  const postId = req.body.postId
 
   const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -1998,7 +2000,7 @@ setTimeout(async () => {
           html: `
             <p>
               <strong>${capitalizeFirstLetter(definitionStillExists.user.username)}</strong> added a new note to the <strong>${capitalizeFirstLetter(clanname)}</strong> clanpraise.
-              <a href="https://clanpraises.com/${tribe}/${clanname}/${'f15e1d23-e03e-45b5-a076-76ada0767083'}">
+              <a href="https://clanpraises.com/${tribe}/${clanname}/${postId}">
                 <strong>>>Click here to view the note<<</strong>
               </a>
             </p>

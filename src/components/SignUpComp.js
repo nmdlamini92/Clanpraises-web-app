@@ -34,7 +34,7 @@ export default function SignUpComp({ onDataChange }) {
     }, []);
 
     const [isEnterVeriCodeCompVisible, setIsEnterVeriCodeCompVisible] = useState(false);
-    const [isSignUpFormVisible, setIsSignUpFormVisible] = useState(false);
+    const [isSignUpFormVisible, setIsSignUpFormVisible] = useState(true);
     const [isUserBioFormVisible, setIsUserBioFormVisible] = useState(false);
     
     const [userBioData, setUserBioData] = useState();
@@ -378,8 +378,7 @@ export default function SignUpComp({ onDataChange }) {
        
 
         {isEnterVeriCodeCompVisible && <EnterVerifCode/>}
-        {/*{isSignUpFormVisible && <SignUpForm/>}*/}
-        <SignUpForm/>
+        {isSignUpFormVisible && <SignUpForm/>}
         {isUserBioFormVisible && <UserBioForm/>}
       </div>
       {(hydrated && (
